@@ -26,6 +26,7 @@ import os
 import re
 import shutil
 import struct
+import subprocess
 import sys
 import time
 import zlib
@@ -150,6 +151,32 @@ def cmd_iso(a):
     log(f"ISO {out}: {geo['bytes']} bytes, {geo['files']} files, {geo['dirs']} dirs, "
         f"kernel clus {geo['kernel_clus']} stage1 {geo['stage1']}, sha1 {geo['sha1']}")
     return 0
+
+
+# ---------------------------------------------------------------- play
+def cmd_play(a):
+    """Build AntichristOS.ISO.C and boot it in a QEMU window, PC speaker on."""
+    out = a.out or os.path.join(OUT, "AntichristOS.ISO.C")
+    if not a.no_build:
+        geo = mkiso.make_iso(a.src, out, log=log, **iso_kwargs(a))
+        log(f"ISO {out}: {geo['bytes']} bytes, sha1 {geo['sha1']}")
+    for accel in (["whpx", "tcg"] if a.accel == "auto" else [a.accel]):
+        cmd = [qemu.find_qemu(), "-name", "AntichristOS",
+               "-machine", "pc,pcspk-audiodev=hellsnd", "-accel", accel,
+               "-m", str(a.mem), "-smp", str(a.smp),
+               "-cdrom", out, "-boot", "d", "-vga", "std", "-display", a.display,
+               "-rtc", "base=localtime", "-nic", "none",
+               "-audiodev", f"{a.audio},id=hellsnd"]
+        log("play: " + " ".join(cmd))
+        p = subprocess.Popen(cmd)
+        try:
+            p.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            log(f"play: AntichristOS is running (accel={accel}, pid {p.pid}). "
+                f"Close the QEMU window to leave Hell.")
+            return 0
+        log(f"play: QEMU exited with {p.returncode} under accel={accel}")
+    return 1
 
 
 # ---------------------------------------------------------------- boot
@@ -806,6 +833,17 @@ def main(argv=None):
     p.add_argument("--out", default=None)
     p.add_argument("--manifest", default=None)
     p.set_defaults(fn=cmd_iso)
+
+    p = sub.add_parser("play", help="build AntichristOS.ISO.C and boot it in a QEMU window with sound")
+    add_iso_opts(p, patch_default=True)
+    p.add_argument("--accel", default="auto", choices=["auto", "whpx", "tcg"])
+    p.add_argument("--mem", type=int, default=2048)
+    p.add_argument("--smp", type=int, default=4)
+    p.add_argument("--display", default="sdl", help="QEMU display backend (sdl, gtk, none)")
+    p.add_argument("--audio", default="dsound", help="QEMU audio backend (dsound, sdl, none)")
+    p.add_argument("--out", default=None)
+    p.add_argument("--no-build", action="store_true")
+    p.set_defaults(fn=cmd_play)
 
     p = sub.add_parser("boot", help="build + boot + screenshots")
     add_iso_opts(p, patch_default=True)
