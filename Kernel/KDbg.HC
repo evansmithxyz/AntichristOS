@@ -577,7 +577,7 @@ U0 Fault3(I64 fault_num,I64 fault_err_code)
     SysHlt;
   }
   "\n\tUnholy C Debugger -- The Exorcist\n\n"
-	">Help;\t//For help.  The power of Help compels you.\n\n";
+	"<Help;\t//For help.  The power of Help compels you.\n\n";
   Snd(62);	//B4...
   Busy(250000);
   Snd(68);	//...F5.  The tritone, diabolus in musica.

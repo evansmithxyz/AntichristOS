@@ -2,6 +2,8 @@
 """forge.py -- Hellforge: build & boot TempleOS/AntichristOS from the repo tree.
 
   forge.py iso   [--out F] [mkiso options]       build the CD image
+  forge.py play  [--no-build] [--audio A]        build AntichristOS.ISO.C and
+                                                 boot it in a QEMU window
   forge.py boot  [--seconds N] [--every S]       build + boot + screenshots
   forge.py run   FILE.HC | - | --eval CODE       build with the code as autorun
                                                  test, stream COM1, exit with
@@ -12,7 +14,7 @@
                                                  current sources
   forge.py selftest                              bootstrap + diff + boot the
                                                  result + stage-2 rebuild
-  forge.py doccheck                              check DolDoc sprite (bin) tails
+  forge.py doccheck                              check DolDoc bin tails and sprites
 
 Exit codes for 'run': guest code (0..127) from HfExit()/hf_exit_code;
 126 = uncaught exception or compile error in the test; 124 = host timeout
@@ -90,15 +92,16 @@ def iso_kwargs(a):
     return dict(boot_msg=a.boot_msg, volume_id=a.volume_id, excludes=a.exclude,
                 date=a.date, catalog_id=a.catalog_id, skip_invalid=a.skip_invalid,
                 patch_bins=a.patch_broken_bins, dotz=getattr(a, "dotz", True),
-                add=[(s[:s.rfind(":")], s[s.rfind(":") + 1:]) for s in a.add])
+                add=[mkiso.split_add(s) for s in a.add])
 
 
 def add_iso_opts(p, patch_default=False):
     p.add_argument("--src", default=REPO)
     p.add_argument("--patch-broken-bins", dest="patch_broken_bins",
                    action="store_true", default=patch_default,
-                   help="image-only workaround for corrupted DolDoc sprite tails "
-                        "(default: %s)" % ("on" if patch_default else "off"))
+                   help="image-only workaround for the repo's damaged DolDoc sprite "
+                        "bins and .GR pictures (see doccheck; default: %s)"
+                        % ("on" if patch_default else "off"))
     p.add_argument("--no-patch-broken-bins", dest="patch_broken_bins",
                    action="store_false")
     p.add_argument("--no-dotz", dest="dotz", action="store_false",
@@ -109,19 +112,23 @@ def add_iso_opts(p, patch_default=False):
     p.add_argument("--catalog-id", default=None,
                    help="El Torito id (default: from the tree's DskISORedSea.HC)")
     p.add_argument("--exclude", action="append", default=[], metavar="GLOB")
-    p.add_argument("--add", action="append", default=[], metavar="HOST:ISOPATH")
+    p.add_argument("--add", action="append", default=[], metavar="HOST:ISOPATH",
+                   help="add/replace a file in the image (repeatable; ISOPATH may "
+                        "use the image's .Z name)")
     p.add_argument("--date", default=None)
     p.add_argument("--skip-invalid", action="store_true")
 
 
-def add_qemu_opts(p):
+def add_qemu_opts(p, anchor=True):
     p.add_argument("--accel", default="auto", choices=["auto", "whpx", "tcg"])
     p.add_argument("--mem", type=int, default=1024)
     p.add_argument("--smp", type=int, default=1)
     p.add_argument("--keys", default="", help="'SECS:text;SECS:<ret>' sendkey script")
-    p.add_argument("--anchor-ready", type=float, default=None, metavar="SECS",
-                   help="--keys/--shots times >= SECS were written for a boot whose "
-                        "autorun got ready at SECS; shift them to the real ready time")
+    if anchor:   # needs the autorun's HELLFORGE_READY, so not for 'boot'
+        p.add_argument("--anchor-ready", type=float, default=None, metavar="SECS",
+                       help="--keys/--shots times >= SECS were written for a boot "
+                            "whose autorun got ready at SECS; shift them to the real "
+                            "ready time (0: every time counts from READY)")
 
 
 def add_guest_opts(p, timeout=300):
@@ -133,7 +140,7 @@ def add_guest_opts(p, timeout=300):
     p.add_argument("--boot-timeout", type=float, default=None,
                    help="give up early if StartOS has not finished after this many "
                         "seconds (boot-time compile error / hang); 0 disables. "
-                        "Default 120 with --patch-broken-bins, else disabled")
+                        "Default 120")
     p.add_argument("--settle", type=float, default=0.5,
                    help="secs to wait after Adam server mode before the test")
     p.add_argument("--no-doc", action="store_true",
@@ -154,28 +161,78 @@ def cmd_iso(a):
 
 
 # ---------------------------------------------------------------- play
+def default_audio():
+    """A QEMU audio backend this platform's QEMU builds have."""
+    if os.name == "nt":
+        return "dsound"
+    if sys.platform == "darwin":
+        return "coreaudio"
+    return "sdl"
+
+
+# What QEMU says when the accelerator itself is unusable (no Hyper-V platform,
+# no /dev/kvm, ...).  Anything else (a bad --audio, a closed window) is not
+# fixed by trying the next accelerator.
+ACCEL_ERR_RE = re.compile(r"whpx|kvm|hvf|hax|accelerat|hypervisor", re.I)
+
+
+def accel_failed(err):
+    """True if QEMU's stderr says the accelerator could not be used (warnings
+    and the 'accelerator is operational' notice do not count)."""
+    return any(ACCEL_ERR_RE.search(ln) for ln in err.splitlines()
+               if "warning:" not in ln and "operational" not in ln)
+
+
 def cmd_play(a):
     """Build AntichristOS.ISO.C and boot it in a QEMU window, PC speaker on."""
     out = a.out or os.path.join(OUT, "AntichristOS.ISO.C")
     if not a.no_build:
         geo = mkiso.make_iso(a.src, out, log=log, **iso_kwargs(a))
         log(f"ISO {out}: {geo['bytes']} bytes, sha1 {geo['sha1']}")
-    for accel in (["whpx", "tcg"] if a.accel == "auto" else [a.accel]):
+    audio = a.audio or default_audio()
+    accels = ["whpx", "tcg"] if a.accel == "auto" else [a.accel]
+    os.makedirs(OUT, exist_ok=True)
+    for k, accel in enumerate(accels):
         cmd = [qemu.find_qemu(), "-name", "AntichristOS",
                "-machine", "pc,pcspk-audiodev=hellsnd", "-accel", accel,
                "-m", str(a.mem), "-smp", str(a.smp),
                "-cdrom", out, "-boot", "d", "-vga", "std", "-display", a.display,
                "-rtc", "base=localtime", "-nic", "none",
-               "-audiodev", f"{a.audio},id=hellsnd"]
+               "-audiodev", f"{audio},id=hellsnd"]
         log("play: " + " ".join(cmd))
-        p = subprocess.Popen(cmd)
+        # QEMU's messages go to a file (it outlives this process), shown here
+        # if it quits during the first seconds.  Its stdout goes there too, so
+        # a caller reading our stdout through a pipe is not held open until
+        # the window closes.
+        errpath = os.path.join(OUT, "play.qemu-stderr.txt")
+        try:
+            errf = open(errpath, "wb")
+        except OSError:            # still held by a running instance
+            errpath = os.path.join(OUT, f"play-{os.getpid()}.qemu-stderr.txt")
+            errf = open(errpath, "wb")
+        with errf:
+            p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=errf,
+                                 stderr=errf)
         try:
             p.wait(timeout=5)
         except subprocess.TimeoutExpired:
             log(f"play: AntichristOS is running (accel={accel}, pid {p.pid}). "
-                f"Close the QEMU window to leave Hell.")
+                f"Close the QEMU window to leave Hell. QEMU messages: {errpath}")
+            return 0
+        with open(errpath, "rb") as f:
+            err = f.read().decode("latin-1").strip()
+        if err:
+            log("qemu: " + err[-1500:])
+        if p.returncode == 0:
+            log("play: QEMU closed")
             return 0
         log(f"play: QEMU exited with {p.returncode} under accel={accel}")
+        if k + 1 < len(accels):
+            if not accel_failed(err):
+                log(f"play: not an accelerator problem, so not retrying under "
+                    f"accel={accels[k + 1]}")
+                return 1
+            log(f"play: trying accel={accels[k + 1]}")
     return 1
 
 
@@ -318,6 +375,13 @@ class SerialParser:
 
 
 # ---------------------------------------------------------------- run
+def anchor_spec(a):
+    """qemu.run(anchor=...) for --anchor-ready (0 is a valid time: every
+    scripted time then counts from HELLFORGE_READY)."""
+    t = getattr(a, "anchor_ready", None)
+    return None if t is None else (b"HELLFORGE_READY", t)
+
+
 def run_guest(a, test, name, extra_add=(), src=None, echo=True):
     """Build an ISO from src (default a.src) whose autorun executes `test`
     (a host path, or bytes), boot it and parse COM1.
@@ -350,7 +414,7 @@ def run_guest(a, test, name, extra_add=(), src=None, echo=True):
     serial = os.path.join(wd, "serial.txt")
     bt = a.boot_timeout
     if bt is None:
-        bt = 120 if a.patch_broken_bins else 0
+        bt = 120   # boot takes ~10 s, patched or not (since the bootstrapped .MAPs)
     expect = []
     if bt and bt < a.timeout:
         expect.append((bt, b"HELLFORGE_STARTOS_END",
@@ -360,7 +424,7 @@ def run_guest(a, test, name, extra_add=(), src=None, echo=True):
                  shot_prefix=name, shot_dir=wd, serial=serial,
                  keys=qemu.parse_keys(a.keys), accel=a.accel, mem=a.mem, smp=a.smp,
                  log=log, name=name, stream=sp.feed, expect=expect,
-                 anchor=(b"HELLFORGE_READY", a.anchor_ready) if a.anchor_ready else None)
+                 anchor=anchor_spec(a))
     sp.feed(b"\n")
     ev = sp.events
     if "HELLFORGE_STARTOS_END" in ev:
@@ -491,16 +555,34 @@ def cdate_decode(ct):
             f"{secs // 3600:02d}:{secs // 60 % 60:02d}:{secs % 60:02d}")
 
 
+def cfg_unescape(s):
+    """--cfg as typed on a shell: backslash escapes (\\n, \\t, \\\\, \\xHH)
+    become the characters KCfg should get.  Real newlines pass through."""
+    try:
+        return s.encode("latin-1", "backslashreplace").decode("unicode_escape")
+    except UnicodeDecodeError as e:
+        raise ValueError(f"bad escape in --cfg {s!r}: {e}")
+
+
+def bs_trees(a):
+    """Kernel and Compiler, plus any --tree dirs (additive, no duplicates)."""
+    trees = list(BS_TREES)
+    for t in (x.replace("\\", "/").strip("/") for x in a.tree):
+        if t and t not in trees:
+            trees.append(t)
+    return trees
+
+
 def bs_prelude(a):
-    trees = a.tree or BS_TREES
+    trees = bs_trees(a)
     drv = a.drv.upper()
     if not ("A" <= drv <= "Z" and len(drv) == 1):
         raise ValueError(f"bad --drv {a.drv!r}")
     lines = ["//Generated by forge.py bootstrap (ISO-only, not in repo)",
              f"U8 hf_bs_drv='{drv}';",
-             f"U8 *hf_bs_cfg={hc_str(a.cfg)};",
+             f"U8 *hf_bs_cfg={hc_str(cfg_unescape(a.cfg))};",
              f"U8 *hf_bs_trees[{len(trees) + 1}]={{"
-             + ",".join(hc_str(t.strip('/')) for t in trees) + ",NULL};",
+             + ",".join(hc_str(t) for t in trees) + ",NULL};",
              f"Bool hf_bs_bootdvdins={'TRUE' if a.bootdvdins else 'FALSE'};", ""]
     return "\n".join(lines).encode("latin-1")
 
@@ -782,30 +864,53 @@ def cmd_selftest(a):
 # ---------------------------------------------------------------- doccheck
 def doccheck(src):
     """Check DolDoc files' binary tails (sprites, .MAP debug info) the way
-    DocLoad() reads them.  Same rule as mkiso --patch-broken-bins."""
+    DocLoad() reads them, every sprite bin the way SpriteElemSize() walks it,
+    and every .GR picture's DCSave() layout.  Same rules as mkiso
+    --patch-broken-bins (mkiso.doc_bin_problems, mkiso.gr_problem).
+    Returns [(relpath, problems dict)]."""
     bad = []
     for dp, dn, fn in os.walk(src):
-        dn[:] = [d for d in dn if d not in (".git", "Hellforge")]
+        dn[:] = sorted(d for d in dn if d not in (".git", "Hellforge", ".claude"))
         for f in sorted(fn):
-            if not mkiso.DOLDOC_EXT_RE.search(f):
+            is_gr = bool(mkiso.GR_EXT_RE.search(f))
+            if not (is_gr or mkiso.DOLDOC_EXT_RE.search(f)):
                 continue
             p = os.path.join(dp, f)
             with open(p, "rb") as fh:
-                r = mkiso.doc_bin_check(fh.read())
-            if r is None:
-                continue
-            _, _, missing, overrun = r
-            if missing or overrun > 15:
-                bad.append((os.path.relpath(p, src), missing, overrun))
+                data = fh.read()
+            if is_gr:
+                gp = mkiso.gr_problem(data)
+                prob = None if gp is None else dict(gr=gp)
+            else:
+                prob = mkiso.doc_bin_problems(
+                    data, map_file=bool(mkiso.MAP_EXT_RE.search(f)))
+            if prob is not None:
+                bad.append((os.path.relpath(p, src).replace("\\", "/"), prob))
     return bad
+
+
+def _nums(xs):
+    return f"{xs[:12]}{'...' if len(xs) > 12 else ''}"
 
 
 def cmd_doccheck(a):
     bad = doccheck(a.src)
-    for p, missing, overrun in bad:
-        print(f"BROKEN {p}: missing bins {missing[:12]}{'...' if len(missing) > 12 else ''}"
-              f" tail overrun {overrun}")
-    print(f"{len(bad)} file(s) with broken DolDoc bin tails")
+    for p, prob in bad:
+        if "gr" in prob:
+            print(f"BROKEN {p}: .GR picture: {prob['gr']}")
+            continue
+        parts = []
+        if prob["missing"]:
+            parts.append(f"missing bins {_nums(prob['missing'])}")
+        if prob["bad_sprites"]:
+            parts.append(f"malformed sprite bins {_nums(prob['bad_sprites'])}")
+        if prob["overrun"] > 0:
+            parts.append(f"tail overrun {prob['overrun']}")
+        elif prob["overrun"] < 0:
+            parts.append(f"{-prob['overrun']} stray bytes after the last bin")
+        print(f"BROKEN {p}: " + "; ".join(parts))
+    print(f"{len(bad)} damaged file(s) "
+          f"(--patch-broken-bins works around them in the image only)")
     return 1 if bad else 0
 
 
@@ -813,11 +918,12 @@ def add_bootstrap_opts(p):
     p.add_argument("--drv", default="B",
                    help="writable work drive in the guest (default B, the CD RAM drive)")
     p.add_argument("--cfg", default=BS_CFG,
-                   help="KCfg answers fed with In() (default: DoDistro's "
-                        "STD_DISTRO_DVD_CFG, a CD kernel)")
+                   help="KCfg answers fed with In(); backslash escapes such as \\n "
+                        "are decoded (default: DoDistro's STD_DISTRO_DVD_CFG, a CD "
+                        "kernel)")
     p.add_argument("--tree", action="append", default=[], metavar="DIR",
-                   help="dir to copy from the CD to the work drive (repeatable; "
-                        "default Kernel and Compiler)")
+                   help="extra dir to copy from the CD to the work drive, in "
+                        "addition to Kernel and Compiler (repeatable)")
     p.add_argument("--bootdvdins", action="store_true",
                    help="call TempleOS's own BootDVDIns() instead of the "
                         "equivalent Cmp() calls (no per-project error counts)")
@@ -840,14 +946,16 @@ def main(argv=None):
     p.add_argument("--mem", type=int, default=2048)
     p.add_argument("--smp", type=int, default=4)
     p.add_argument("--display", default="sdl", help="QEMU display backend (sdl, gtk, none)")
-    p.add_argument("--audio", default="dsound", help="QEMU audio backend (dsound, sdl, none)")
+    p.add_argument("--audio", default=None,
+                   help="QEMU audio backend (dsound, sdl, pa, coreaudio, none; default "
+                        f"for this platform: {default_audio()})")
     p.add_argument("--out", default=None)
     p.add_argument("--no-build", action="store_true")
     p.set_defaults(fn=cmd_play)
 
     p = sub.add_parser("boot", help="build + boot + screenshots")
     add_iso_opts(p, patch_default=True)
-    add_qemu_opts(p)
+    add_qemu_opts(p, anchor=False)
     p.add_argument("--out", default=None)
     p.add_argument("--no-build", action="store_true")
     p.add_argument("--seconds", type=float, default=120)
@@ -888,13 +996,16 @@ def main(argv=None):
     p.add_argument("--no-stage2", action="store_true")
     p.set_defaults(fn=cmd_selftest)
 
-    p = sub.add_parser("doccheck", help="report DolDoc files with broken sprite tails")
+    p = sub.add_parser("doccheck", help="report damaged DolDoc bin tails, sprites and "
+                       ".GR pictures")
     p.add_argument("--src", default=REPO)
     p.set_defaults(fn=cmd_doccheck)
 
     a = ap.parse_args(argv)
     if getattr(a, "stages", 1) < 1:
         ap.error("--stages must be >= 1")
+    if (getattr(a, "anchor_ready", None) or 0) < 0:
+        ap.error("--anchor-ready must be >= 0")
     try:
         return a.fn(a)
     except mkiso.IsoError as e:

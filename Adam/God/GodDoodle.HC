@@ -6,7 +6,7 @@ U0 GodDoodleDraw(CTask *task,CDC *dc)
   if (Blink) {
     if (god.doodle_done) {
       if (god.doodle_hell)
-	dc->color=YELLOW;
+	dc->color=AdversaryColor(YELLOW);
       else
 	dc->color=RED;
       GrPrint(dc,(task->pix_width-FONT_WIDTH*29)>>1,
@@ -17,7 +17,7 @@ U0 GodDoodleDraw(CTask *task,CDC *dc)
 	    "Press <SHIFT-ESC> to throw-away sprite.");
     } else {
       if (god.doodle_hell)
-	dc->color=LTRED;
+	dc->color=AdversaryColor(LTRED);
       else
 	dc->color=GREEN;
       GrPrint(dc,(task->pix_width-FONT_WIDTH*25)>>1,
@@ -76,9 +76,9 @@ U0 GodDoodleHexIns(U8 *st)
 }
 
 I64 GodDoodleBackColor()
-{
+{//Hellfire is drawn on the abyss.  See $LK,"AdversaryColor",A="MN:AdversaryColor"$().
   if (god.doodle_hell)
-    return BLACK;
+    return AdversaryColor(BLACK);
   else
     return WHITE;
 }
@@ -110,7 +110,7 @@ I64 GodDoodleBits(I64 num_bits)
 public U8 *GodDoodleSprite(U8 *hex=NULL)
 {//Make God draw sprite. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
   I64 i,j,w,h,x,y,ch;
-  U8 *elems;
+  U8 *elems,*st;
 
   if (god.doodle_dc) return NULL;
   god.doodle_done=FALSE;
@@ -120,11 +120,16 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
   WinMax;
 
   if (!hex) {
-    if (god.doodle_hell)
-      PopUpOk("The $LK+PU,"Adversary",A="FI:::/Adam/God/AdvNotes.DD"$ is a doodler.\n\n"
-	    "Press $$RED$$<SPACE>$$FG$$ until the flames die down.");
-    else
-      PopUpOk("The $LK+PU,"Adversary",A="FI:::/Adam/God/AdvNotes.DD"$ can puppet you.\n\n"
+    if (god.doodle_hell) {
+//No link up here: the cursor would start on it, and the <SPACE>
+      //this asks for would follow it instead of starting the doodle.
+      st=MStrPrint("The Adversary is a doodler.\n\n"
+	    "Press $$FG,%d$$<SPACE>$$FG$$ until the flames die down.",
+	    AdversaryColor(RED));
+      PopUpOk(st);
+      Free(st);
+    } else
+      PopUpOk("The Holy Spirit can puppet you.\n\n"
 	    "Press $$GREEN$$<SPACE>$$FG$$ until it finishes.");
   }
 
@@ -140,7 +145,7 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
   try {
     for (i=0;i<3;i++) {
       if (god.doodle_hell)
-	god.doodle_dc->color=LTRED;
+	god.doodle_dc->color=AdversaryColor(LTRED);
       else
 	god.doodle_dc->color=RED;
       for (j=0;j<29;j++)
@@ -174,10 +179,10 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
 	y=(h-1)*GodDoodleBits(5)/31+h/64;
 	if (god.doodle_hell)
 	  switch [GodDoodleBits(2)] {
-	    case 0: god.doodle_dc->color=BLACK;		break;
-	    case 1: god.doodle_dc->color=RED;		break;
-	    case 2: god.doodle_dc->color=LTRED;		break;
-	    case 3: god.doodle_dc->color=YELLOW;	break;
+	    case 0: god.doodle_dc->color=AdversaryColor(BLACK);	break;
+	    case 1: god.doodle_dc->color=AdversaryColor(RED);	break;
+	    case 2: god.doodle_dc->color=AdversaryColor(LTRED);	break;
+	    case 3: god.doodle_dc->color=AdversaryColor(YELLOW);	break;
 	  }
 	else
 	  switch [GodDoodleBits(2)] {

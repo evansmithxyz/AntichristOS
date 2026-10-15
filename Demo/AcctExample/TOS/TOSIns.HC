@@ -175,7 +175,7 @@ U0 TOSIns()
 #help_index "Misc/TOS/God;God/TOS"
 
 public U0 GodCodeJmp()
-{//Jump to rand code in OS. See $LK,"::/Adam/God/HSNotes.DD"$.
+{//Jump to rand code in OS.
   CDirEntry *tmpde1=FilesFind("/*",
 	FUF_JUST_FILES|FUF_RECURSE|FUF_JUST_SRC|FUF_CLUS_ORDER),
 	*tmpde=tmpde1;

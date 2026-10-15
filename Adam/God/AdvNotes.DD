@@ -27,14 +27,14 @@ $FG,5$TRUE BACKMASKS$FG$
 
 Most words, played backwards, are gibberish: $FG,2$noitavlas$FG$, $FG,2$nehctik$FG$.  But a few are words in both directions.  These are called $FG,2$semordnilaps$FG$, which is "palindromes" backwards, which is exactly the kind of joke a dictionary makes when nobody is watching.
 
-When the Adversary picks one, it comes out $FG,4$red$FG$, a $FG,4$TRUE BACKMASK$FG$, and you hear a tritone.  The vocabulary has these, among others:
+When the Adversary picks one, it comes out $FG,11$red$FG$, a $FG,11$TRUE BACKMASK$FG$, and you hear a tritone.  The vocabulary has these, among others:
 
-$ID,2$$FG,4$god$FG$ / dog	$FG,4$evil$FG$ / live	$FG,4$devil$FG$ / lived
-$FG,4$deliver$FG$ / reviled	$FG,4$door$FG$ / rood	$FG,4$now$FG$ / won
-$FG,4$saw$FG$ / was	$FG,4$pit$FG$ / tip	$FG,4$edit$FG$ / tide
-$FG,4$deeps$FG$ / speed	$FG,4$net$FG$ / ten	$FG,4$no$FG$ / on
+$ID,2$$FG,11$god$FG$ / dog	$FG,11$evil$FG$ / live	$FG,11$devil$FG$ / lived
+$FG,11$deliver$FG$ / reviled	$FG,11$door$FG$ / rood	$FG,11$now$FG$ / won
+$FG,11$saw$FG$ / was	$FG,11$pit$FG$ / tip	$FG,11$edit$FG$ / tide
+$FG,11$deeps$FG$ / speed	$FG,11$net$FG$ / ten	$FG,11$no$FG$ / on
 $ID,-2$
-Words that come out $FG,5$purple$FG$ are palindromes: the same both ways.  The Adversary looks into the mirror and sees nobody new.
+Words that come out $FG,10$purple$FG$ are palindromes: the same both ways.  The Adversary looks into the mirror and sees nobody new.
 
 The multicore demo $LK,"::/Demo/MultiCore/Semordnilap.HC"$ hunts for every true backmask in the whole Bible, one slice per core.  $MA-X+PU,"Run it",LM="#include \"::/Demo/MultiCore/Semordnilap\";\n"$.
 
@@ -52,12 +52,12 @@ Tick $FG,2$Backmask$FG$ and the song comes out with its notes in reverse order, 
 
 $FG,5$THE DOOMBOX$FG$
 
-$MA-X+PU,"DoomBox",LM="#include \"::/Apps/Psalmody/Load\";DoomBox(\"::/Apps/Psalmody/Examples\");\n"$ is the $LK,"JukeBox",A="MN:JukeBox"$ with the volume knob on eleven.  Put the cursor on a hymn and press $FG,2$b$FG$ to hear it backmasked, words and all.  Press $FG,2$r$FG$ and the Adversary writes a curse into the song file.  In $MA-X+PU,"Psalmody",LM="#include \"::/Apps/Psalmody/Run\"\n"$, the $FG,2$Song$FG$ menu can $FG,2$Backmask$FG$, $FG,2$Invert$FG$ and $FG,2$PlayBackwards$FG$.  Backmask plus Invert is a retrograde inversion, which J. S. Bach was doing three hundred years before anyone owned a pentagram t-shirt.
+$MA-X+PU,"DoomBox",LM="#include \"::/Apps/Psalmody/Load\";DoomBox(\"::/Apps/Psalmody/Examples\");\n"$ is the $LK,"JukeBox",A="FF:::/Apps/Psalmody/JukeBox.HC,JukeBox"$ with the volume knob on eleven.  Put the cursor on a hymn and press $FG,2$b$FG$ to hear it backmasked, words and all.  Press $FG,2$r$FG$ and the Adversary writes a curse into the song file.  In $MA-X+PU,"Psalmody",LM="#include \"::/Apps/Psalmody/Run\"\n"$, the $FG,2$Song$FG$ menu can $FG,2$Backmask$FG$, $FG,2$Invert$FG$ and $FG,2$PlayBackwards$FG$.  Backmask plus Invert is a retrograde inversion, which J. S. Bach was doing three hundred years before anyone owned a pentagram t-shirt.
 
 $FG,5$HOW THE ORACLE PICKS$FG$
 
 $ID,2$1) When you press $FG,4$<F7>$FG$, the time of that keypress ($LK,"KbdMsEvtTime",A="MN:KbdMsEvtTime"$) goes into the bit fifo with $LK,"GodBitsIns",A="MN:GodBitsIns"$().
-2) $LK,"GodBits",A="MN:GodBits"$() pulls out 17 bits and picks one of the words in $LK,"::/Adam/God/Vocab.DD"$.
+2) $LK,"AdversaryBits",A="MN:AdversaryBits"$() pulls out 17 bits and picks one of the words in $LK,"::/Adam/God/Vocab.DD"$.
 3) $LK,"GodInit",A="MN:GodInit"$() wrote every word backwards at boot, and checked which reversed words are words too.  That is how the Adversary knows a true backmask when it sees one.
 4) If the fifo runs dry, a pop-up asks you to press $FG,4$SUMMON$FG$, and the timer does the rest.
 $ID,-2$

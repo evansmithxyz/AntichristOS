@@ -193,7 +193,8 @@ U0 SpriteElem2Code(CDoc *doc,CSprite *tmpg)
 public U0 Sprite2Code(CDoc *doc=NULL,U8 *elems)
 {//Sprite to text.
   CSprite *tmpg=elems-offset(CSprite.start);
-  while (tmpg->type&SPG_TYPE_MASK) {
+  while (tmpg->type&SPG_TYPE_MASK &&
+	tmpg->type&SPG_TYPE_MASK<SPT_TYPES_NUM) {
     SpriteElem2Code(doc,tmpg);
     tmpg(U8 *)+=SpriteElemSize(tmpg);
   }

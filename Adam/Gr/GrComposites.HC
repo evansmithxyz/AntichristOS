@@ -246,6 +246,12 @@ public Bool GrTextDiamond3(CDC *dc=gr.dc,
 }
 
 #help_index "Graphics/Mesh"
+Bool Gr3MeshTriOk(CMeshTri *tri,I64 vertex_cnt)
+{//A corrupt mesh must not send us outside its own vertices.
+  return 0<=tri->nums[0]<vertex_cnt && 0<=tri->nums[1]<vertex_cnt &&
+	0<=tri->nums[2]<vertex_cnt;
+}
+
 public I64 Gr3Mesh(CDC *dc=gr.dc,I64 vertex_cnt,CD3I32 *p,
 	I64 tri_cnt,CMeshTri *tri)
 {//Returns cnt of pixs changed.
@@ -273,21 +279,23 @@ public I64 Gr3Mesh(CDC *dc=gr.dc,I64 vertex_cnt,CD3I32 *p,
       dst->x=x; dst->y=y; dst->z=z;
     }
     p_sym=pt_sym;
-    for (i=0;i<tri_cnt;i++,tri_sym++) {
-      (*dc->lighting)(dc,&p_sym[tri_sym->nums[0]],&p_sym[tri_sym->nums[2]],
-	    &p_sym[tri_sym->nums[1]],tri_sym->color);
-      res+=GrFillTri0(dc,&p_sym[tri_sym->nums[0]],&p_sym[tri_sym->nums[2]],
-	    &p_sym[tri_sym->nums[1]]);
-    }
+    for (i=0;i<tri_cnt;i++,tri_sym++)
+      if (Gr3MeshTriOk(tri_sym,vertex_cnt)) {
+	(*dc->lighting)(dc,&p_sym[tri_sym->nums[0]],&p_sym[tri_sym->nums[2]],
+	      &p_sym[tri_sym->nums[1]],tri_sym->color);
+	res+=GrFillTri0(dc,&p_sym[tri_sym->nums[0]],&p_sym[tri_sym->nums[2]],
+	      &p_sym[tri_sym->nums[1]]);
+      }
     Free(pt_sym);
     if (dc->flags&DCF_JUST_MIRROR)
       goto mesh_done;
   }
-  for (i=0;i<tri_cnt;i++,tri++) {
-    (*dc->lighting)(dc,&p[tri->nums[0]],&p[tri->nums[1]],
-	  &p[tri->nums[2]],tri->color);
-    res+=GrFillTri0(dc,&p[tri->nums[0]],&p[tri->nums[1]],&p[tri->nums[2]]);
-  }
+  for (i=0;i<tri_cnt;i++,tri++)
+    if (Gr3MeshTriOk(tri,vertex_cnt)) {//Lost bytes scramble the tris.
+      (*dc->lighting)(dc,&p[tri->nums[0]],&p[tri->nums[1]],
+	    &p[tri->nums[2]],tri->color);
+      res+=GrFillTri0(dc,&p[tri->nums[0]],&p[tri->nums[1]],&p[tri->nums[2]]);
+    }
 mesh_done:
   dc->color=old_color;
   Free(pt);

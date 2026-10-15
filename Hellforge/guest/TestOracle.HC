@@ -145,7 +145,10 @@ U0 TestWords()
   SeedIdx(i,17);
   CheckStr(AdversaryWordStr,"dog","AdversaryWordStr(god)");
   st=AdversaryWordDolDoc(i);
-  CheckStr(st,"$$RED$$dog$$FG$$ ","AdversaryWordDolDoc(god) is red");
+//Hellfire (the boot palette) keeps red in slot 11, CRIMSON: see AdversaryColor().
+  Check(unholy_palette==UNHOLY_PAL_HELLFIRE && AdversaryColor(RED)==LTCYAN,
+	"hellfire red is slot 11");
+  CheckStr(st,"$$FG,11$$dog$$FG$$ ","AdversaryWordDolDoc(god) is red");
   Free(st);
 
   DocClear;
@@ -173,7 +176,7 @@ U0 TestWords()
   if (i<god.num_words) {
     st=AdversaryWordDolDoc(i);
     HfPrint("palindrome: %s\n",god.words[i]);
-    Check(StrMatch("PURPLE",st)!=NULL,"palindrome is purple");
+    Check(StrMatch("$$FG,10$$",st)!=NULL,"palindrome is purple (BRUISE)");
     Free(st);
   }
   //Old API still works.
@@ -487,7 +490,7 @@ U0 TestPsalmodyUI()
 	"Song/PlayBackwards menu entry");
 //PostMsg, not PostMsgWait: the task blocks inside the pop-ups.
   PostMsg(task,MSG_KEY_DOWN_UP,',',0); //Random song: God's form pops up,
-  for (i=0;i<80;i++) {			//then a SUMMON pop-up per 24 bits.
+  for (i=0;i<80;i++) {			//then an OKAY pop-up per 24 bits.
     Sleep(150);
     if (TaskValidate(task->popup_task)) {
       if (++popups==2)
@@ -720,7 +723,7 @@ U0 Showcase(U8 *elems)
   WinHorz(1,TEXT_COLS-2);
   WinVert(2,TEXT_ROWS-2);
   WinToTop;
-  "$$WW,1$$$$RED$$The Adversary speaks.$$FG$$  <F7> x9, seeded:\n\n";
+  "$$WW,1$$$$LTCYAN$$The Adversary speaks.$$FG$$  <F7> x9, seeded:\n\n";
   SeedIdx(VocabIdx("god"),17);		AdversaryWord;
   SeedIdx(VocabIdx("salvation"),17);	AdversaryWord;
   SeedIdx(VocabIdx("evil"),17);		AdversaryWord;
@@ -730,10 +733,10 @@ U0 Showcase(U8 *elems)
   SeedIdx(VocabIdx("deliver"),17);	AdversaryWord;
   SeedIdx(VocabIdx("angels"),17);	AdversaryWord;
   SeedIdx(VocabIdx("door"),17);		AdversaryWord;
-  "\n\n$$RED$$<SHIFT-F7>:$$FG$$ ";
+  "\n\n$$LTCYAN$$<SHIFT-F7>:$$FG$$ ";
   SeedIdx(999,21);
   AdversaryPassage(6);
-  "\n$$RED$$<SHIFT-F6>:$$FG$$\n";
+  "\n$$LTCYAN$$<SHIFT-F6>:$$FG$$\n";
   if (elems)
     Sprite(elems);
   "\n";

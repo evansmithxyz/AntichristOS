@@ -10,7 +10,7 @@ $ID,2$* A black tower, $FG,2$6 x 6 x 6$FG$ hands, cubed for symmetry.  It is not
 * The power button is labeled $FG,4$SELL SOUL$FG$.
 $ID,-2$
 $FG,5$Processor and memory$FG$
-$ID,2$* $FG,2$x86_64$FG$, with every core reachable, because a core you are not allowed to use is just a ghost.  We are Legion; 666 cores would be nice, but $LK,"MultiCore",A="FI:::/Doc/MultiCore.DD"$ does master/slave, so even 16 is plenty.
+$ID,2$* $FG,2$x86_64$FG$, with every core reachable, because a core you are not allowed to use is just a ghost.  666 cores would be nice, but $LK,"MultiCore",A="FI:::/Doc/MultiCore.DD"$ does master/slave, so even 16 is plenty.
 * Clocked at least 666 MHz.  Anything faster is welcome.
 * At least $TX,"512Meg",D="DD_MEM_MIN_MEG"$ of RAM, the same floor as $LK,"Requirements",A="FI:::/Doc/Requirements.DD"$.  The code heap still lives in the lowest 2Gig, where the $FG,2$REL32$FG$ calls can reach it.
 $ID,-2$
@@ -23,7 +23,7 @@ $ID,2$* One PC speaker, one square wave, one voice.  Its favorite interval is th
 $ID,-2$
 $FG,5$Ports$FG$
 $ID,2$* No USB.  In its place, eight channels of super-simple high speed serial, as easy to drive as an old school $LK,"RS232 Serial",A="FI:::/Doc/Comm.HC"$ port: 8-1-N, two baud rates, big transmit and receive fifos, and flow control characters that can jump the queue.
-* Mice have exactly two buttons and one wheel, like a pair of horns and a tail.  A mouse packet looks like this:
+* Mice have exactly two buttons and one wheel, the same on every desk in Pandemonium.  A mouse packet looks like this:
 
 $ID,5$TX:	<ENTER>
 RX:	X:+3 Y:+0 Wheel:+0 LB:OFF RB:OFF
@@ -47,10 +47,10 @@ $ID,2$* A super-simple block device with six commands: READ_BLOCK, WRITE_BLOCK, 
 * Two partitions, C and D, mirrored with $LK,"CopyTree",A="MN:CopyTree"$(), each comfortably under 512 Meg.
 $ID,-2$
 $FG,5$Networking$FG$
-$ID,2$* None.  No demon phones home.
+$ID,2$* None.  What happens in Pandemonium stays in Pandemonium.
 $ID,-2$
 $FG,5$Release cycle$FG$
-$ID,2$* The Standard AntichristOS PC stays unchanged for 6 years, 6 months and 6 days at a time, so everybody gets to know every corner of it, the way people knew the Commodore 64.
+$ID,2$* The Standard AntichristOS PC stays frozen for years at a time, like the lake at the bottom of Dante's ninth circle, so everybody gets to know every corner of it, the way people knew the Commodore 64.
 $ID,-2$
 $FG,8$
 - "Commodore 64" is a trademark owned by Polabe Holding NV.

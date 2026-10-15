@@ -6,7 +6,7 @@ TempleOS limited itself to 100,000 lines of code, forever!  It never needs a lin
 
 People mock Bill Gates for, "640K should be enough."  AntichristOS says, "2Gig for code should be enough."
 
-When the Titan missile was converted into the Gemini rocket, it had to be "man-rated".  You can bet that everything got an order of magnitude more complexity and documentation.  The vision is a souped-up C64, not a 1970's mainframe; a canoe on the Styx, not a Titanic.
+When the Titan missile was converted into the Gemini rocket, it had to be "man-rated".  You can bet that everything got an order of magnitude more complexity and documentation.  The vision is a souped-up C64, not a 1970's mainframe; a kayak, not a Titanic.
 
 Linux is a semi-tractor -- you need professional drivers for 20 gears.  Linux has file permissions.  Common people are hurt by file permissions.
 
@@ -16,7 +16,7 @@ AntichristOS is a motorcycle with flames painted on the tank -- if you lean-over
 
 Linux and Windows are general purpose operating systems.  They attempt to do any task you want.  AntichristOS cherry-picks tasks and is designed to do the same things a C64 did.  This saves and order of magnitude complexity.  For example, the $LK,"RedSea",A="FI:::/Doc/RedSea.DD"$ file system allocates just contiguous files -- you load and save whole files at once.  A benefit is this allows compression.  Also, AntichristOS does not do networking or multimedia.  In theory, memory will fragment with lots of big files.  The system would fall to pieces with multimedia, and 640x480 16 color is a permanent pact anyway.
 
-A mouse needs two bttns, like a pair of horns.  AntichristOS just does hardware everybody has, with no divergent code bases for each machine's custom hardware.  There is one graphics driver instead of 50 for different GPUs.  This saves an order of magnitude complexity and makes for a delightful API, so developer's code is not like a frayed rope end.
+A mouse needs two bttns.  The pitchfork pointer already has all the prongs anybody needs.  AntichristOS just does hardware everybody has, with no divergent code bases for each machine's custom hardware.  There is one graphics driver instead of 50 for different GPUs.  This saves an order of magnitude complexity and makes for a delightful API, so developer's code is not like a frayed rope end.
 
 
 
@@ -42,7 +42,7 @@ A mouse needs two bttns, like a pair of horns.  AntichristOS just does hardware 
 
 * Whole files are processed almost exclusively, allowing compression.
 
-* $LK,"One language",A="FI:::/Doc/UnholyC.DD"$ and compiler for command-line, scripts, songs, automations and code.  It can be spelled backwards.
+* $LK,"One language",A="FI:::/Doc/UnholyC.DD"$ and compiler for command-line, scripts, songs, automations and code.  Its everyday keywords can be spelled backwards.
 
 * One editor/word processor/browser for the command-line window, source code, documentation browser, dialog forms.
 

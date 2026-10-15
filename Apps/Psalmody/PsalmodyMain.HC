@@ -589,7 +589,7 @@ mo_got_msg:
 		      "$$GREEN$$<SHIFT-ESC>$$FG$$ to load it into Psalmody.\n\n"
 		      ST_WARN_ST " Graphics and other embelishments\n"
 		      "will be lost because Psalmody can't\n"
-		      "parse HolyC programs completely.\n");
+		      "parse Unholy C programs completely.\n");
 		Free(filename);
 		filename=NULL;
 		JukeBox(dirname,&filename);
@@ -653,6 +653,12 @@ mo_got_msg:
 		if (was_playing)
 		  break;
 		col=0;
+		if (music.backmask) {//<CTRL-ALT-r> backmasks all music.
+		  PsmMenu(psm_octave);
+		  PsmPlayBackwards;
+		  PsmMenu(psm_octave);
+		  break;
+		}
 		psm.playing=TRUE;
 		PsmMenu(psm_octave);
 		tmpn=psm.cur_note;
@@ -679,7 +685,7 @@ mo_got_msg:
 		    psm.scrn_x+=tmpn->x-0.33*GR_WIDTH;
 		    if (PsmHasWords(tmpn->word))
 		      "%s",tmpn->word;
-		    Snd(tmpn->ona);
+		    Snd(PsmSndOna(tmpn->ona,tmpn->flags));
 
 		    music.tempo=4.4*tempo_state.tempo/TEMPO_RANGE+0.5;
 		    music.stacatto_factor=
@@ -768,7 +774,10 @@ mo_got_msg:
 	    st="R";
 	} else
 	  st=LstSub(Ona2Note(ona),psm_note_lst);
-	Snd(ona);
+	if (ona && st[1]=='#')
+	  Snd(PsmSndOna(ona,1<<PSMf_SHARP));
+	else
+	  Snd(PsmSndOna(ona));
 	if (psm.record_entry->checked) {
 	  if (!was_null) {
 	    music.tempo=4.4*tempo_state.tempo/TEMPO_RANGE+0.5;

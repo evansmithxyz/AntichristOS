@@ -10,7 +10,7 @@ Memory alloced by a task will be freed when the task is killed.  The $LK,"Adam T
 
 All of the regular page tables are marked, "cached".  When accessing hardware, however, you need uncached page table.  The lowest 4Gig addresses have an alias to access hardware located toward the top of mapped space, $FG,2$0x$TX,"01AA000000",D="DD_UNCACHED_ALIAS"$$FG$.  See $LK,"dev.uncached_alias",A="FF:::/Kernel/KMain.HC,dev.uncached_alias"$.
 
-During an extended powered-on session of AntichristOS, in theory, memory will become fragmented, requiring a reboot.  It has never happens to me.
+During an extended powered-on session of TempleOS, in theory, memory will become fragmented, requiring a reboot.  It has never happens to me.
 
 See $LK,"MemRep",A="MN:MemRep"$() and $LK,"::/Demo/MemDemo.HC"$.
 

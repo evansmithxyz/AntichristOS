@@ -590,6 +590,38 @@ I64 PrsFunCall(CCmpCtrl *cc,CPrsStk *ps,Bool indirect,CHashFun *tmpf)
   return PE_UNARY_MODIFIERS;
 }
 
+Bool LexIsStrUC(CCmpCtrl *cc)
+{//Unholy C: a str const starts here (TK_STR or 'backwards').
+  return cc->token==TK_STR ||
+	cc->token==TK_IDENT && PrsKeyWord(cc)==KW_BACKWARDS;
+}
+
+U8 *LexExtStrUC(CCmpCtrl *cc,I64 *_size=NULL)
+{//Unholy C: $LK,"LexExtStr",A="MN:LexExtStr"$() after any run of 'backwards'.
+//Two wrongs make a right: backwards backwards "x" is "x".
+  I64 i=0,j,size;
+  Bool rev=FALSE;
+  U8 *res;
+  while (cc->token==TK_IDENT && PrsKeyWord(cc)==KW_BACKWARDS) {
+    rev=!rev;
+    Lex(cc);
+  }
+  if (cc->token!=TK_STR)
+    LexExcept(cc,"Expecting string after 'backwards' at ");
+  res=LexExtStr(cc,&size);
+  if (rev) {
+    j=size-2; //size counts the terminator.
+    while (i<j) {
+      SwapU8(res+i,res+j);
+      i++;
+      j--;
+    }
+  }
+  if (_size)
+    *_size=size;
+  return res;
+}
+
 I64 PrsUnaryTerm(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
 	CArrayDim **_tmpad,I64 *max_prec,I64 *unary_pre_prec,I64 *paren_prec)
 {
@@ -934,25 +966,11 @@ pu_export_sys_sym:
 	      }
 	      return PE_MAYBE_MODIFIERS;
 	    case KW_BACKWARDS: //Unholy C: str const, bytes reversed.
-	      j=0; //Two wrongs make a right: backwards backwards "x" is "x".
-	      do j^=1;
-	      while (Lex(cc)==TK_IDENT && PrsKeyWord(cc)==KW_BACKWARDS);
-	      if (cc->token!=TK_STR)
-		LexExcept(cc,"Expecting string after 'backwards' at ");
 	      if (PREC_TERM>*max_prec)
 		*max_prec=PREC_TERM;
 	      cm=COCMiscNew(cc,CMT_STR_CONST);
 	      ICAdd(cc,IC_STR_CONST,cm,cmp.internal_types[RT_U8]+1);
-	      cm->str=LexExtStr(cc,&cm->st_len);
-	      if (j) {
-		i=0;
-		j=cm->st_len-2; //st_len counts the terminator.
-		while (i<j) {
-		  SwapU8(cm->str+i,cm->str+j);
-		  i++;
-		  j--;
-		}
-	      }
+	      cm->str=LexExtStrUC(cc,&cm->st_len);
 	      cc->flags|=CCF_HAS_MISC_DATA;
 	      return PE_MAYBE_MODIFIERS;
 	    case KW_DEFINED:
