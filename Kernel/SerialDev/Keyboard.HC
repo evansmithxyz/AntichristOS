@@ -232,7 +232,7 @@ U8 *Char2KeyName(I64 ch,Bool include_ctrl=TRUE)
 	break;
       default:
 	if (include_ctrl)
-	  StrCpy(buf,"CTRL ");
+	  StrCpy(buf,"CTRL");
 	buf[i=StrLen(buf)]=ch-1+'a';
 	buf[i+1]=0;
 	break;
@@ -251,13 +251,13 @@ U8 *ScanCode2KeyName(I64 sc)
   U8 buf[STR_LEN],*st;
   *buf=0;
   if (sc&SCF_CTRL)
-    CatPrint(buf,"CTRL ");
+    CatPrint(buf,"CTRL");
   if (sc&SCF_ALT)
-    CatPrint(buf,"ALT ");
+    CatPrint(buf,"ALT");
   if (sc&SCF_SHIFT)
-    CatPrint(buf,"SHIFT ");
+    CatPrint(buf,"SHIFT");
   if (sc&SCF_NO_SHIFT)
-    CatPrint(buf,"      ");
+    CatPrint(buf,"");
   if (ch=ScanCode2Char(sc&255)) {
     st=Char2KeyName(ch,FALSE);
     StrCpy(buf+StrLen(buf),st);

@@ -494,22 +494,22 @@ I64 PopUpFMRight(U8 *header=NULL,U8 *footer=NULL)
   I64 i;
   CDoc *doc=DocNew;
   if (header) DocPrint(doc,"%s",header);
-  DocPrint(doc,"$$CM+LX,1,1 $$$$BT,\"INCLUDE                 \",LE=FMR_INCLUDE$$"
-	"$$CM+LX,29,0$$$$BT,\"ADAM INCLUDE            \",LE=FMR_ADAM_INCLUDE$$"
-	"$$CM+LX,1,3 $$$$BT,\"DELETE                  \",LE=FMR_DELETE$$"
-	"$$CM+LX,29,0$$$$BT,\"RENAME                  \",LE=FMR_RENAME$$"
-	"$$CM+LX,1,3 $$$$BT,\"MAKE DIRECTORY          \",LE=FMR_MKDIR$$"
-	"$$CM+LX,29,0$$$$BT,\"PLAIN-TEXT EDIT         \",LE=FMR_PLAIN$$"
-	"$$CM+LX,1,3 $$$$BT,\"PASTE CLIP FILES        \",LE=FMR_PASTE$$"
-	"$$CM+LX,29,0$$$$BT,\"CHANGE DISK(MOUNT IT)   \",LE=FMR_CHG_DSK$$"
-	"$$CM+LX,1,3 $$$$BT,\"FORMAT                  \",LE=FMR_FORMAT$$"
-	"$$CM+LX,1,3 $$$$BT,\"MOUNT ISO.C FILE        \","
+  DocPrint(doc,"$$CM+LX,1,1 $$$$BT,\"INCLUDE\",LE=FMR_INCLUDE$$"
+	"$$CM+LX,29,0$$$$BT,\"ADAMINCLUDE\",LE=FMR_ADAM_INCLUDE$$"
+	"$$CM+LX,1,3 $$$$BT,\"DELETE\",LE=FMR_DELETE$$"
+	"$$CM+LX,29,0$$$$BT,\"RENAME\",LE=FMR_RENAME$$"
+	"$$CM+LX,1,3 $$$$BT,\"MAKEDIRECTORY\",LE=FMR_MKDIR$$"
+	"$$CM+LX,29,0$$$$BT,\"PLAIN-TEXTEDIT\",LE=FMR_PLAIN$$"
+	"$$CM+LX,1,3 $$$$BT,\"PASTECLIPFILES\",LE=FMR_PASTE$$"
+	"$$CM+LX,29,0$$$$BT,\"CHANGEDISK(MOUNTIT)\",LE=FMR_CHG_DSK$$"
+	"$$CM+LX,1,3 $$$$BT,\"FORMAT\",LE=FMR_FORMAT$$"
+	"$$CM+LX,1,3 $$$$BT,\"MOUNTISO.CFILE\","
 	"LE=FMR_MOUNT_REDSEA_ISO_C$$"
-	"$$CM+LX,29,0$$$$BT,\"UNMOUNT                 \",LE=FMR_UNMOUNT$$"
-	"$$CM+LX,1,3 $$$$BT,\"MAKE ISO.C (CD/DVD) FILE\",LE=FMR_MAKE_REDSEA_ISO_C$$"
-	"$$CM+LX,29,0$$$$BT,\"BURN ISO (CD/DVD) FILE  \",LE=FMR_BURN_ISO$$"
-	"$$CM+LX,1,3 $$$$BT,\"HELP                    \",LE=FMR_HELP$$"
-	"$$CM+LX,29,0$$$$BT,\"CANCEL                  \",LE=DOCM_CANCEL$$\n");
+	"$$CM+LX,29,0$$$$BT,\"UNMOUNT\",LE=FMR_UNMOUNT$$"
+	"$$CM+LX,1,3 $$$$BT,\"MAKEISO.C(CD/DVD)FILE\",LE=FMR_MAKE_REDSEA_ISO_C$$"
+	"$$CM+LX,29,0$$$$BT,\"BURNISO(CD/DVD)FILE\",LE=FMR_BURN_ISO$$"
+	"$$CM+LX,1,3 $$$$BT,\"HELP\",LE=FMR_HELP$$"
+	"$$CM+LX,29,0$$$$BT,\"CANCEL\",LE=DOCM_CANCEL$$\n");
   if (footer) DocPrint(doc,"%s",footer);
   i=PopUpMenu(doc);
   DocDel(doc);

@@ -30,7 +30,7 @@ TESTS = [
     ("BootOk", [], "boot to the autorun"),
     ("TestToolchain", ["--add", "{guest}/TestToolchain.HC:Doc/Glossary.DD.Z",
                        "--add", "{guest}/TestToolchain.HC:Tmp/HfAddZ.HC.Z"],
-     "image: .Z overlays, ACWords.DATA.Z, sound sprite bins, .GR"),
+     "image: .Z overlays, AutoComplete dictionary, sound sprite bins, .GR"),
     ("TestUnholyC", [], "keyword aliases, StrRev/Backmask/BEAST"),
     ("TestUnholyC2", [], "rebuilt: unless/until/do..until/backwards, BLASPHEMY, .UC"),
     ("TestUnholyC3", [], "rebuilt: reindenter"),

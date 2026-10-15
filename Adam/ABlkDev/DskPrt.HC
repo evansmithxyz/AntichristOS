@@ -69,7 +69,7 @@ drv_let=0 means add new drive that is not already mounted.
 	tmppp->size=MinI64(CeilU64(MaxI64(remaining,DRV_HEADER),ROUND_DRV_TO),
 	      CeilU64(argv[cur_arg++](F64)*total,ROUND_DRV_TO));
       else
-	tmppp->size=CeilU64(GetI64("Size in Blocks  :",
+	tmppp->size=CeilU64(GetI64("Size in Blocks:",
 	      remaining-DRV_HEADER)+DRV_HEADER,ROUND_DRV_TO);
     } while (!(ROUND_DRV_TO<=tmppp->size<=FloorU64(remaining,ROUND_DRV_TO)));
     QueIns(tmppp,head.last);

@@ -53,7 +53,7 @@ U0 TOSInit()
 			"HeapInit\n0\nMemInit\n0\nVarInit\n0\n\n"
 #define TOS_CFG		"\n" CFG_RAM_DRVS CFG_DVD_DRVS CFG_HARD_DRVS "\n"\
 			CFG_DSK_CACHE CFG_OPTS
-#define TOS_DVD_CFG	"TB\n0x20000\nT \n\n\nStaffMode\nMountIDEAuto\nCT\n"
+#define TOS_DVD_CFG	"TB\n0x20000\nT\n\n\nStaffMode\nMountIDEAuto\nCT\n"
 #define TOS_DVD_DBG_CFG "A" CFG_DBG_DISTRO\
 			"B\nScale2Mem(2048,0x40000)\n\n\n"\
 			"NoMP\nTextMode\nDontProbe\nDbgDistro\n"\

@@ -10,7 +10,7 @@ U0 BSplineDemo()
   Fs->win_inhibit=WIG_TASK_DFT-WIF_SELF_FOCUS-WIF_SELF_BORDER;
 
   DocClear;
-  "Sel ctrl points with left mouse.  Right when finished.\n";
+  "Sel ctrl points with left mouse.Right when finished.\n";
   DCFill;
   do {
     msg_code=GetMsg(&arg1,&arg2,1<<MSG_MS_L_UP+1<<MSG_MS_R_UP);

@@ -21,7 +21,7 @@ U0 EdReplaceTroubleAll(CDoc *doc,Bool to_safe,Bool sel)
   EdReplaceTroubleOne(doc,"#if"     ,"//<@%d@>"  ,i++,to_safe,sel);
   EdReplaceTroubleOne(doc,"#endif"  ,"//<@%d@>"  ,i++,to_safe,sel);
 //Convert #exe to union because we want that indent pattern.
-  EdReplaceTroubleOne(doc,"#exe"    ,"union @%d@",i++,to_safe,sel);
+  EdReplaceTroubleOne(doc,"#exe"    ,"union@%d@",i++,to_safe,sel);
   EdReplaceTroubleOne(doc,"'{'"     ,"'<@%d@>'"  ,i++,to_safe,sel);
   EdReplaceTroubleOne(doc,"'}'"     ,"'<@%d@>'"  ,i++,to_safe,sel);
 }

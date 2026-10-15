@@ -531,7 +531,7 @@ U0 Ui(U8 *buf,U8 **_rip,I64 seg_size=64,I64 *_jmp_dst=NULL,Bool just_ins=FALSE)
       imm=*rip(U8 *)++;
       CatPrint(arg1_st,"%02X",imm);
       if (tmpins->opcode[0]==0xCD && (ptr=DefineSub(imm,"ST_INT_NAMES")))
-	CatPrint(arg1_st," %s",ptr);
+	CatPrint(arg1_st,"%s",ptr);
       break;
     case ARGT_IMM16:
     case ARGT_UIMM16:
@@ -578,7 +578,7 @@ U0 Ui(U8 *buf,U8 **_rip,I64 seg_size=64,I64 *_jmp_dst=NULL,Bool just_ins=FALSE)
     case ARGT_AL ... ARGT_DX:
     case ARGT_SS ... ARGT_ST0:
       CatPrint(arg1_st,"%z",arg1-ARGT_AL,
-	    "AL\0AX\0EAX\0RAX\0CL\0DX\0 \0 \0SS\0DS\0ES\0FS\0GS\0CS\0ST0\0");
+	    "AL\0AX\0EAX\0RAX\0CL\0DX\0\0\0SS\0DS\0ES\0FS\0GS\0CS\0ST0\0");
       break;
     case ARGT_STI:
       rip--;
@@ -617,7 +617,7 @@ U0 Ui(U8 *buf,U8 **_rip,I64 seg_size=64,I64 *_jmp_dst=NULL,Bool just_ins=FALSE)
     case ARGT_AL ... ARGT_DX:
     case ARGT_SS ... ARGT_ST0:
       CatPrint(arg2_st,"%z",arg2-ARGT_AL,
-	    "AL\0AX\0EAX\0RAX\0CL\0DX\0 \0 \0SS\0DS\0ES\0FS\0GS\0CS\0ST0\0");
+	    "AL\0AX\0EAX\0RAX\0CL\0DX\0\0\0SS\0DS\0ES\0FS\0GS\0CS\0ST0\0");
       break;
     case ARGT_STI:
       rip--;

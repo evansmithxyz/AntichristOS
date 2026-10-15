@@ -265,9 +265,11 @@ turns every 0x1F (CH_SHIFT_SPACE) into 0x20** in the whole file, binary tail
 included (only `.BIN.Z` files were expanded in binary mode). That hit the
 DolDoc files' sprite tails, the `.MAP` files and the `.GR` picture
 `Demo/Games/Stadium/StadiumBG.GR` (its compressed body was 20 bytes short, and
-`GRRead()` of it hung). **The sprite tails and `StadiumBG.GR` are now restored
-from the original ISO** (see "Restored from the V5.03 ISO" below), so this
-section mostly records what the damage looked like.
+`GRRead()` of it hung), the text parts of 153 source files (their
+CH_SHIFT_SPACEs became plain spaces) and the AutoComplete dictionary.
+**All of it is now restored from the original ISO** except one shift-space
+(see "Restored from the V5.03 ISO" below), so this section mostly records what
+the damage looked like.
 
 A lost byte shifts everything after it inside the tail, so a damaged DolDoc
 file showed one or more of:
@@ -337,10 +339,32 @@ nothing can restore them.
   `Kernel/Kernel.MAP` and `Compiler/Compiler.MAP` in the guest, with their 0x05
   bytes, and they are in the repo, so the old ~45 minute boot stall is gone:
   every image reaches the desktop in about 10 s.
-- **Not restored:** the text parts of about 150 files lost their 0x05 and
-  0x1F bytes too (their CH_SHIFT_SPACEs are plain spaces), and
-  `Adam/AutoComplete/ACDefs.DATA` and `ACWords.DATA` lost 256,736 and 15,239
-  0x05 bytes (and `ACWords.DATA` 530 0x1F). `doccheck` does not look at these.
+- **Text parts:** 152 files have their CH_SHIFT_SPACEs (0x1F) back, 2,745 of
+  them. No V5.03 text part holds a 0x05, so no byte had moved. 112 of the files
+  now have the original text, because the fork never changed it. In the other 40
+  the fork had edited the text, so each 0x1F went back only where its place is
+  certain: on a line the fork left as it was (`git diff --histogram`), on a
+  line it moved verbatim (the same bytes occur once in each version: the God
+  key descriptions in `DocPutKey.HC`, now on F8/F9), or at a hand-checked
+  anchor where the fork kept the bytes around it (`GodBible.HC`'s
+  `Cmd /Bible`, the `Part  1` ... `Part 12` buttons in `Tour.IN`, a sentence
+  in `TourC.IN`, and `KDefine.HC`'s blank `ST_INT_NAMES` entries, matched by
+  interrupt number). The lexer reads 0x1F as a space, so compiled code does
+  not change; in the editor a shift-space is a small dot again, as in V5.03.
+- **Not restored:** one 0x1F, in `Adam/Opt/Boot/BootDVD.HC`. V5.03's
+  `"Loading TempleOS"` had it between the two words, and the fork replaced both
+  (`"Summoning AntichristOS"`), so it stays a space.
+- **AutoComplete dictionary:** `Adam/AutoComplete/ACDefs.DATA` and
+  `ACWords.DATA` are the V5.03 files, whole (the fork never changed them).
+  `ACDefs.DATA` had lost 256,736 0x05 bytes (`ACD_EXTRA_CHAR` marks), which
+  shifted its 16 KB blocks, and `ACWords.DATA` 15,239 0x05 and 530 0x1F, all in
+  its 16-bit block numbers. Only 3,636 of the 95,293 words found their
+  definition; now 94,907 do. `TestToolchain` looks up Devil, Pandemonium and
+  Tritone in the guest.
+- **toslint:** W-CTRL does not flag 0x05 or 0x1F (see `toslint.CTRL_RE`).
+  They are ordinary DolDoc text (`DocSave()` writes the cursor as 0x05, and
+  Shift-Space types 0x1F), and the `archive` base has none of them, so every
+  restored byte would otherwise look new.
 - **Workaround for damaged sprites:** `--patch-broken-bins` rewrites, in the
   image only, every damaged tail that `doccheck` reports (now just
   `DemoDoc.DD`): sound bins are kept, and each lost, truncated, malformed or
@@ -364,4 +388,6 @@ sprite tail after the first NUL and some contain CP437 bytes. `.gitattributes`
 - `toslint.py [--base archive] [files]`: checks changed files against pristine
   TempleOS. It flags UTF-8 sequences, line-ending changes, altered binary tails,
   odd `$` counts per line (every original line has an even count), bad DolDoc
-  commands, broken `FI:`/`FF:`/`FL:` link targets and brace-balance drift.
+  commands, broken `FI:`/`FF:`/`FL:` link targets, brace-balance drift and new
+  control characters (but not CH_CURSOR 0x05 or CH_SHIFT_SPACE 0x1F, which are
+  DolDoc text that the `archive` base lost).

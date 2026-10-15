@@ -1234,9 +1234,9 @@ public class CDocEntry:CDocEntryBase
 class CEdFindText
 {
   U8	find_text[STR_LEN] format "$$DA-P,"
-	"A=\"Find        :%s\"$$\n",
+	"A=\"Find:%s\"$$\n",
 	replace_text[STR_LEN] format "$$DA-P,"
-	"A=\"Replace     :%s\"$$\n";
+	"A=\"Replace:%s\"$$\n";
   Bool	replace			format "$$CB,\"Replace\"$$\n",
 	scan_fwd		format "$$CB,\"Fwd\"$$\n",
 	scan_sel_text		format "$$CB,\"Selection\"$$\n",
@@ -3023,15 +3023,15 @@ public class CGridGlbls
 	show	format "$$CB,\"Show Grid\"$$\n",
 	coord	format "$$CB,\"Show Coordinates\"$$\n";
   U8	pad[5];
-  F64	x	format "$$DA-TRM,A=\"X Spacing:%6.3f\"$$\n",
-	y	format "$$DA-TRM,A=\"Y Spacing:%6.3f\"$$\n",
-	z	format "$$DA-TRM,A=\"Z Spacing:%6.3f\"$$\n",
-	x_offset format "$$DA-TRM,A=\"X Offset :%6.3f\"$$\n",
-	y_offset format "$$DA-TRM,A=\"Y Offset :%6.3f\"$$\n",
-	z_offset format "$$DA-TRM,A=\"Z Offset :%6.3f\"$$\n",
-	x_speed	format "$$DA-TRM,A=\"X Speed  :%6.3f\"$$\n",
-	y_speed	format "$$DA-TRM,A=\"Y Speed  :%6.3f\"$$\n",
-	z_speed	format "$$DA-TRM,A=\"Z Speed  :%6.3f\"$$\n";
+  F64	x	format "$$DA-TRM,A=\"XSpacing:%6.3f\"$$\n",
+	y	format "$$DA-TRM,A=\"YSpacing:%6.3f\"$$\n",
+	z	format "$$DA-TRM,A=\"ZSpacing:%6.3f\"$$\n",
+	x_offset format "$$DA-TRM,A=\"XOffset:%6.3f\"$$\n",
+	y_offset format "$$DA-TRM,A=\"YOffset:%6.3f\"$$\n",
+	z_offset format "$$DA-TRM,A=\"ZOffset:%6.3f\"$$\n",
+	x_speed	format "$$DA-TRM,A=\"XSpeed:%6.3f\"$$\n",
+	y_speed	format "$$DA-TRM,A=\"YSpeed:%6.3f\"$$\n",
+	z_speed	format "$$DA-TRM,A=\"ZSpeed:%6.3f\"$$\n";
 };
 
 #help_index "Ctrls"
@@ -3843,7 +3843,7 @@ public class CDbgGlbls
 #define BOOT_SRC_DVD		4
 
 // $LK,"In",A="MN:In"$("") StdIn for call to $LK,"BootHDIns",A="MN:BootHDIns"$().
-#define STD_DISTRO_DVD_CFG	"TB\nScale2Mem(2048,0x40000)\nT \n\n\n\n"
+#define STD_DISTRO_DVD_CFG	"TB\nScale2Mem(2048,0x40000)\nT\n\n\n\n"
 
 #help_index "Registry"
 //Registry sys_msg_flags. $LK,"RegOneTimePopUp",A="MN:RegOneTimePopUp"$()

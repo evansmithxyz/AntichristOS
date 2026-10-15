@@ -99,13 +99,13 @@ U0 SysDefinesLoad()
   DefineLstLoad("ST_OFF_ON","Off\0On\0");
   DefineLstLoad("ST_HTT_TYPES","ExportSysSym\0ImportSysSym\0DefineStr\0GlbVar\0"
 	"Class\0IntType\0Funct\0Word\0DictWord\0KeyWord\0AsmKeyWord\0OpCode\0"
-	"Reg\0File\0Module\0HelpFile\0Frame Ptr\0 \0 \0 \0 \0 \0 \0Private\0"
+	"Reg\0File\0Module\0HelpFile\0FramePtr\0\0\0\0\0\0\0Private\0"
 	"Public\0Export\0Import\0Imm\0Goto\0Res\0Unres\0Local\0");
   DefineLstLoad("ST_DAYS_OF_WEEK","Sunday\0Monday\0Tuesday\0Wednesday\0"
 	"Thursday\0Friday\0Saturday\0");
   DefineLstLoad("ST_MONTHS","January\0February\0March\0April\0May\0"
 	"June\0July\0August\0September\0October\0November\0December\0");
-  DefineLstLoad("ST_FILE_ATTRS","R\0H\0S\0V\0D\0A\0 \0 \0X\0T\0Z\0C\0F\0");
+  DefineLstLoad("ST_FILE_ATTRS","R\0H\0S\0V\0D\0A\0\0\0X\0T\0Z\0C\0F\0");
   DefineLstLoad("ST_FILE_UTIL_FLAGS","r\0d\0i\0a\0c\0R\0p\0m\0x\0s\0"
 	"D\0F\0T\0$$\0S\0A\0J\0G\0Z\0O\0P\0f\0l\0lb\0la\0");
   DefineLstLoad("ST_BLKDEV_TYPES",
@@ -131,13 +131,13 @@ U0 SysDefinesLoad()
 	"Stk Segment Fault (Stack of Sins)\0"
 	"General Protection (Holy Water)\0"
 	"Page Fault (Torn from the Grimoire)\0"
-	" \0"
+	"\0"
 	"Math Fault (Number of the Beast)\0"
 	"Alignment Check (Planets Misaligned)\0"
 	"Machine Check (Ghost in the Machine)\0"
 	"SIMD Exception (Legion)\0"
-	" \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0"
-	" \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0"
+	"\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
+	"\0\0\0\0\0\0\0\0\0\0\0"
 	"MP Crash (Pandemonium)\0Wake (Raise the Dead)\0Dbg (Exorcism)\0");
 }
 

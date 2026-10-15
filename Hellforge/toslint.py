@@ -13,7 +13,8 @@ Checks every text file (.HC .HH .DD .IN .PRJ .TXT) that differs from BASE
   E-LINK     $LK$ / A="FI:::/..." style link to a file that no longer exists
              (only links that resolved in BASE or are new are checked)
   W-BRACES   net {}/() balance of a .HC/.HH file differs from BASE
-  W-CTRL     new control characters other than TAB/CR/LF
+  W-CTRL     new control characters other than TAB/CR/LF, CH_CURSOR (0x05) and
+             CH_SHIFT_SPACE (0x1F); see CTRL_RE
 
 Usage:  python toslint.py [--base archive] [paths...]
 Exit status 1 if any E-* finding.
@@ -72,6 +73,13 @@ TAIL_REPAIRS = {
     "Doc/HelpIndex.DD": "51d2b53565ef7355a0d8e2475d9360fab03a4115",
     "PersonalMenu.DD": "f55f9e7c82cff1a518c7653dd0ba6638d0d303c6",
 }
+# W-CTRL's control characters.  Not TAB/LF/CR, and not CH_CURSOR (0x05) or
+# CH_SHIFT_SPACE (0x1F): those two are ordinary DolDoc text (DocSave() writes
+# the cursor as 0x05, Shift-Space types 0x1F, and the lexer skips 0x05 and
+# reads 0x1F as a space).  BASE cannot show them: TOSZ -ascii dropped every
+# 0x05 and made every 0x1F a space in the 'archive' branch, so each one put
+# back from the V5.03 ISO (2,745 0x1F in 152 text parts) would look new.
+CTRL_RE = re.compile(rb"[\x00-\x04\x06-\x08\x0b\x0c\x0e-\x1e\x7f]")
 TEXT_EXT = (".HC", ".HH", ".DD", ".IN", ".PRJ", ".TXT", ".UC", ".UH")
 LINK_RE = re.compile(r'(?:A=")?(FI|FL|FF|PI):(::)?(/[^",$]+)')
 
@@ -199,7 +207,7 @@ def main(argv):
                 TAIL_REPAIRS.get(rel) != hashlib.sha1(ntail).hexdigest():
             rep("E-TAIL", rel, 0, f"binary tail changed ({len(otail)} -> {len(ntail)} bytes)")
         # dollars / doldoc commands / ctrl chars
-        octrl = set(re.findall(rb"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", ot)) if ot is not None else set()
+        octrl = set(CTRL_RE.findall(ot)) if ot is not None else set()
         for i, l in enumerate(nt.split(b"\n"), 1):
             s = l.decode("latin-1")
             if s.count("$") % 2:
@@ -210,7 +218,7 @@ def main(argv):
                     c = parts[k]
                     if c and not re.match(r"[A-Z][A-Z]", c):
                         rep("E-DOLCMD", rel, i, f"bad DolDoc command ${c[:30]}$ (literal $ must be $$)")
-            for ch in set(re.findall(rb"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", l)) - octrl:
+            for ch in set(CTRL_RE.findall(l)) - octrl:
                 rep("W-CTRL", rel, i, f"control char {ch!r}")
         # links
         old_links = link_targets(ot) if ot is not None else set()

@@ -1,7 +1,7 @@
 TourPut(
 "This is Judecca, the last ring of the ice.  We will now run a test-suite "
 "that automatically executes most AntichristOS demos: the damned demos "
-"run themselves.  It takes a few minutes, so kick-back.\n\n"
+"run themselves.It takes a few minutes, so kick-back.\n\n"
 "Press $$GREEN$$<ENTER>$$FG$$.\n");
 
 "#include \"::/Misc/OSTestSuite\";";

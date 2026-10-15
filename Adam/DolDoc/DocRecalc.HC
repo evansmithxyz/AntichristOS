@@ -794,7 +794,7 @@ rc_adjust_xy:
 	  if (recalc_flags&RECALCG_MASK==RECALCt_TO_SCRN &&
 		!(doc_e->de_flags&DOCEF_DONT_DRAW)) {
 	    if (y_plot_top<=y<=y_plot_bottom)
-	      TextLenStr(win_task,x-x0,y-y0,k,tmp_u32_attr,"        ");
+	      TextLenStr(win_task,x-x0,y-y0,k,tmp_u32_attr,"");
 	    x+=k;
 	  } else {
 	    if (find_cursor) {

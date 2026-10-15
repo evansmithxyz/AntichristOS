@@ -474,12 +474,12 @@ U8 *PsmSaveSong(U8 *dirname,U8 *full_filename)
   DocPrint(doc,
 	"U0 Song()\n"
 	"{\n"
-	"  Fs->task_end_cb=&SndTaskEndCB;\n"
-	"  MusicSettingsRst;\n"
-	"  music.tempo=%6.3f;\n"
-	"  music.stacatto_factor=%6.3f;\n"
-	"  try {\n"
-	"    while (!ScanKey) {\n"
+	"Fs->task_end_cb=&SndTaskEndCB;\n"
+	"MusicSettingsRst;\n"
+	"music.tempo=%6.3f;\n"
+	"music.stacatto_factor=%6.3f;\n"
+	"try {\n"
+	"while (!ScanKey) {\n"
 	"\tPlay(\"",music.tempo+0.0005,music.stacatto_factor+0.0005);
 
   tmpn=psm.head.next;
@@ -537,10 +537,10 @@ U8 *PsmSaveSong(U8 *dirname,U8 *full_filename)
     }
   }
   DocPrint(doc,"\");\n"
-	"    }\n"
-	"  } catch\n"
-	"    PutExcept;\n"
-	"  Snd;\n"
+	"}\n"
+	"} catch\n"
+	"PutExcept;\n"
+	"Snd;\n"
 	"}\n"
 	"\n"
 	"Song;\n");

@@ -194,11 +194,11 @@ U0 PrsFun(CCmpCtrl *cc,CHashClass *tmp_return,U8 *name,I64 fsp_flags)
   while (tmpm) {
     if (tmpm->flags & MLF_NO_UNUSED_WARN) {
       if (tmpm->use_cnt>1&&StrCmp(tmpm->str,"_anon_"))
-	PrintWarn("Unneeded no_warn\n $$LK,\"FL:%s,%d\"$$ '%s' in '%s'\n",
+	PrintWarn("Unneeded no_warn\n $$LK,\"FL:%s,%d\"$$'%s' in '%s'\n",
 	      cc->lex_include_stk->full_name,cc->lex_include_stk->line_num,
 	      tmpm->str,cc->htc.fun->str);
     } else if (!tmpm->use_cnt && GetOption(OPTf_WARN_UNUSED_VAR))
-      PrintWarn("Unused var\n $$LK,\"FL:%s,%d\"$$ '%s' in '%s'\n",
+      PrintWarn("Unused var\n $$LK,\"FL:%s,%d\"$$'%s' in '%s'\n",
 	    cc->lex_include_stk->full_name,cc->lex_include_stk->line_num,
 	    tmpm->str,cc->htc.fun->str);
     tmpm=tmpm->next;

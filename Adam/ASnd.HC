@@ -489,7 +489,7 @@ The var music.stacatto_factor can
 be set to a range from 0.0 to 1.0.
 
 The var music.tempo is quarter-notes
-per second.  It defaults to
+per second.It defaults to
 2.5 and gets faster when bigger.
 
 AntichristOS: if music.backmask is set
@@ -512,7 +512,7 @@ mapped to the Unholy (Locrian) mode.
     if (!(st=PlayTokNote(st,note_map,&music.octave,&music.note_len,
 	  &music.meter_top,&music.meter_bottom,&ona,&tie)))
       break;
-    if (words && (word=LstSub(i++,words)) && StrCmp(word," "))
+    if (words && (word=LstSub(i++,words)) && StrCmp(word,""))
       "%s",word;
     MusicNotePlay(ona,music.note_len,tie,timeout_val);
     music.play_note_num++;

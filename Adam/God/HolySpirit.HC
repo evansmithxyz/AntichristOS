@@ -19,9 +19,9 @@ I64 PopUpTimerOk(U8 *header=NULL,U8 *footer=NULL,U8 *button="OKAY")
   CDocEntry *doc_e;
   CDoc *doc=DocNew;
   if (header) DocPrint(doc,"%s",header);
-  doc_e=DocPrint(doc,"\nTimer:$$TX+TC,\" \"$$");
+  doc_e=DocPrint(doc,"\nTimer:$$TX+TC,\"\"$$");
   doc_e->tag_cb=&TimeStampCB;
-  doc_e=DocPrint(doc,"\nLatch:$$TX+TC,\" \"$$");
+  doc_e=DocPrint(doc,"\nLatch:$$TX+TC,\"\"$$");
   doc_e->tag_cb=&KbdMsTimeCB;
   DocPrint(doc,"\n$$CM+CX,0,4$$$$BT,\"%s\",LE=1$$\n",button);
   if (footer) DocPrint(doc,"%s",footer);

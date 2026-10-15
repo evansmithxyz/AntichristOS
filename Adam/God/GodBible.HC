@@ -321,7 +321,7 @@ public CDoc *BibleDoc()
     chapter=1;
     while (doc_e->y+1<line) {
       doc_e1=doc_e->next;
-      if (doc_e->type_u8==DOCT_TEXT && StrMatch(":1 ",doc_e->tag)) {
+      if (doc_e->type_u8==DOCT_TEXT && StrMatch(":1",doc_e->tag)) {
 	res->cur_entry=doc_e;
 	res->cur_col=0;
 	if (open_chapter) {
@@ -390,7 +390,7 @@ U0 CtrlAltB(I64)
 {
   PopUp("BibleView;");
 }
-CtrlAltCBSet('B',&CtrlAltB,"Cmd /Bible (Revelation First)");
+CtrlAltCBSet('B',&CtrlAltB,"Cmd/Bible (Revelation First)");
 
 #help_index "God;AntichristOS"
 public U8 *BibleLinesStr(I64 start,I64 lines,Bool backmask=FALSE,

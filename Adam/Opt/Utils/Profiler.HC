@@ -78,19 +78,19 @@ public U0 ProfRep(I64 filter_cnt=1,Bool leave_it=OFF)
       StrFirstRem(buf,"+",buf2);
       if (StrCmp(buf2,last_buf)) {
 	if (*last_buf && routine_total>=filter_cnt)
-	  "$$GREEN$$%6.2f %08X:%s\n$$FG$$",100*routine_total/total_time,
+	  "$$GREEN$$%6.2f%08X:%s\n$$FG$$",100*routine_total/total_time,
 		routine_total,last_buf;
 	StrCpy(last_buf,buf2);
 	routine_total=0;
       }
       routine_total+=hits;
       if (hits>=filter_cnt) {
-	"%6.2f %08X:%P\n",100*hits/total_time,hits,rip;
+	"%6.2f%08X:%P\n",100*hits/total_time,hits,rip;
 	last_rip=rip;
       }
     }
     if (*last_buf && routine_total>=filter_cnt)
-      "$$GREEN$$%6.2f %08X:%s\n$$FG$$",100*routine_total/total_time,
+      "$$GREEN$$%6.2f%08X:%s\n$$FG$$",100*routine_total/total_time,
 	    routine_total,last_buf;
     "Total Time:%0.6fs\n",total_time/JIFFY_FREQ;
     if (leave_it) {
