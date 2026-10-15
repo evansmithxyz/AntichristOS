@@ -78,7 +78,8 @@ FILENAME_CHARS = frozenset(c for c in range(256)
                            if _CHAR_BMP_FILENAME[c >> 5] >> (c & 31) & 1)
 
 DEFAULT_EXCLUDES = [".git", ".gitignore", ".gitattributes", ".github",
-                    "Hellforge", ".claude", "*.swp", "Thumbs.db", "desktop.ini"]
+                    "Hellforge", ".claude", "README.md", "*.swp", "Thumbs.db",
+                    "desktop.ini"]
 # ::/Misc/DoDistro.HC adds these dirs (Home copied, empty here: "An empty /Home
 # dir should be valid because it will get default files from the root dir").
 DISTRO_DIRS = ["Home", "Tmp", "Tmp/ScrnShots"]

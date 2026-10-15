@@ -145,8 +145,8 @@ U0 TestKernelReview()
   if (!TkrHas("\nUnit (0 or 1): ")) TkrFail("unit prompt");
   if (!TkrHas("not a soul\n")) TkrFail("soul contract prompt");
   if (!TkrHas("\n\tUnholy C Debugger -- The Exorcist\n\n")) TkrFail("banner");
-  if (!TkrHas(">G;\t\t\t\t//Resume execution.")) TkrFail("dbg help G;");
-  if (!TkrHas(">Exit;\t\t\t\t//Exit (kill) task.")) TkrFail("dbg help Exit;");
+  if (!TkrHas("<G;\t\t\t\t//Resume execution.")) TkrFail("dbg help G;");
+  if (!TkrHas("<Exit;\t\t\t\t//Exit (kill) task.")) TkrFail("dbg help Exit;");
   if (TkrHas("Speaking in Tongues")) TkrFail("guardrail: tongues");
   TkrOk("kernel strings");
 

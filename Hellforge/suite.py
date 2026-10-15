@@ -35,6 +35,7 @@ TESTS = [
     ("TestUnholyC2", [], "rebuilt: unless/until/do..until/backwards, BLASPHEMY, .UC"),
     ("TestUnholyC3", [], "rebuilt: reindenter"),
     ("TestUnholyC4", ["--timeout", "600"], "rebuilt: adversarial branch-sense matrix"),
+    ("TestFixCompiler", [], "rebuilt: .UC fallback/Silent, backwards arrays+meta, fault names"),
     ("TestKernel", ["--shots", "1,2,3,4,6"], "rebuilt: V6.66, task names, ST_INT_NAMES"),
     ("TestKernelReview", ["--smp", "4"], "rebuilt: kernel identity on 4 cores"),
     ("TestKernelISO", [], "in-guest RedSeaISO carries the AntichristOS ids"),
@@ -48,11 +49,13 @@ TESTS = [
     ("TestOracleKeys", ["--keys", "11:<f7>;11.5:<f7>;12:<f8>;12.5:<shift-f7>;14:<ctrl-alt-r>;"
                                   "15:<f6>;17:<esc>;21:<ctrl-alt-b>",
                         "--shots", "16", "--anchor-ready", "7.5"], "F-keys for real"),
+    ("TestFixAdam", ["--smp", "4"], "sprite guards, breathing, fonts, Adversary colours, God popup"),
     ("TestVisual", [], "palettes, flips, fonts, chrome"),
     ("TestVisualRite", [], "mouse compensation, pixel-exact flips"),
     ("TestVisualKeys", ["--keys", "16:<ctrl-alt-i>;19:<ctrl-alt-u>;22:<ctrl-alt-y>;"
                                   "25:<ctrl-alt-shift-y>;28:<ctrl-alt-shift-u>;31:<ctrl-alt-shift-i>",
                         "--anchor-ready", "9.0"], "Ctrl-Alt hotkeys for real"),
+    ("TestFixDocs", [], "guardrail removals, facts, prompt examples"),
     ("TestDocs", [], "rewritten docs load, temptations"),
     ("TestDocsExamples", [], "rebuilt: doc code examples compile and run"),
     ("TestDocsReview", ["--timeout", "600"], "every doc parses; the Descent tour"),

@@ -18,12 +18,20 @@ Checks every text file (.HC .HH .DD .IN .PRJ .TXT) that differs from BASE
 Usage:  python toslint.py [--base archive] [paths...]
 Exit status 1 if any E-* finding.
 """
+import hashlib
 import os
 import re
 import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Deliberate repairs of binary tails damaged by the archive's stripped 0x05
+# bytes (see README "Known repo data problem"): path -> sha1 of the repaired
+# tail.  Any other tail change is still an error.
+TAIL_REPAIRS = {
+    "Adam/AMouse.HC": "22481c99a18fbf56f43603777564ebc2f2d76d6d",       # gr.empty_sprite radius
+    "Demo/Graphics/Extents.HC": "40e6560be46e9ffe78f882fdf9b0bc2067c6bcb5",  # first LINE y1
+}
 TEXT_EXT = (".HC", ".HH", ".DD", ".IN", ".PRJ", ".TXT", ".UC", ".UH")
 LINK_RE = re.compile(r'(?:A=")?(FI|FL|FF|PI):(::)?(/[^",$]+)')
 
@@ -147,7 +155,8 @@ def main(argv):
         elif crlf and lf:
             rep("E-EOL", rel, 0, f"new file mixes CRLF ({crlf}) and LF ({lf})")
         # tail
-        if otail is not None and ntail != otail:
+        if otail is not None and ntail != otail and \
+                TAIL_REPAIRS.get(rel) != hashlib.sha1(ntail).hexdigest():
             rep("E-TAIL", rel, 0, f"binary tail changed ({len(otail)} -> {len(ntail)} bytes)")
         # dollars / doldoc commands / ctrl chars
         octrl = set(re.findall(rb"[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]", ot)) if ot is not None else set()
