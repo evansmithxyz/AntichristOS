@@ -118,6 +118,9 @@ def add_qemu_opts(p):
     p.add_argument("--mem", type=int, default=1024)
     p.add_argument("--smp", type=int, default=1)
     p.add_argument("--keys", default="", help="'SECS:text;SECS:<ret>' sendkey script")
+    p.add_argument("--anchor-ready", type=float, default=None, metavar="SECS",
+                   help="--keys/--shots times >= SECS were written for a boot whose "
+                        "autorun got ready at SECS; shift them to the real ready time")
 
 
 def add_guest_opts(p, timeout=300):
@@ -329,7 +332,8 @@ def run_guest(a, test, name, extra_add=(), src=None, echo=True):
     r = qemu.run(iso, timeout=a.timeout, shots=shots, shot_every=a.every,
                  shot_prefix=name, shot_dir=wd, serial=serial,
                  keys=qemu.parse_keys(a.keys), accel=a.accel, mem=a.mem, smp=a.smp,
-                 log=log, name=name, stream=sp.feed, expect=expect)
+                 log=log, name=name, stream=sp.feed, expect=expect,
+                 anchor=(b"HELLFORGE_READY", a.anchor_ready) if a.anchor_ready else None)
     sp.feed(b"\n")
     ev = sp.events
     if "HELLFORGE_STARTOS_END" in ev:

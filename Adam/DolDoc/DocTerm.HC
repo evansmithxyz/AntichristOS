@@ -117,7 +117,7 @@ I64 TermRightClickLink(CDoc *doc,CDocEntry *doc_e)
 	switch (i) {
 	  case RIGHT_INCLUDE:
 	    if (FileExtDot(st) && !FilesFindMatch(st,FILEMASK_JIT)) {
-	      if (!PopUpCancelOk(ST_WARN_ST "Not .HC File\n\n")) {
+	      if (!PopUpCancelOk(ST_WARN_ST "Not .HC/.UC File\n\n")) {
 		send_new_line=TRUE;
 		break;
 	      }
@@ -129,7 +129,7 @@ I64 TermRightClickLink(CDoc *doc,CDocEntry *doc_e)
 	    break;
 	  case RIGHT_AINCLUDE:
 	    if (FileExtDot(st) && !FilesFindMatch(st,FILEMASK_JIT)) {
-	      if (!PopUpCancelOk(ST_WARN_ST "Not .HC File\n\n")) {
+	      if (!PopUpCancelOk(ST_WARN_ST "Not .HC/.UC File\n\n")) {
 		send_new_line=TRUE;
 		break;
 	      }

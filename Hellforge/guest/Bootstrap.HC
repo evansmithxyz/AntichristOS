@@ -33,11 +33,11 @@ Bool HfBsDump(U8 *name,U8 *rel1,U8 *rel2=NULL)
 {//Dump the first of rel1/rel2 that exists on the work drive.
   U8 *p=HfBsPath(rel1);
   Bool res=FALSE;
-  if (!FileFind(p) && rel2) {
+  if (!FileFind(p,,FUF_Z_OR_NOT_Z) && rel2) {
     Free(p);
     p=HfBsPath(rel2);
   }
-  if (FileFind(p)) {
+  if (FileFind(p,,FUF_Z_OR_NOT_Z)) {
     HfPrint("HFBS FILE %s %s\n",name,p);
     res=HfDumpFile(p,name);
   } else
@@ -69,8 +69,8 @@ U0 HfBootstrap()
   dst=HfBsPath("0000Boot");
   DirMk(dst);
   Free(dst);
-  if (!FileFind(src=HfBsPath("Kernel/Kernel.PRJ")) ||
-	!FileFind(dst=HfBsPath("Compiler/Compiler.PRJ"))) {
+  if (!FileFind(src=HfBsPath("Kernel/Kernel.PRJ"),,FUF_Z_OR_NOT_Z) ||
+	!FileFind(dst=HfBsPath("Compiler/Compiler.PRJ"),,FUF_Z_OR_NOT_Z)) {
     HfPrint("HFBS ERROR sources not staged\n");
     hf_exit_code=HF_BS_EXIT_COPY;
     goto bs_done;

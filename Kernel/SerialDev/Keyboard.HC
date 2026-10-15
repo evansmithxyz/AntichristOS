@@ -373,8 +373,8 @@ U0 KbdBuildSC(U8 raw_byte,Bool in_irq,U8 *_last_raw_byte,I64 *_last_sc)
 	  kbd.last_down_scan_code=sc;
 	  if (keydev.fp_ctrl_alt_cbs[ch] &&
 		Bt(&keydev.ctrl_alt_in_irq_flags,ch)==in_irq &&
-		(!(sc_flags & SCF_SHIFT)&&keydev.ctrl_alt_no_shift_descs[ch]) ||
-		sc_flags & SCF_SHIFT && keydev.ctrl_alt_shift_descs[ch])
+		(!(sc_flags & SCF_SHIFT)&&keydev.ctrl_alt_no_shift_descs[ch] ||
+		sc_flags & SCF_SHIFT && keydev.ctrl_alt_shift_descs[ch]))
 	    (*keydev.fp_ctrl_alt_cbs[ch])(sc);
 	}
       }

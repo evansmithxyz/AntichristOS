@@ -245,7 +245,10 @@ U0 TvMain()
   ms.show=TRUE;
 
 //Inverted chrome: [X] on the left, MENU on the right.  Real clicks
-//through the WinMgr's title-bar hit zones.
+//through the WinMgr's title-bar hit zones.  The AutoComplete window stays
+//on top over the right of the screen, so put it away for these clicks.
+  Bool tv_ac=AutoComplete(OFF);
+  Sleep(300);
   t=User;
   Sleep(600);
   WinToTop(t);
@@ -268,6 +271,7 @@ U0 TvMain()
   TvCheck(TaskValidate(t) && DocPut(t) &&
 	StrMatch("PersonalMenu",DocPut(t)->filename.name),
 	"MENU on the right opens the personal menu");
+  AutoComplete(tv_ac);
   MsSet(320,240);
   TvShot("menu_click",300,700);
 

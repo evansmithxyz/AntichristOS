@@ -307,7 +307,7 @@ def send_keyspec(q, keys):
 def run(iso, timeout=180, shots=(), shot_every=None, shot_prefix="shot",
         serial=None, keys=(), accel="auto", mem=1024, smp=1, stream=None,
         stop_on=None, log=print, name="hellforge", keep_running=False,
-        shot_dir=None, expect=()):
+        shot_dir=None, expect=(), anchor=None):
     """Boot ISO; returns dict(rc, guest_code, accel, elapsed, shots, serial,
     timed_out, stalled).
 
@@ -317,6 +317,10 @@ def run(iso, timeout=180, shots=(), shot_every=None, shot_prefix="shot",
     expect: [(secs, needle_bytes, label)] -- if needle has not appeared on
     serial after secs, stop early as a timeout with stalled=label (e.g. a
     boot-time compile error that never reaches the autorun).
+    anchor: (needle_bytes, calib_secs) -- shots/keys scheduled at t >= calib_secs
+    are held until needle appears on serial and then fire at
+    t - calib_secs + <time needle appeared>, so scripts written for one boot
+    time keep working when boot gets slower or faster.
     """
     sdir = shot_dir or OUT
     os.makedirs(sdir, exist_ok=True)
@@ -333,6 +337,13 @@ def run(iso, timeout=180, shots=(), shot_every=None, shot_prefix="shot",
     serial_pos = 0
     serial_buf = b""
     stop_hit = None
+    anchor_needle, anchor_cal = anchor if anchor else (None, None)
+    anchor_at = [None]
+
+    def due(t, el):
+        if anchor_needle is None or t < anchor_cal:
+            return el >= t
+        return anchor_at[0] is not None and el >= t - anchor_cal + anchor_at[0]
 
     def shot(tag, el):
         p = os.path.join(sdir, f"{shot_prefix}_{tag}.png")
@@ -352,13 +363,13 @@ def run(iso, timeout=180, shots=(), shot_every=None, shot_prefix="shot",
             if el >= timeout:
                 timed_out = True
                 break
-            while pending_shots and el >= pending_shots[0]:
+            while pending_shots and due(pending_shots[0], el):
                 t = pending_shots.pop(0)
                 shot(f"{t:06.1f}s", el)
             if next_every and el >= next_every:
                 shot(f"{el:06.1f}s", el)
                 next_every += shot_every
-            while pending_keys and el >= pending_keys[0][0]:
+            while pending_keys and due(pending_keys[0][0], el):
                 _, k = pending_keys.pop(0)
                 log(f"qemu: [{el:6.1f}s] sendkeys {k!r}")
                 try:
@@ -372,6 +383,11 @@ def run(iso, timeout=180, shots=(), shot_every=None, shot_prefix="shot",
                 serial_pos += len(chunk)
                 if chunk:
                     serial_buf += chunk
+                    if anchor_needle and anchor_at[0] is None and anchor_needle in serial_buf:
+                        anchor_at[0] = q.elapsed()
+                        log(f"qemu: [{anchor_at[0]:6.1f}s] anchor {anchor_needle.decode()!r} "
+                            f"(scripted times >= {anchor_cal:g}s shift by "
+                            f"{anchor_at[0] - anchor_cal:+.1f}s)")
                     if stream:
                         for nm in (stream(chunk) or ()):
                             shot(nm, q.elapsed())
