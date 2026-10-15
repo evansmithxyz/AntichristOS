@@ -152,14 +152,28 @@ def t_tree_rule(src):
         check(f"restored {rel} is sound unpatched",
               data is not None and mkiso.doc_bin_problems(data) is None
               and mkiso.patch_bin_tail(data) is None)
-    # Pick3D's bin 2 walks to SPT_END but its mesh is shifted by a byte
-    # (triangles name vertex 0x03000000): Gr3Mesh() of it kills QEMU-WHPX.
+    # Pick3D's tail is restored from the V5.03 ISO.  With the archive's damage
+    # (TOSZ -ascii: 0x05 dropped, 0x1F -> 0x20) its bin 2 still walks to
+    # SPT_END but its mesh is shifted by a byte (triangles name vertex
+    # 0x03000000): Gr3Mesh() of it kills QEMU-WHPX.
     p = os.path.join(src, "Demo", "Graphics", "Pick3D.HC")
     if os.path.isfile(p):
         with open(p, "rb") as fh:
+            data = fh.read()
+        damaged = data.replace(b"\x05", b"").replace(b"\x1f", b"\x20")
+        prob = mkiso.doc_bin_problems(damaged)
+        check("Pick3D is sound, its -ascii damaged mesh (bin 2) is flagged",
+              mkiso.doc_bin_problems(data) is None
+              and prob is not None and 2 in prob["bad_sprites"], f"{prob}")
+    # Titanium's MPMenDraw() jobs SpriteInterpolate() bins 8, 7, 8, 9, which
+    # throws if --patch-broken-bins blanks one of them; DrawIt() then waits
+    # for that job forever and the screen freezes.  Bin 9's last two bytes
+    # were junk in V5.03 itself (repaired, see toslint.TAIL_REPAIRS).
+    p = os.path.join(src, "Apps", "Titanium", "Titanium.HC")
+    if os.path.isfile(p):
+        with open(p, "rb") as fh:
             prob = mkiso.doc_bin_problems(fh.read())
-        check("Pick3D's shifted mesh (bin 2) is flagged",
-              prob is not None and 2 in prob["bad_sprites"], f"{prob}")
+        check("Titanium's animation frames are sound unpatched", prob is None, f"{prob}")
     check(".GR is not DolDoc", not mkiso.DOLDOC_EXT_RE.search("StadiumBG.GR"))
     grs, bad_gr = 0, []
     for dp, dn, fn in os.walk(src):

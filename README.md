@@ -57,9 +57,12 @@ See [Hellforge/README.md](Hellforge/README.md) and the design spec in [Hellforge
 ## Known issue
 
 The archive this repo was imported from stripped every 0x05 byte (and changed 0x1F to 0x20) in
-DolDoc files, which damaged the sprites in about 29 demo and game files. The rebuilt `.MAP` files
-are clean again. Hellforge replaces the damaged sprites with empty ones in the image, so nothing
-crashes. Restoring them properly needs the original TempleOS V5.03 ISO.
+DolDoc files, which damaged the sprites in 39 files (demos, games, the Personal Menu, a few docs).
+Their sprite tails and the `StadiumBG.GR` picture now hold the original bytes from the TempleOS
+V5.03 ISO, and the rebuilt `.MAP` files are clean again. The text parts of about 150 files
+(shift-spaces, cursor marks) and the AutoComplete dictionary files are still affected. One sprite,
+in `Demo/DolDoc/DemoDoc.DD`, is broken in V5.03 itself; Hellforge replaces it with an empty one in
+the image.
 
 ## Credits
 
