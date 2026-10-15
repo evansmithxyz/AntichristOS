@@ -13,8 +13,10 @@
 ;   BOOT_MSG_BYTES   comma-separated byte list of the boot message
 ;                    (default "Loading TempleOS")
 ;   NOT64_MSG_BYTES  comma-separated byte list of the not-64-bit message
-;   MAPFILE          path of a NASM symbol map to emit (used by mkiso.py to
-;                    locate the patch fields BDVD_BLK_LO etc.)
+;   MAPFILE          file name of a NASM symbol map to emit (used by mkiso.py
+;                    to locate the patch fields BDVD_BLK_LO etc.).  NASM ends
+;                    the name at the first blank and keeps quotes literally,
+;                    so mkiso runs NASM in its temp dir with a bare name.
 ;
 ; Patch fields (filled by mkiso.py like RedSeaISO9660Stage1() does):
 ;   BDVD_BLK_LO   U32 (LO+HI)  = kernel de.clus>>2  (DVD block)

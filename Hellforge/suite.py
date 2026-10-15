@@ -11,6 +11,8 @@ number of failed tests.
 Tests marked "rebuilt" need the Unholy C compiler/kernel built from the
 current sources (forge.py bootstrap --install). Key-driven tests use
 --anchor-ready, so their scripted key times follow the real boot time.
+"{guest}" in a test's arguments stands for the absolute Hellforge/guest dir.
+"hosttest" is Hellforge/hosttest.py (host-side toolchain checks, no QEMU).
 """
 import argparse
 import concurrent.futures as cf
@@ -24,7 +26,11 @@ REPO = os.path.dirname(HERE)
 
 # (test file stem, extra forge.py run args, note)
 TESTS = [
+    ("hosttest", [], "host: stage 1, sprite rule, .Z layout, --add, parsing"),
     ("BootOk", [], "boot to the autorun"),
+    ("TestToolchain", ["--add", "{guest}/TestToolchain.HC:Doc/Glossary.DD.Z",
+                       "--add", "{guest}/TestToolchain.HC:Tmp/HfAddZ.HC.Z"],
+     "image: .Z overlays, ACWords.DATA.Z, sound sprite bins, .GR"),
     ("TestUnholyC", [], "keyword aliases, StrRev/Backmask/BEAST"),
     ("TestUnholyC2", [], "rebuilt: unless/until/do..until/backwards, BLASPHEMY, .UC"),
     ("TestUnholyC3", [], "rebuilt: reindenter"),
@@ -60,9 +66,14 @@ TESTS = [
 
 def run_one(stem, extra, src):
     name = "suite_" + stem
-    path = os.path.join(HERE, "guest", stem + ".HC")
-    cmd = [sys.executable, os.path.join(HERE, "forge.py"), "run", path, "--quiet",
-           "--name", name, "--src", src] + extra
+    guest = os.path.join(HERE, "guest")
+    extra = [x.replace("{guest}", guest) for x in extra]
+    if stem == "hosttest":
+        cmd = [sys.executable, os.path.join(HERE, "hosttest.py"), "--src", src] + extra
+    else:
+        cmd = [sys.executable, os.path.join(HERE, "forge.py"), "run",
+               os.path.join(guest, stem + ".HC"), "--quiet", "--name", name,
+               "--src", src] + extra
     t0 = time.time()
     r = subprocess.run(cmd, capture_output=True, text=True, errors="replace")
     wd = os.path.join(HERE, "out", "run", name)

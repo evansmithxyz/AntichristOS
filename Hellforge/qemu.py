@@ -260,9 +260,17 @@ class Qemu:
         return out
 
     def screendump(self, png_path):
-        from PIL import Image
+        from PIL import Image   # Pillow: the only non-stdlib Python dependency
         ppm = png_path + ".ppm"
-        self.hmp(f"screendump {ppm.replace(chr(92), '/')}")
+        # HMP ends an unquoted file name at the first blank, so quote it (a
+        # checkout path with a space in it); '/' needs no escaping.
+        reply = self.hmp('screendump "%s"' % ppm.replace("\\", "/"))
+        # The reply is the echoed command line, then QEMU's own output (none
+        # on success), then the prompt.
+        said = reply.split("\n", 1)[1] if "\n" in reply else ""
+        said = said.replace("(qemu) ", "").strip()
+        if said:
+            raise OSError("screendump: " + said)
         for _ in range(50):
             if os.path.exists(ppm) and os.path.getsize(ppm) > 0:
                 break

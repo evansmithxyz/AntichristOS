@@ -16,7 +16,10 @@ does when called from ::/Misc/DoDistro.HC:
                      CopyTree() pre-order, exactly like RedSeaFmt/RedSeaMkDir/
                      RedSeaFileWrite would on a fresh BDT_ISO_FILE_WRITE drive.
 
-All file bytes are copied verbatim (no re-encoding, no compression).
+File bytes are never re-encoded or compressed.  By default each file is stored
+under a TempleOS-style "<name>.Z" name inside a CT_NONE CArcCompress header,
+which ExpandBuf() returns verbatim (see dotz_tree(); --no-dotz stores the plain
+bytes under the plain names instead).
 Output is deterministic for a given tree + options.
 """
 import argparse
@@ -247,6 +250,45 @@ def get_file(root, iso_path):
     return node
 
 
+def add_file(root, iso_path, data, dotz=True):
+    """--add: put data at iso_path.  The image shows .Z names, so an ISO path
+    ending in .Z is accepted and means the same file as the plain name: plain
+    bytes replace the repo file and are wrapped like it (by dotz_tree(), or
+    right here with --no-dotz), and a CArcCompress blob is stored as given in
+    place of the plain file.  Either way there is one entry, never a duplicate
+    or raw bytes flagged compressed."""
+    if iso_path.upper().endswith(".Z"):
+        base = iso_path[:-2]
+        if dotz and not is_arc(data):
+            iso_path = base                       # dotz_tree() adds the .Z back
+        else:
+            if not is_arc(data):
+                data = arc_wrap(data)
+            old = get_file(root, base)
+            if old is not None and not old.is_dir:
+                old.parent.children.remove(old)
+    put_file(root, iso_path, data)
+
+
+def split_add(s):
+    """'HOST:ISOPATH' -> (host, isopath).  Splits on the last ':' so a Windows
+    drive letter in HOST works; refuses a spec without an ISO path."""
+    i = s.rfind(":")
+    host, isop = s[:i], s[i + 1:]
+    if i < 0 or not host or not isop.strip("/") or \
+            (len(host) == 1 and host.isalpha() and isop[:1] in ("/", "\\")):
+        raise IsoError(f"--add expects HOST:ISOPATH, got {s!r}")
+    return host, isop.replace("\\", "/")
+
+
+def split_append(s):
+    """'ISOPATH:HOST' -> (isopath, host)."""
+    i = s.find(":")
+    if i <= 0 or i == len(s) - 1:
+        raise IsoError(f"--append expects ISOPATH:HOST, got {s!r}")
+    return s[:i], s[i + 1:]
+
+
 def file_bytes(node):
     if node.data is None:
         with open(node.src, "rb") as f:
@@ -292,15 +334,20 @@ def build_stage1(boot_msg="Loading TempleOS", not64_msg=None, workdir=None):
     try:
         out = os.path.join(tmp, "stage1.bin")
         mp = os.path.join(tmp, "stage1.map")
-        cmd = [nasm, "-f", "bin", "-o", out, "-DMAPFILE=" + mp.replace("\\", "/")]
+        # NASM's [map] directive stops its file name at the first blank (quotes
+        # are taken literally), so NASM runs inside tmp and gets a bare name:
+        # a TEMP path with a space in it must still work.
+        cmd = [nasm, "-f", "bin", "-o", out, "-DMAPFILE=stage1.map"]
         if boot_msg:
             cmd.append("-DBOOT_MSG_BYTES=" + _bytes_list(boot_msg))
         if not64_msg:
             cmd.append("-DNOT64_MSG_BYTES=" + _bytes_list(not64_msg.replace("\\n", "\n").replace("\\r", "\r")))
         cmd.append(os.path.join(HERE, "stage1.asm"))
-        r = subprocess.run(cmd, capture_output=True, text=True)
+        r = subprocess.run(cmd, capture_output=True, text=True, cwd=tmp)
         if r.returncode:
             raise IsoError("nasm failed:\n" + r.stdout + r.stderr)
+        if not (os.path.isfile(out) and os.path.isfile(mp)):
+            raise IsoError(f"nasm did not write {out} and {mp}:\n" + r.stdout + r.stderr)
         with open(out, "rb") as f:
             code = f.read()
         syms = {}
@@ -552,9 +599,16 @@ def build_image(root, stage1, syms, dt, volume_id=None, catalog_id="TempleOS",
 # (sprites, .MAP debug info).  That shifts the CDocBin headers, so DocLoad()
 # loses bins and DocBinsValidate() RawPrint(3000)s "Bin Not Found" for every
 # reference: ~1000 x 3s at boot (Kernel.MAP+Compiler.MAP alone ~860).
+# A stripped byte inside a bin also leaves that bin itself corrupt: its
+# declared size runs past the end of the file (DocLoad() then copies whatever
+# follows the file buffer), or its sprite elements no longer parse, and
+# Sprite3() walks out of sprite_elem_base_sizes[] into the heap (GP faults,
+# endless WinMgr loops, QEMU-WHPX "failed to decode instruction").
 # --patch-broken-bins rewrites such tails in the IMAGE ONLY (never the repo).
 _BI_RE = re.compile(rb"BI=(\d+)")
-DOLDOC_EXT_RE = re.compile(r"\.(HC|HH|DD|GR|IN|PRJ|TXT|MAP)(\.Z)?$", re.I)
+# DolDoc-format files.  (.GR is not one: GRWrite() stores a raw CDC, DCSave().)
+DOLDOC_EXT_RE = re.compile(r"\.(HC|HH|DD|IN|PRJ|TXT|MAP)(\.Z)?$", re.I)
+MAP_EXT_RE = re.compile(r"\.MAP(\.Z)?$", re.I)
 _BI_STRIP_RE = re.compile(rb",BI=(\d+)")
 
 
@@ -569,7 +623,9 @@ def doc_bin_check(data):
 
     Returns (text_len, intact_bins[(off,num,size)], missing_refs, overrun) or
     None if the file has no NUL (no tail).  intact_bins stops at the first
-    implausible header."""
+    implausible header, which includes a bin whose declared size runs past the
+    end of the file.  overrun is how far DocLoad() reads past the end of the
+    file (negative: that many leftover bytes it ignores); a sound tail has 0."""
     i = data.find(b"\0")
     if i < 0:
         return None
@@ -587,25 +643,102 @@ def doc_bin_check(data):
     return i, intact, sorted(refs - set(nums)), s - len(t)
 
 
-def patch_bin_tail(data, strip_refs=False):
-    """Rebuild a broken tail: keep the intact leading bins; for every other
-    referenced bin either add an empty sprite (one SPT_END byte), or with
-    strip_refs (used for .MAP files, whose bins are CDbgInfo) drop the ',BI=n'
-    from the text so MapFileLoad() just has no line info for that symbol.
-    Returns new bytes, or None if the file is fine."""
+# Sprites (the only kind of bin in a DolDoc other than a .MAP's CDbgInfo; see
+# ::/Doc/DolDocOverview.DD $IB).  sprite_elem_base_sizes[] in
+# ::/Adam/Gr/SpriteNew.HC, i.e. the packed CSprite* classes of ::/Adam/Gr/Gr.HH.
+SPT_BASE_SIZES = (1, 2, 3, 5, 17, 1, 1, 9, 9, 13, 17, 5, 17, 25, 13, 25, 29,
+                  5, 5, 5, 5, 9, 9, 17, 9, 21, 17, 9, 9, 9)
+SPT_TYPES_NUM = len(SPT_BASE_SIZES)      # 30
+SPG_TYPE_MASK = 0x7F
+
+
+def sprite_ok(d):
+    """True if d is well-formed sprite data: SpriteElemSize() steps through
+    elements of known types (< SPT_TYPES_NUM, no negative counts) and lands on
+    SPT_END at exactly the last byte, as the sprite editor saves them (a
+    sprite bin's size is SpriteSize()).  Anything else is damaged data."""
+    off, n = 0, len(d)
+    while off < n:
+        t = d[off] & SPG_TYPE_MASK
+        if t == 0:                                   # SPT_END
+            return off == n - 1
+        if t >= SPT_TYPES_NUM:
+            return False
+        size = SPT_BASE_SIZES[t]
+        if off + size > n:
+            return False
+        cnt = ()
+        if t == 11:                                  # SPT_POLYLINE: num CD2I32
+            cnt = struct.unpack_from("<i", d, off + 1)
+            extra = cnt[0] * 8
+        elif 17 <= t <= 20:                          # SPT_BSPLINE*: num CD3I32
+            cnt = struct.unpack_from("<i", d, off + 1)
+            extra = cnt[0] * 12
+        elif t == 9:                                 # SPT_POLYPT: 3 bits each
+            cnt = struct.unpack_from("<i", d, off + 1)
+            extra = (cnt[0] * 3 + 7) >> 3
+        elif t == 23:                                # SPT_BITMAP: w x h bytes
+            cnt = struct.unpack_from("<ii", d, off + 9)
+            extra = ((cnt[0] + 7) & ~7) * cnt[1]
+        elif t == 24:                                # SPT_MESH
+            cnt = struct.unpack_from("<ii", d, off + 1)
+            extra = cnt[0] * 12 + cnt[1] * 16
+        elif t == 25:                                # SPT_SHIFTABLE_MESH
+            cnt = struct.unpack_from("<ii", d, off + 13)
+            extra = cnt[0] * 12 + cnt[1] * 16
+        elif t >= 27:                                # SPT_TEXT*: NUL-ended
+            j = d.find(b"\0", off + size)
+            if j < 0:
+                return False
+            extra = j + 1 - (off + size)
+        else:
+            extra = 0
+        if any(c < 0 for c in cnt):
+            return False
+        off += size + extra
+    return False
+
+
+def doc_bin_problems(data, map_file=False):
+    """None if data has no bin tail or a sound one, else
+    dict(missing=[bin nums referenced but lost], overrun=N,
+    bad_sprites=[bin nums whose data is not a well-formed sprite]).
+    map_file: the bins are CDbgInfo (.MAP), not sprites.
+    This is the rule both doccheck and --patch-broken-bins use."""
     r = doc_bin_check(data)
     if r is None:
         return None
     i, intact, missing, overrun = r
-    if not missing and overrun <= 15:  # small overrun: DocLoad tolerates it
+    bad = []
+    if not map_file:
+        t = data[i + 1:]
+        bad = sorted({num for off, num, size in intact
+                      if not sprite_ok(t[off + 16:off + 16 + size])})
+    if missing or overrun or bad:
+        return dict(missing=missing, overrun=overrun, bad_sprites=bad)
+    return None
+
+
+def patch_bin_tail(data, strip_refs=False):
+    """Rebuild a broken tail: keep the intact leading bins that are sound; for
+    every other referenced bin either add an empty sprite (one SPT_END byte),
+    or with strip_refs (used for .MAP files, whose bins are CDbgInfo) drop the
+    ',BI=n' from the text so MapFileLoad() just has no line info for that
+    symbol.  Returns new bytes, or None if the file is fine."""
+    prob = doc_bin_problems(data, map_file=strip_refs)
+    if prob is None:
         return None
+    i, intact, missing, overrun = doc_bin_check(data)
+    bad = set(prob["bad_sprites"])
     text, t = data[:i], data[i + 1:]
     out, have = [], set()
     for off, num, size in intact:
         if num in have:
             break
-        out.append(t[off:off + 16 + size])
         have.add(num)
+        if num not in bad:
+            out.append(t[off:off + 16 + size])
+    have -= bad
     lost = sorted(set(int(x) for x in _BI_RE.findall(text)) - have)
     if strip_refs:
         lost_set = set(lost)
@@ -617,6 +750,59 @@ def patch_bin_tail(data, strip_refs=False):
     return text + b"\0" + b"".join(out)
 
 
+# .GR pictures are not DolDoc: GRWrite() stores a raw DCSave() (CDC.start..end,
+# the palette if DCF_PALETTE, then the body, normally CompressBuf()ed).  The
+# same 0x05 stripping hit Demo/Games/Stadium/StadiumBG.GR: its LZW body is 20
+# bytes short and GRRead() of it hangs.
+GR_EXT_RE = re.compile(r"\.GR(\.Z)?$", re.I)
+GR_HDR = struct.Struct("<q6i")   # cdt, x0, y0, width, width_internal, height, flags
+DCF_COMPRESSED, DCF_PALETTE = 1, 2
+GR_PALETTE_SIZE = 16 * 6         # COLORS_NUM CBGR48s
+
+
+def gr_problem(data):
+    """None if data is a whole DCSave() picture, else what is wrong with it."""
+    if len(data) < GR_HDR.size:
+        return "shorter than a CDC header"
+    w, wi, h, flags = GR_HDR.unpack_from(data)[3:]
+    if not (0 < w <= wi and 0 < h and wi * h <= 1 << 26):
+        return f"implausible header ({w}x{h}, width_internal {wi})"
+    off = GR_HDR.size + (GR_PALETTE_SIZE if flags & DCF_PALETTE else 0)
+    if flags & DCF_COMPRESSED:
+        if len(data) < off + ARC_HDR.size:
+            return "body header cut off"
+        csize, esize, ctype = ARC_HDR.unpack_from(data, off)
+        if esize != wi * h or not CT_NONE <= ctype <= CT_8_BIT or csize < ARC_HDR.size:
+            return "bad body header"
+        need = off + csize
+    else:
+        need = off + wi * h
+    if need > len(data):
+        return f"picture data {need - len(data)} bytes short"
+    if need < len(data):
+        return f"{len(data) - need} stray bytes after the picture"
+    return None
+
+
+def patch_gr(data):
+    """A damaged picture -> one of the same size and palette with a blank
+    (colour 0) CT_NONE body, so GRRead() returns; None if data is fine or its
+    header is unusable."""
+    if gr_problem(data) is None or len(data) < GR_HDR.size:
+        return None
+    hdr = list(GR_HDR.unpack_from(data))
+    w, wi, h, flags = hdr[3:]
+    if not (0 < w <= wi and 0 < h and wi * h <= 1 << 26):
+        return None
+    pal = b""
+    if flags & DCF_PALETTE:
+        pal = data[GR_HDR.size:GR_HDR.size + GR_PALETTE_SIZE]
+        if len(pal) != GR_PALETTE_SIZE:
+            pal, flags = b"", flags & ~DCF_PALETTE
+    hdr[6] = flags | DCF_COMPRESSED
+    return GR_HDR.pack(*hdr) + pal + arc_wrap(bytes(wi * h))
+
+
 # ---- .Z names, as on a real TempleOS disk --------------------------------------
 # The original distro stored nearly every file TempleOS-compressed under a
 # "<name>.Z" name (e.g. ::/Doc/StandBy.DD.Z, ~/PersonalMenu.DD.Z,
@@ -626,20 +812,42 @@ def patch_bin_tail(data, strip_refs=False):
 # which ExpandBuf() returns verbatim, and mkiso marks it RS_ATTR_COMPRESSED like
 # FileWrite() would.  These stay unwrapped:
 #   * /0000Boot/* and *.C: contiguous files read raw (the CD boot kernel)
-#   * *.DATA: AutoComplete opens ACDefs.DATA with FOpen() for raw block access
+#   * ACDefs.DATA: AutoComplete opens it with FOpen() for raw block access
+#     (ACWords.DATA must be .Z: ACInit FileFind()s ACWords.DATA.Z by exact
+#     name, and without it the dictionary fill-ins are off)
+#   * a name that would grow past 37 chars (it is stored plain, with a note)
 CT_NONE = 1
+CT_8_BIT = 3
 ARC_HDR = struct.Struct("<qqB")
-DOTZ_KEEP_RE = re.compile(r"(\.Z|\.C|\.DATA)$", re.I)
+DOTZ_KEEP_RE = re.compile(r"(\.Z|\.C)$|^ACDefs\.DATA$", re.I)
 
 
-def dotz_tree(root):
+def arc_wrap(data):
+    """data -> a CT_NONE CArcCompress blob that ExpandBuf() returns as is."""
+    return ARC_HDR.pack(ARC_HDR.size + len(data), len(data), CT_NONE) + data
+
+
+def is_arc(data):
+    """True if data is a whole CArcCompress blob, as every .Z file must be:
+    FileRead() ExpandBuf()s anything RS_ATTR_COMPRESSED.  CompressBuf() sets
+    compressed_size to the whole blob, header included."""
+    if len(data) < ARC_HDR.size:
+        return False
+    csize, esize, ctype = ARC_HDR.unpack_from(data)
+    return csize == len(data) and CT_NONE <= ctype <= CT_8_BIT and esize >= 0
+
+
+def dotz_tree(root, log=None):
     n_wrapped = 0
     for n in list(root.walk()):
         if n.is_dir or DOTZ_KEEP_RE.search(n.name) or n.path().upper().startswith("/0000BOOT/"):
             continue
-        data = file_bytes(n)
-        check_name(n.name + ".Z", n.path() + ".Z")
-        n.data = ARC_HDR.pack(ARC_HDR.size + len(data), len(data), CT_NONE) + data
+        if len((n.name + ".Z").encode("latin-1")) >= CDIR_FILENAME_LEN:
+            if log:
+                log(f"mkiso: {n.path()} stays unwrapped: {n.name}.Z would exceed "
+                    f"RedSea's {CDIR_FILENAME_LEN - 1} chars")
+            continue
+        n.data = arc_wrap(file_bytes(n))
         n.src = None
         n.name += ".Z"
         n_wrapped += 1
@@ -647,6 +855,21 @@ def dotz_tree(root):
         if n.is_dir:
             n.children.sort(key=lambda c: c.name)
     return n_wrapped
+
+
+def check_tree(root):
+    """Refuse an image the guest would misread: two entries with one name
+    (RedSea lookups take the first and silently ignore the other) or a .Z
+    file that is not CArcCompress data (FileRead() throws 'Compress')."""
+    for n in root.walk():
+        if n.is_dir:
+            seen = set()
+            for c in n.children:                # RedSea names: StrCmp()
+                if c.name in seen:
+                    raise IsoError(f"duplicate entry {c.path()}")
+                seen.add(c.name)
+        elif n.name.upper().endswith(".Z") and not is_arc(file_bytes(n)):
+            raise IsoError(f"{n.path()}: a .Z file must hold CArcCompress data")
 
 
 # ---- Identity strings taken from the OS's own sources -------------------------
@@ -719,20 +942,28 @@ def make_iso(src, out, boot_msg=None, volume_id=None, excludes=None,
     patched = []
     if patch_bins:
         for n in root.walk():
-            if not n.is_dir and DOLDOC_EXT_RE.search(n.name):
+            nd = None
+            if n.is_dir:
+                continue
+            if DOLDOC_EXT_RE.search(n.name):
                 nd = patch_bin_tail(file_bytes(n),
-                                    strip_refs=bool(re.search(r"\.MAP(\.Z)?$", n.name, re.I)))
-                if nd is not None:
-                    n.data, n.src = nd, None
-                    patched.append(n.path())
+                                    strip_refs=bool(MAP_EXT_RE.search(n.name)))
+            elif GR_EXT_RE.search(n.name):
+                nd = patch_gr(file_bytes(n))
+            if nd is not None:
+                n.data, n.src = nd, None
+                patched.append(n.path())
         if patched:
-            log(f"mkiso: patched {len(patched)} broken DolDoc bin tails (image only)")
+            log(f"mkiso: patched {len(patched)} damaged DolDoc bin tails / .GR "
+                f"pictures (image only)")
     for d in (DISTRO_DIRS if mkdirs is None else mkdirs):
         ensure_dir(root, d)
     for host, isop in add:
         with open(host, "rb") as f:
-            put_file(root, isop, f.read())
+            add_file(root, isop, f.read(), dotz)
     for isop, host in append:
+        if dotz and isop.upper().endswith(".Z") and get_file(root, isop) is None:
+            isop = isop[:-2]           # the repo file, before dotz_tree() names it .Z
         with open(host, "rb") as f:
             append_file(root, isop, f.read())
     if inject_autorun:
@@ -742,7 +973,8 @@ def make_iso(src, out, boot_msg=None, volume_id=None, excludes=None,
                     b"\n//Hellforge autorun (injected, not in repo)\n"
                     + AUTORUN_INCLUDE.encode() + b"\n")
     if dotz:
-        log(f"mkiso: stored {dotz_tree(root)} files under .Z names (CT_NONE)")
+        log(f"mkiso: stored {dotz_tree(root, log)} files under .Z names (CT_NONE)")
+    check_tree(root)
     stage1, syms = build_stage1(boot_msg, not64_msg)
     dt = parse_date(date)
     # deterministic "unique_id": hash of tree paths+sizes+date
@@ -806,28 +1038,24 @@ def main(argv=None):
     ap.add_argument("--no-dotz", dest="dotz", action="store_false",
                     help="store files under their plain names instead of TempleOS-style .Z")
     ap.add_argument("--patch-broken-bins", action="store_true",
-                    help="in the image only, replace corrupted DolDoc sprite tails "
-                         "(see README) so boot is not stalled by 'Bin Not Found'")
+                    help="in the image only, replace lost, truncated or malformed "
+                         "DolDoc sprite bins with an empty sprite and damaged .GR "
+                         "pictures with blank ones (see README)")
     a = ap.parse_args(argv)
-
-    def split2(s, what):
-        # allow Windows drive letters in host paths: split on the LAST ':' for --add
-        if what == "add":
-            i = s.rfind(":")
-            return s[:i], s[i + 1:]
-        i = s.find(":")
-        return s[:i], s[i + 1:]
     try:
         geo = make_iso(a.src, a.out, boot_msg=a.boot_msg, volume_id=a.volume_id,
                        excludes=a.exclude, inject_autorun=a.inject_autorun,
-                       add=[split2(s, "add") for s in a.add],
-                       append=[split2(s, "append") for s in a.append],
+                       add=[split_add(s) for s in a.add],
+                       append=[split_append(s) for s in a.append],
                        mkdirs=a.mkdir, date=a.date, catalog_id=a.catalog_id,
                        not64_msg=a.not64_msg, skip_invalid=a.skip_invalid,
                        manifest=a.manifest, patch_bins=a.patch_broken_bins,
                        dotz=a.dotz)
     except IsoError as e:
         print("mkiso: error:", e, file=sys.stderr)
+        return 1
+    except OSError as e:
+        print(f"mkiso: error: {e}", file=sys.stderr)
         return 1
     print(f"mkiso: wrote {geo['out']} ({geo['bytes']} bytes, {geo['files']} files, "
           f"{geo['dirs']} dirs) kernel clus={geo['kernel_clus']} stage1={geo['stage1']} "
