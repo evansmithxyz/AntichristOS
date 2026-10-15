@@ -16,7 +16,7 @@ AntichristOS is a motorcycle with flames painted on the tank -- if you lean-over
 
 Linux and Windows are general purpose operating systems.  They attempt to do any task you want.  AntichristOS cherry-picks tasks and is designed to do the same things a C64 did.  This saves and order of magnitude complexity.  For example, the $LK,"RedSea",A="FI:::/Doc/RedSea.DD"$ file system allocates just contiguous files -- you load and save whole files at once.  A benefit is this allows compression.  Also, AntichristOS does not do networking or multimedia.  In theory, memory will fragment with lots of big files.  The system would fall to pieces with multimedia, and 640x480 16 color is a permanent pact anyway.
 
-A mouse needs two bttns.  The pointer is already a pitchfork; it does not need a third prong.  AntichristOS just does hardware everybody has, with no divergent code bases for each machine's custom hardware.  There is one graphics driver instead of 50 for different GPUs.  This saves an order of magnitude complexity and makes for a delightful API, so developer's code is not like a frayed rope end.
+A mouse needs two bttns.  The pitchfork pointer already has all the prongs anybody needs.  AntichristOS just does hardware everybody has, with no divergent code bases for each machine's custom hardware.  There is one graphics driver instead of 50 for different GPUs.  This saves an order of magnitude complexity and makes for a delightful API, so developer's code is not like a frayed rope end.
 
 
 
