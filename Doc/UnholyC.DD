@@ -152,7 +152,7 @@ $FG,5$$TX+CX,"The Library of the Damned"$$FG$
 
 $LK,"::/Adam/UnholyC.HC"$ is compiled into $FG,2$Adam$FG$ at boot, so these are available everywhere:
 
-* $FG,2$#define BEAST 666$FG$.  See $LK,"Revelation,13:18",A="BF:Revelation,13:18"$.  ($FG,2$0x29A$FG$ is also $FG,2$BEAST$FG$, and so is $FG,2$6*6*6*3+6+6+6$FG$.  Do not build it with the power operator: $FG,2$`$FG$ always goes through the FPU, $FG,2$6`3+6`3+6`3+6+6+6$FG$ comes out $FG,2$665.99999999999872$FG$, the command line rounds that to $FG,2$ansf=666$FG$ to spare your feelings, and an $FG,2$I64$FG$ truncates it to 665: the Neighbor of the Beast.)
+* $FG,2$#define BEAST 666$FG$.  See $LK,"Revelation,13:18",A="BF:Revelation,13:18"$.  ($FG,2$0x29A$FG$ is also $FG,2$BEAST$FG$, and so is $FG,2$6*6*6*3+6+6+6$FG$.  Do not build it with the power operator: $FG,2$`$FG$ always goes through the FPU, $FG,2$6`3+6`3+6`3+6+6+6$FG$ comes out $FG,2$665.99999999999872$FG$, the command line shows it as $FG,2$ansf=666.0000000$FG$ to spare your feelings, and an $FG,2$I64$FG$ truncates it to 665: the Neighbor of the Beast.)
 
 * $FG,2$U8 *$LK,"StrRev",A="MN:StrRev"$(U8 *src,CTask *mem_task=NULL)$FG$ returns a $LK,"MAlloc",A="MN:MAlloc"$()ed copy of $FG,2$src$FG$, reversed.  $FG,2$Free$FG$ it when you are done.
 

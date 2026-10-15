@@ -25,7 +25,7 @@ $FG,2$Merge(\"C:/*\",\"D:/*\",\"+r+d\");$FG$ to check my changes.
 
 * You can set your local time zone by setting the $LK,"local_time_offset",A="MN:local_time_offset"$ global var in a start-up file.  It's units are $LK,"CDATE_FREQ",A="MN:CDATE_FREQ"$.  See $LK,"local time",A="FF:~/HomeLocalize.HC,local_time"$.
 
-* $FG,2$<CTRL-SHIFT-L>$FG$ in the editor to reindent a $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$ function or renumber an asm routine's local labels.
+* $FG,2$<CTRL-SHIFT-L>$FG$ in the editor to reindent an $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$ function or renumber an asm routine's local labels.
 
 * You can use $FG,2$filter_lines$FG$ in the editor text search form ($FG,2$<CTRL-f>$FG$) to temporarily display just lines near each match.  A value of $FG,2$filter lines$FG$ set to $FG,2$5$FG$ will display lines within 5 lines of matches.  Then, you can do another find to a different string and achieve a $FG,2$AND$FG$ search.  When finished, press $FG,2$<ESC>$FG$.
  

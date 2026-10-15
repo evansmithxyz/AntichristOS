@@ -34,7 +34,7 @@ InGetStr("\n");
 
 TourPut(
 "$$GREEN$$ansf$$FG$$ says 666.  Looks right.  But $$GREEN$$`$$FG$$ always "
-"works in floating point, and the command line only shows seven digits.  "
+"works in floating point, and the command line only shows seven decimals.  "
 "Let's keep it in an integer.\n\n"
 "Press $$GREEN$$<ENTER>$$FG$$.\n");
 "I64 beast_pow=6`3+6`3+6`3+6+6+6;beast_pow;";

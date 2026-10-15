@@ -1,5 +1,5 @@
                          AntichristOS V6.66
-                    (SOtsirhcitnA, played forwards)
+              (SOtsirhcitnA, if you play it backwards)
 
 AntichristOS is a parody fork of TempleOS V5.03, the public domain 64-bit
 operating system written by Terry A. Davis.  It is TempleOS played

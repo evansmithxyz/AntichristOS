@@ -7,7 +7,7 @@ $FG,5$Case$FG$
 $ID,2$* A black tower, $FG,2$6 x 6 x 6$FG$ hands, cubed for symmetry.  It is not to be shrunk: make it more powerful, not smaller.
 * One red power LED.  It does not blink.  It glows.
 * The reset button is labeled $FG,4$REPENT$FG$.  Pressing it boots straight into AntichristOS, skipping diagnostics, so the penance takes under ten seconds.
-* The power button is labeled $FG,4$SELL$FG$.
+* The power button is labeled $FG,4$SELL SOUL$FG$.
 $ID,-2$
 $FG,5$Processor and memory$FG$
 $ID,2$* $FG,2$x86_64$FG$, with every core reachable, because a core you are not allowed to use is just a ghost.  We are Legion; 666 cores would be nice, but $LK,"MultiCore",A="FI:::/Doc/MultiCore.DD"$ does master/slave, so even 16 is plenty.

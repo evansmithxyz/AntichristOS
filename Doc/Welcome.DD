@@ -52,14 +52,14 @@ $LK,"/Apps/Psalmody/Examples/prosper.HC",A="FI:::/Apps/Psalmody/Examples/prosper
 $LK,"/Apps/Descent/Run.HC",A="FI:::/Apps/Descent/Run.HC"$ $FG,4$<-- fall through Dante's nine circles$FG$
 
 $FG,4$$TX+CX,"Unholy Things To Try First"$$FG$
-$ID,2$$FG,2$<F7>$FG$		The Adversary speaks: a backmasked word.  Sometimes it is a $FG,4$TRUE BACKMASK$FG$.
+$ID,2$$FG,2$<F7>$FG$		The Adversary speaks backwards.  Maybe a $FG,4$TRUE BACKMASK$FG$.
 $FG,2$<SHIFT-F7>$FG$	A Bible passage, held up to a mirror.
-$FG,2$<F6>$FG$		A song in the Diabolus mode.  $FG,2$<SHIFT-F6>$FG$ doodles in hellfire.
-$FG,2$<F8>$FG$/$FG,2$<F9>$FG$	The old oracle, $FG,2$GodWord$FG$ and $FG,2$GodSong$FG$, is still here.  We only moved it down the hall.
-$FG,2$<CTRL-ALT-i>$FG$	Cycle the palette: Hellfire, Negative, Holy.  $FG,2$<CTRL-ALT-I>$FG$ breathes fire.
-$FG,2$<CTRL-ALT-u>$FG$	Turn the whole screen upside down.  $FG,2$<CTRL-ALT-U>$FG$ is the reflection in the lake of fire.
-$FG,2$<CTRL-ALT-y>$FG$	Mirror-script font, for reading in a mirror.  $FG,2$<CTRL-ALT-Y>$FG$ stands it on its head.
-$FG,2$<CTRL-ALT-r>$FG$	Backmask ALL music.  $FG,2$<CTRL-ALT-R>$FG$ flips everything into the Locrian mode.
+$FG,2$<F6>$FG$		A song in the Diabolus mode.  $FG,2$<SHIFT-F6>$FG$ doodles in fire.
+$FG,2$<F8>$FG$/$FG,2$<F9>$FG$	The old oracle, $FG,2$GodWord$FG$ and $FG,2$GodSong$FG$, down the hall.
+$FG,2$<CTRL-ALT-i>$FG$	Hellfire, Negative, Holy.  $FG,2$<CTRL-ALT-I>$FG$ breathes fire.
+$FG,2$<CTRL-ALT-u>$FG$	Upside-down screen.  $FG,2$<CTRL-ALT-U>$FG$: the lake of fire.
+$FG,2$<CTRL-ALT-y>$FG$	Mirror-script font.  $FG,2$<CTRL-ALT-Y>$FG$ stands it on its head.
+$FG,2$<CTRL-ALT-r>$FG$	Backmask ALL music.  $FG,2$<CTRL-ALT-R>$FG$: Locrian mode.
 $FG,2$<CTRL-ALT-b>$FG$	The Bible, opened at the last book.
 $ID,-2$
 $LK,"Temptation of the Day",A="FI:::/Doc/Temptations.DD"$ explains the rest, one sin at a time.
