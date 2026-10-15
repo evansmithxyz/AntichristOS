@@ -260,11 +260,25 @@ public F64 PopUpRangeF64Log(F64 lo,F64 hi,I64 steps,
 }
 
 #help_index "Job/Exe;Task/Job/Exe;Compiler"
+U8 *ExtDftUC(U8 *name)
+{//$LK,"ExtDft",A="MN:ExtDft"$(name,"HC.Z"), or "UC.Z" if only the Unholy C file exists.
+  U8 *res=ExtDft(name,"HC.Z"),*res2;
+  if (!FileExtDot(name) && !FileFind(res,,FUF_Z_OR_NOT_Z)) {
+    res2=ExtDft(name,"UC.Z");
+    if (FileFind(res2,,FUF_Z_OR_NOT_Z)) {
+      Free(res);
+      return res2;
+    }
+    Free(res2);
+  }
+  return res;
+}
+
 public I64 AdamFile(U8 *filename,Bool warn_ext=TRUE)
 {//Make adam_task execute file.
   Bool okay=TRUE;
   U8 *name=FileNameAbs(filename),
-	*name2=ExtDft(name,"HC.Z");
+	*name2=ExtDftUC(name);
   I64 res=0;
   if (warn_ext &&
 	!FilesFindMatch(name2,FILEMASK_JIT) &&
@@ -282,7 +296,7 @@ public I64 PopUpFile(U8 *filename,Bool warn_ext=TRUE,
 {//$LK,"ExeFile2",A="MN:ExeFile2"$() in $LK,"PopUp",A="MN:PopUp"$ task. Cont as User.
   Bool okay=TRUE;
   U8 *st,*name=FileNameAbs(filename),
-	*name2=ExtDft(name,"HC.Z");
+	*name2=ExtDftUC(name);
   I64 res=0;
   if (warn_ext &&
 	!FilesFindMatch(name2,FILEMASK_JIT) &&
@@ -304,7 +318,7 @@ public I64 PopUpFile(U8 *filename,Bool warn_ext=TRUE,
 public I64 PopUpRunFile(U8 *filename,I64 ccf_flags=0,...)
 {//$LK,"ExeFile",A="MN:ExeFile"$() with args using $LK,"LastFun",A="MN:LastFun"$() in $LK,"PopUp",A="MN:PopUp"$ task.
   U8 *st,*name=FileNameAbs(filename),
-	*name2=ExtDft(name,"HC.Z");
+	*name2=ExtDftUC(name);
   I64 res=0;
   st=MStrPrint(
 	"\"$$$$WW+H,1$$$$\";ExeFile2(\"%s\",0x%X);LastFun(0x%X,0x%X);",

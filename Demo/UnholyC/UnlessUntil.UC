@@ -3,6 +3,7 @@
 //  $FG,4$until$FG$ (c) S             is  while (!(c)) S
 //  do S $FG,4$until$FG$ (c);         is  do S while (!(c));
 //  $FG,4$backwards$FG$ "txet"        is  "text" (and, as a statement, prints it)
+//Two wrongs make a right: backwards backwards "text" is just "text".
 //The compiler does not insert a NOT: it just flips the branch, so they
 //cost exactly as much as if and while.  They need the AntichristOS
 //Compiler.BIN.  Run it with  #include "::/Demo/UnholyC/UnlessUntil.UC";
