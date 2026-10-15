@@ -27,3 +27,11 @@ U0 CtrlAltS(I64)
   Spawn(&Scrn2Clip);
 }
 CtrlAltCBSet('S',&CtrlAltS,"Cmd /Scrn Shot to Clip");
+
+#help_index "Graphics/Unholy"
+CtrlAltCBSet('I',&CtrlAltI,"Cmd /Next Unholy Palette",
+	"Cmd /Breathing Hellfire");
+CtrlAltCBSet('U',&CtrlAltU,"Cmd /Upside Down Scrn",
+	"Cmd /Reflection Scrn");
+CtrlAltCBSet('Y',&CtrlAltY,"Cmd /Mirror Script Font",
+	"Cmd /Upside Down Font");

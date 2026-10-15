@@ -1,5 +1,6 @@
-$WW+H,1$$FG,5$$TX+CX,"TempleOS V5.03",D="DD_OS_NAME_VERSION"$$FG$
+$WW+H,1$$FG,4$$TX+CX,"AntichristOS V6.66",D="DD_OS_NAME_VERSION"$$FG$
 
 $TX+CX,"Public Domain Operating System"$
+$FG,8$$TX+CX,"metsyS gnitarepO niamoD cilbuP"$$FG$
 
-$LK,"Help & Index",A="FI:::/Doc/HelpIndex.DD"$, $LK,"Quick Start: Cmd line",A="FI:::/Doc/CmdLineOverview.DD"$
+$LK,"Hellp & Index",A="FI:::/Doc/HelpIndex.DD"$, $LK,"Quick Start: Cmd line",A="FI:::/Doc/CmdLineOverview.DD"$, $LK,"Welcome",A="FI:::/Doc/Welcome.DD"$, $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$

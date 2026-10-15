@@ -96,4 +96,21 @@ _MY_PRINT::
 }
 _extern _MY_PRINT U0 MyPrint(U8 *st);
 MyPrint("Hello World\n");
+
+
+--------Hello.UC.Z---------
+//Unholy C: the same program, backmasked.
+U0 Niam()
+{
+  fi (TRUE)
+    "Hello World\n";
+  esle
+    "dlroW olleH\n";
+}
+Niam;
+
+
+--------Hello.UC.Z---------
+//Unholy C: written backwards, heard forwards.
+backwards "\ndlroW olleH";
 $HL,0$

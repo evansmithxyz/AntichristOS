@@ -186,6 +186,65 @@ KEYWORD haserrcode	45;
 KEYWORD argpop		46;
 KEYWORD noargpop	47;
 
+/* Unholy C.  Play the keywords backwards and hear the truth.
+Each alias maps a new spelling onto an OLD keyword number, so
+no compiler rebuild is needed: fi (x) {...} esle {...}, od {...}
+elihw (x);, #edulcni "File", #enifed BEAST 666 and so on.
+The palindrome exe and the _underscore keywords are left alone.
+*/
+KEYWORD edulcni	0;
+KEYWORD enifed		1;
+KEYWORD noinu		2;
+KEYWORD hctac		3;
+KEYWORD ssalc		4;
+KEYWORD yrt		5;
+KEYWORD fi		6;
+KEYWORD esle		7;
+KEYWORD rof		8;
+KEYWORD elihw		9;
+KEYWORD nretxe		10;
+KEYWORD nruter		12;
+KEYWORD foezis		13;
+KEYWORD od		15;
+KEYWORD msa		16;
+KEYWORD otog		17;
+KEYWORD kaerb		19;
+KEYWORD hctiws		20;
+KEYWORD trats		21;
+KEYWORD dne		22;
+KEYWORD esac		23;
+KEYWORD tluafed	24;
+KEYWORD cilbup		25;
+KEYWORD tesffo		26;
+KEYWORD tropmi		27;
+KEYWORD fedfi		29;
+KEYWORD fednfi		30;
+KEYWORD fidne		33;
+KEYWORD tressa		34;
+KEYWORD citats		41;
+KEYWORD kcol		42;
+KEYWORD denifed	43;
+KEYWORD ssalctsal	37;
+
+/* Heavy-metal aliases, sung from the pit. */
+KEYWORD summon		0;
+KEYWORD curse		1;
+KEYWORD forsake	19;
+KEYWORD sacrifice	12;
+KEYWORD descend	17;
+KEYWORD otherwise	7;
+KEYWORD tempt		5;
+KEYWORD repent		3;
+KEYWORD legion		20;
+
+/* Brand new Unholy C keywords (need the rebuilt Compiler.BIN).
+The old compiler just says "Missing expression" on them.
+unless (c) S;  until (c) S;  do S until (c);  backwards "txet"
+*/
+KEYWORD unless		48;
+KEYWORD until		49;
+KEYWORD backwards	50;
+
 ASM_KEYWORD ALIGN	64;
 ASM_KEYWORD ORG		65;
 ASM_KEYWORD I0		66;

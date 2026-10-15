@@ -223,8 +223,10 @@ U0 WinMsUpdate()
   if (ms_hard.installed) {
     ms.has_wheel=ms_hard.has_wheel;
     if (ms_hard.evt) {
+      UnholyMsPre;
       MsUpdate(ms_hard.pos.x,ms_hard.pos.y,ms_hard.pos.z,
 	    ms_hard.bttns[0],ms_hard.bttns[1]);
+      UnholyMsUpdate;
       ms_hard.evt=FALSE;
       set=TRUE;
     }

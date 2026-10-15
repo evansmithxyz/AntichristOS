@@ -284,6 +284,9 @@ class CIntermediateStruct
 #define KW_HASERRCODE	45
 #define KW_ARGPOP	46
 #define KW_NOARGPOP	47
+#define KW_UNLESS	48 //Unholy C: if (!(c))
+#define KW_UNTIL	49 //Unholy C: while (!(c))
+#define KW_BACKWARDS	50 //Unholy C: reversed str const
 
 #define AKW_ALIGN	64
 #define AKW_ORG		65

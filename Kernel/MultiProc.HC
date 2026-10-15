@@ -121,7 +121,7 @@ CCPU *CPUStructInit(I64 num,CCPU *c,CTask *seth_task)
   c->idle_factor=0.01;
   QueInit(&c->next_dying);
   if (Bt(&sys_run_level,RLf_16MEG_ADAM_HEAP_CTRL)) {
-    c->idle_task=Spawn(0,NULL,"Idle Task",,Fs,,0);
+    c->idle_task=Spawn(0,NULL,"Idle Hands" /*The devil's workshop*/,,Fs,,0);
     LBts(&c->idle_task->task_flags,TASKf_IDLE);
     c->tss=TSSNew(num);
   }
@@ -334,7 +334,7 @@ U0 Core0StartMP()
     my_mp_cnt=MP_PROCESSORS_NUM;
 
   for (i=1;i<my_mp_cnt;i++) {
-    StrPrint(buf,"Seth Task CPU%02X",i);
+    StrPrint(buf,"hteS Task CPU%02X",i); //Seth, backmasked
     task=Spawn(&CoreAPSethInit,NULL,buf,,,MEM_SETH_STK,0);
     task->rflags=RFLAGG_START;
 //$LK,"CTask",A="MN:CTask"$ alloced off this core's seth_task's heap (Which is Adam)

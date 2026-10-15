@@ -1,0 +1,57 @@
+$WW,1$$FG,4$$TX+CX,"The Standard AntichristOS PC"$$FG$
+$FG,8$$TX+CX,"Specification 6.66, Revision Number of the Beast"$$FG$
+
+Every AntichristOS PC shall be identical, so a program written on one runs, and looks, the same on all of them.  The Commodore 64 was a success partly because everybody had exactly the same machine, and so will everybody in Pandemonium.
+
+$FG,5$Case$FG$
+$ID,2$* A black tower, $FG,2$6 x 6 x 6$FG$ hands, cubed for symmetry.  It is not to be shrunk: make it more powerful, not smaller.
+* One red power LED.  It does not blink.  It glows.
+* The reset button is labeled $FG,4$REPENT$FG$.  Pressing it boots straight into AntichristOS, skipping diagnostics, so the penance takes under ten seconds.
+* The power button is labeled $FG,4$SELL SOUL$FG$.
+$ID,-2$
+$FG,5$Processor and memory$FG$
+$ID,2$* $FG,2$x86_64$FG$, with every core reachable, because a core you are not allowed to use is just a ghost.  We are Legion; 666 cores would be nice, but $LK,"MultiCore",A="FI:::/Doc/MultiCore.DD"$ does master/slave, so even 16 is plenty.
+* Clocked at least 666 MHz.  Anything faster is welcome.
+* At least $TX,"512Meg",D="DD_MEM_MIN_MEG"$ of RAM, the same floor as $LK,"Requirements",A="FI:::/Doc/Requirements.DD"$.  The code heap still lives in the lowest 2Gig, where the $FG,2$REL32$FG$ calls can reach it.
+$ID,-2$
+$FG,5$Video$FG$
+$ID,2$* A linear frame buffer, $FG,2$640x480 16 color$FG$, one byte per pixel, and nothing else.  The pact is not renegotiable.  The palette ships set to Hellfire.
+* An interrupt to sync with the refresh would be appreciated, so the flames stop tearing.
+$ID,-2$
+$FG,5$Sound$FG$
+$ID,2$* One PC speaker, one square wave, one voice.  Its favorite interval is the tritone, $FG,4$diabolus in musica$FG$, but it will play the hymns too, forwards or backwards.
+$ID,-2$
+$FG,5$Ports$FG$
+$ID,2$* No USB.  In its place, eight channels of super-simple high speed serial, as easy to drive as an old school $LK,"RS232 Serial",A="FI:::/Doc/Comm.HC"$ port: 8-1-N, two baud rates, big transmit and receive fifos, and flow control characters that can jump the queue.
+* Mice have exactly two buttons and one wheel, like a pair of horns and a tail.  A mouse packet looks like this:
+
+$ID,5$TX:	<ENTER>
+RX:	X:+3 Y:+0 Wheel:+0 LB:OFF RB:OFF
+TX:	<ENTER>
+RX:	X:+0 Y:-1 Wheel:+0 LB:ON  RB:OFF
+$ID,-5$
+* We aspire to be as simple as a Commodore 64 joystick driver:
+
+$ID,5$VAL=PEEK(56321)
+if VAL AND 1 THEN y=y-1
+if VAL AND 2 THEN y=y+1
+if VAL AND 4 THEN x=x-1
+if VAL AND 8 THEN x=x+1
+$ID,-5$
+* Until then, the BIOS keeps PS/2 keyboard and mouse emulation switched on.
+$ID,-2$
+$FG,5$Storage$FG$
+$ID,2$* A super-simple block device with six commands: READ_BLOCK, WRITE_BLOCK, GET_CAPACITY, GET_MODEL, GET_SERIAL_NUM and EJECT.  Six.  Of course it is six.  No bad blocks.
+* Until then, the hard drive sits at the IDE primary master, $FG,2$1F0/3F6$FG$, and the CD/DVD at the secondary master, $FG,2$170/376$FG$, every time, so nobody has to $LK,"go looking",A="FI:::/Kernel/BlkDev/DskATAId.HC"$ for them.
+* A CD/DVD drive, because software comes on $LK,"RedSea",A="FI:::/Doc/RedSea.DD"$ ISOs.  Games live on discs, not on the hard drive.
+* Two partitions, C and D, mirrored with $LK,"CopyTree",A="MN:CopyTree"$(), each comfortably under 512 Meg.
+$ID,-2$
+$FG,5$Networking$FG$
+$ID,2$* None.  No demon phones home.
+$ID,-2$
+$FG,5$Release cycle$FG$
+$ID,2$* The Standard AntichristOS PC stays unchanged for 6 years, 6 months and 6 days at a time, so everybody gets to know every corner of it, the way people knew the Commodore 64.
+$ID,-2$
+$FG,8$
+- "Commodore 64" is a trademark owned by Polabe Holding NV.
+$FG$

@@ -302,13 +302,41 @@ U0 LexIncludeStr(CCmpCtrl *cc,U8 *abs_filename,U8 *src,Bool actual_file)
   tmpf->buf=tmpf->buf_ptr=tmpf->line_start=cc->cur_buf_ptr=src;
 }
 
-CDoc *LexDocRead(U8 *abs_filename,I64 flags)
+U8 *LexFileReadUC(U8 **_abs_filename,I64 *_size=NULL)
+{//Unholy C: FileRead() "X.HC.Z"; ONLY if that fails, try "X.UC.Z".
+//On success with .UC, *_abs_filename is replaced by the .UC name.
+  U8 *res,*uc_name=*_abs_filename;
+  I64 l=StrLen(uc_name);
+  Bool old_silent=Silent;
+  res=FileRead(uc_name,_size);
+  if (!res && l>=5 && !StrCmp(uc_name+l-5,".HC.Z")) {
+    uc_name=StrNew(uc_name);
+    uc_name[l-4]='U';
+    if (res=FileRead(uc_name,_size)) {
+      Free(*_abs_filename);
+      *_abs_filename=uc_name;
+    } else
+      Free(uc_name);
+  }
+  Silent(old_silent);
+  if (!res)
+    PrintErr("File not found: \"%s\".\n",*_abs_filename);
+  return res;
+}
+
+CDoc *LexDocRead(U8 *abs_filename,I64 flags,Bool uc_fallback=FALSE)
 {
-  CDoc *doc=DocNew(abs_filename);
+  CDoc *doc;
   U8 *src;
   I64 size=0;
+  abs_filename=StrNew(abs_filename);
+  if (uc_fallback)
+    src=LexFileReadUC(&abs_filename,&size);
+  else
+    src=FileRead(abs_filename,&size);
+  doc=DocNew(abs_filename);
+  Free(abs_filename);
   doc->flags|=flags;
-  src=FileRead(abs_filename,&size);
   if (!src || !size) {
     Free(src);
     src=CAlloc(1);
@@ -701,10 +729,19 @@ lex_float_start:
 	    fbuf=ExtDft(cc->cur_str,"HC.Z");
 	    buf2=FileNameAbs(fbuf);
 	    Free(fbuf);
-	    if (Bt(&sys_run_level,RLf_DOC))
-	      LexAttachDoc(cc,,,buf2);
-	    else
-	      LexIncludeStr(cc,buf2,FileRead(buf2),TRUE);
+	    if (FileExtDot(cc->cur_str)) {
+	      if (Bt(&sys_run_level,RLf_DOC))
+		LexAttachDoc(cc,,,buf2);
+	      else
+		LexIncludeStr(cc,buf2,FileRead(buf2),TRUE);
+	    } else {//No ext: ".HC.Z", then Unholy ".UC.Z" if that failed.
+	      if (Bt(&sys_run_level,RLf_DOC))
+		LexAttachDoc(cc,,LexDocRead(buf2,DOCF_DBL_DOLLARS,TRUE));
+	      else {
+		buf3=LexFileReadUC(&buf2);
+		LexIncludeStr(cc,buf2,buf3,TRUE);
+	      }
+	    }
 	    Free(buf2);
 	    break;
 	  case KW_DEFINE:

@@ -1,0 +1,444 @@
+$WW,1$$FG,4$$TX+CX,"Unholy C"$$FG$
+$FG,8$$TX+CX,"Unholy (a.) Not holy; unhallowed; not consecrated; hence, profane; wicked; impious."$
+$TX+CX,"-- Webster's 1913, already on this CD.  Ask AutoComplete."$$FG$
+
+Unholy C is $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$ with the record needle dropped on backwards.  Every HolyC program is still a valid Unholy C program -- nothing was taken away, things were only added, the way a backmasked message is added to an album that sounds perfectly innocent when played forwards.
+
+* Source files may end in $FG,2$.UC$FG$ and $FG,2$.UH$FG$ as well as $FG,2$.HC$FG$ and $FG,2$.HH$FG$.  An extensionless $FG,2$#include "File"$FG$ looks for $FG,2$File.HC$FG$ first and only tries $FG,2$File.UC$FG$ after that has failed, so the boot path pays nothing for the privilege.  $FG,2$<F5>$FG$ in the editor runs a $FG,2$.UC$FG$ file like any other.
+
+* The command line is still the compiler, but the prompt has turned around: $FG,2$T:/Home<$FG$.  It points at you now.
+
+* Start here: $LK,"::/Demo/UnholyC/HelloHell.UC"$, $LK,"::/Demo/UnholyC/Backmasked.UC"$ and $LK,"::/Demo/UnholyC/UnlessUntil.UC"$.  The whole $LK,"Descent",A="FI:::/Apps/Descent/Run.HC"$ game is written in Unholy C.
+
+$FG,5$$TX+CX,"The Seven Deadly Syntaxes"$$FG$
+
+$ID,2$$FG,4$Pride$FG$	Backmasked keywords.  $FG,2$fi$FG$ will not stoop to $FG,2$if$FG$.
+$FG,4$Wrath$FG$	Heavy-metal keywords.  $FG,2$summon$FG$, $FG,2$curse$FG$, $FG,2$sacrifice$FG$...
+$FG,4$Sloth$FG$	$FG,2$unless$FG$.  Why do it, when you could not do it?
+$FG,4$Envy$FG$	$FG,2$until$FG$.  The evil twin $FG,2$while$FG$ always knew it had.
+$FG,4$Gluttony$FG$	$FG,2$do ... until$FG$.  Keep eating until you are full.
+$FG,4$Greed$FG$	$FG,2$backwards "..."$FG$.  Takes your string, hands it back reversed.
+$FG,4$Lust$FG$	$LK,"StrRev",A="MN:StrRev"$(), $LK,"Backmask",A="MN:Backmask"$() and $FG,2$BEAST$FG$.  Cannot stop looking in the mirror.
+$ID,-2$
+$FG,5$$TX+CX,"Backmasked Keywords"$$FG$
+
+Every keyword below can be spelled backwards.  Play the source in reverse and it says something perfectly ordinary.  Each one is just a line in $LK,"::/Compiler/OpCodes.DD"$ mapping the reversed word onto the original keyword number, so they work with the stock compiler, cost nothing at compile time, and live in the same hash table as their righteous twins.
+
+$WW,0$$FG,2$  Unholy     HolyC        Unholy     HolyC        Unholy     HolyC$FG$
+  edulcni    include      enifed     define       noinu      union
+  hctac      catch        ssalc      class        yrt        try
+  fi         if           esle       else         rof        for
+  elihw      while        nretxe     extern       nruter     return
+  foezis     sizeof       od         do           msa        asm
+  otog       goto         kaerb      break        hctiws     switch
+  trats      start        dne        end          esac       case
+  tluafed    default      cilbup     public       tesffo     offset
+  tropmi     import       fedfi      ifdef        fednfi     ifndef
+  fidne      endif        tressa     assert       citats     static
+  kcol       lock         denifed    defined      ssalctsal  lastclass
+$WW,1$
+The preprocessor ones go after a $FG,2$#$FG$ as usual: $FG,2$#edulcni$FG$, $FG,2$#enifed$FG$, $FG,2$#fedfi$FG$...$FG,2$#fidne$FG$, $FG,2$#tressa$FG$.  $FG,2$exe$FG$ is a palindrome, so $FG,2$#exe{}$FG$ was always unholy and needed no alias.  The underscore keywords ($FG,2$_extern$FG$, $FG,2$_import$FG$, $FG,2$_intern$FG$) have no aliases; an underscore spelled backwards is still an underscore at the wrong end.  If an alias ever collides with an identifier in the tree it is left out; $LK,"OpCodes.DD",A="FI:::/Compiler/OpCodes.DD"$ has the final word.
+
+$ID,2$$FG,2$U0 Countdown()
+{
+  I64 i;
+  rof (i=6;i>0;i--) {
+    fi (i==3)
+      kaerb;
+    esle
+      "%d...",i;
+  }
+  "\nThe rest is silence.\n";
+}
+
+I64 Digits(I64 n=BEAST)
+{//Prints the digits of n last-to-first.
+  I64 cnt=0;
+  elihw (n) {
+    "%d",n%10;
+    n/=10;
+    cnt++;
+  }
+  '\n';
+  nruter cnt;
+}$FG$
+$ID,-2$
+$FG,2$Digits;$FG$ prints $FG,2$666$FG$ either way you play it.  That is rather the point.
+
+$FG,5$$TX+CX,"Heavy-Metal Keywords"$$FG$
+
+For when spelling it backwards is not loud enough.  These are also $LK,"OpCodes.DD",A="FI:::/Compiler/OpCodes.DD"$ aliases and work with the stock compiler.
+
+$WW,0$$FG,2$  Metal      HolyC        Metal      HolyC        Metal      HolyC$FG$
+  summon     include      curse      define       forsake    break
+  sacrifice  return       descend    goto         otherwise  else
+  tempt      try          repent     catch        legion     switch
+$WW,1$
+$ID,2$$FG,2$#curse	CIRCLES	9
+
+U8 *Sentence(I64 sin)
+{
+  legion (sin) {
+    case 0:  sacrifice "Limbo";
+    case 1:  sacrifice "Lust";
+    case 2:  sacrifice "Gluttony";
+    case 3...7: forsake;
+  }
+  sacrifice "Treachery";
+}
+
+U0 Bargain(I64 offer)
+{
+  tempt {
+    fi (offer!=BEAST)
+      throw('LowBall');
+    "Deal.\n";
+  } repent {
+    "The Adversary does not haggle.\n";
+    Fs->catch_except=TRUE;
+  }
+}
+
+U0 Abyss()
+{
+  I64 depth=0;
+deeper:
+  fi (++depth<CIRCLES)
+    descend deeper;
+  otherwise
+    "You have reached the bottom: circle %d.\n",depth;
+}$FG$
+$ID,-2$
+$FG,2$#summon "File"$FG$ is $FG,2$#include "File"$FG$.  $FG,2$#curse BEAST 666$FG$ would be $FG,2$#define BEAST 666$FG$, except $FG,2$BEAST$FG$ is already cursed for you in $LK,"::/Adam/UnholyC.HC"$.
+
+$FG,5$$TX+CX,"New Keywords"$$FG$
+
+These four are real new keywords, compiled by the rebuilt $FG,2$Compiler.BIN$FG$.  The parser does not insert a $FG,2$!$FG$; it flips the sense of the branch it would have emitted anyway, so an $FG,2$unless$FG$ costs exactly what an $FG,2$if$FG$ costs.
+
+$TR-C,"unless"$
+$ID,2$$FG,2$unless (cond) stmt [else stmt]$FG$ is $FG,2$if (!(cond)) stmt [else stmt]$FG$.
+
+$ID,2$$FG,2$unless (soul)
+  "Nothing to collect.\n";
+else
+  "Thy soul is forfeit.\n";$FG$
+$ID,-2$$ID,-2$$TR-C,"until"$
+$ID,2$$FG,2$until (cond) stmt$FG$ is $FG,2$while (!(cond)) stmt$FG$.
+
+$ID,2$$FG,2$I64 circle=1;
+until (circle>9) {
+  "Circle %d\n",circle;
+  circle++;
+}$FG$
+$ID,-2$$ID,-2$$TR-C,"do ... until"$
+$ID,2$$FG,2$do stmt until (cond);$FG$ is the inverse do-while: the body runs at least once and repeats until $FG,2$cond$FG$ comes true.  $FG,2$do stmt while (cond);$FG$ still works.
+
+$ID,2$$FG,2$I64 i=0;
+do "6";
+until (++i==3);
+'\n';$FG$
+$ID,-2$$ID,-2$$TR-C,"backwards"$
+$ID,2$$FG,2$backwards "text"$FG$ is a string constant with its bytes reversed, after escapes are processed, so $FG,2$"\n"$FG$ stays one byte and lands at the other end.  It works anywhere an expression does, and on its own it is a print statement, just like a bare string.
+
+$ID,2$$FG,2$backwards "\n!dlroW ,olleH";		//Prints Hello, World!
+Print(backwards "\nd% si rebmun ehT",BEAST);	//The number is 666
+U8 *st=backwards "evil";			//"live"$FG$
+$ID,-2$
+Mind the format codes: $FG,2$"%d"$FG$ has to be written $FG,2$"d%"$FG$, because it gets reversed too.
+$ID,-2$
+Do not use $FG,2$unless$FG$, $FG,2$until$FG$ or $FG,2$backwards$FG$ in code compiled during boot ($FG,2$/Kernel$FG$, $FG,2$/Compiler$FG$, $FG,2$/Adam$FG$, $FG,2$StartOS.HC$FG$, $FG,2$/Home$FG$ start-up files): if an older $FG,2$Compiler.BIN$FG$ ever compiles them, the boot stops right there.  Demos, apps and anything you $FG,2$#include$FG$ by hand are fair game.  The aliases are safe anywhere, but boot code keeps the standard spellings so mortals can read it.
+
+$FG,5$$TX+CX,"The Library of the Damned"$$FG$
+
+$LK,"::/Adam/UnholyC.HC"$ is compiled into $FG,2$Adam$FG$ at boot, so these are available everywhere:
+
+* $FG,2$#define BEAST 666$FG$.  See $LK,"Revelation,13:18",A="BF:Revelation,13:18"$.  ($FG,2$0x29A$FG$ is also $FG,2$BEAST$FG$, and so is $FG,2$6*6*6*3+6+6+6$FG$.  Do not build it with the power operator: $FG,2$`$FG$ always goes through the FPU, $FG,2$6`3+6`3+6`3+6+6+6$FG$ comes out $FG,2$665.99999999999872$FG$, the command line shows it as $FG,2$ansf=666.0000000$FG$ to spare your feelings, and an $FG,2$I64$FG$ truncates it to 665: the Neighbor of the Beast.)
+
+* $FG,2$U8 *$LK,"StrRev",A="MN:StrRev"$(U8 *src,CTask *mem_task=NULL)$FG$ returns a $LK,"MAlloc",A="MN:MAlloc"$()ed copy of $FG,2$src$FG$, reversed.  $FG,2$Free$FG$ it when you are done.
+
+$ID,2$$FG,2$U8 *st=StrRev("live");
+"%s\n",st;	//evil
+Free(st);$FG$
+$ID,-2$
+* $FG,2$U0 $LK,"Backmask",A="MN:Backmask"$(U8 *fmt,...)$FG$ is $LK,"Print",A="MN:Print"$() played backwards: it formats, then prints every line reversed.  Dollar signs are escaped first, so a backmasked $LK,"DolDoc",A="FI:::/Doc/DolDocOverview.DD"$ command cannot possess your terminal.
+
+$ID,2$$FG,2$Backmask("Paul is dead\n");			//daed si luaP
+Backmask("Number of the beast: %d\n",BEAST);	//666 :tsaeb eht fo rebmuN$FG$
+$ID,-2$
+$FG,5$$TX+CX,"Sins and Temptations"$$FG$
+
+The compiler no longer reports errors and warnings.  It reports $FG,4$BLASPHEMY:$FG$ and $FG,4$TEMPTATION:$FG$.  $LK,"Cmp",A="MN:Cmp"$() ends a project with a tally of $FG,2$Sins:%d Temptations:%d Code:%X Size:%X$FG$.  Writing a C-style prefix typecast earns a sermon: "Use AntichristOS postfix typecasting".  $LK,"Fix",A="MN:Fix"$() still takes you straight to your last sin.
+
+$FG,5$$TX+CX,"The Inherited Scripture"$$FG$
+
+Everything below is the HolyC reference that Unholy C inherited from TempleOS, with the furniture rearranged.  It is all still true.
+
+* See $LK,"::/Doc/CompilerOverview.DD"$.
+
+* See $LK,"Scoping and Linkage",A="FI:::/Doc/ScopingLinkage.DD"$ for details on $FG,2$extern$FG$, $FG,2$import$FG$, $FG,2$_extern$FG$, $FG,2$_import$FG$, etc.
+
+* Built-in types include $FG,2$I0,I8,I16,I32,I64$FG$ for signed 0-8 byte ints and $FG,2$U0,U8,U16,U32,U64$FG$ for unsigned 0-8 byte ints and $FG,2$F64$FG$ for 8 byte floats.
+
+$FG,2$	U0	void, but ZERO size!  The void stares back.
+	I8	char
+	U8	unsigned char
+	I16	short
+	U16	unsigned short
+	I32	int
+	U32	unsigned int
+	I64	long (64-bit)
+	U64	unsigned long (64-bit)
+	F64	double$FG$
+	$FG,4$no F32 float.$FG$
+
+* Function with no args, or just default args can be called without parentheses.
+
+  <$FG,2$Dir("*");$FG$
+  <$FG,2$Dir();$FG$
+  <$FG,2$Dir;$FG$
+
+* Default args don't have to be on the end.  This code is valid:
+$ID,2$$FG,2$U0 Test(I64 i=4,I64 j,I64 k=5)
+{
+  Print("%X %X %X\n",i,j,k);
+}
+
+Test(,3);$FG$
+$ID,-2$
+* A char const all alone is sent to $LK,"PutChars",A="MN:PutChars"$().  A string with or without args is sent to $LK,"Print",A="MN:Print"$().  An empty string literal signals a variable fmt_str follows -- the empty string summons a format.
+
+$ID,2$$FG,2$void DemoC(char drv,char *fmt,char *name,int age)
+{
+  printf("Hello World!\n");
+  printf("%s age %d\n",name,age);
+  printf(fmt,name,age);
+  putchar(drv);
+  putchar('*');
+}
+
+U0 DemoUnholyC(U8 drv,U8 *fmt,U8 *name,I64 age)
+{
+  "Hello World!\n";
+  "%s age %d\n",name,age;
+  "" fmt,name,age;
+  '' drv;
+  '*';
+  backwards "\n!llew sa ,dlroW olleH";
+}
+$FG$$ID,-2$
+* When dealing with function addresses such as for callbacks, precede the name with "$FG,2$&$FG$".
+
+* Type casting is postfix -- the cast comes after, like regret.  To typecast int or F64, use $LK,"ToI64",A="MN:ToI64"$(), $LK,"ToBool",A="MN:ToBool"$() or $LK,"ToF64",A="MN:ToF64"$(). (AntichristOS follows normal C float<-->int conversion, but sometimes you want to override.  These functions are better than multiplying by "1.0" to convert to float.)
+
+* There is no $FG,2$main()$FG$ function, and no salvation entry point.  Any code outside of functions gets executed upon start-up, in order.
+
+* There are no bit fields, but there are $LK,"bit access",A="HI:Bit"$ routines and you can access bytes or words within any int.  See $LK,"I64 declaration",A="MN:I64"$.  A class can be accessed as a whole are subints, if you put a type in front of the $FG,2$class$FG$ declaration.
+$ID,2$
+$FG,2$public I64i union I64		//"I64i" is intrinsic.  We are defining "I64".
+{
+  I8i i8[8];
+  U8i u8[8];
+  I16 i16[4];
+  U16 u16[4];
+  I32 i32[2];
+  U32 u32[2];
+};
+
+I64 i=0x123456780000DEF0;
+i.u16[1]=0x9ABC;
+$FG$$ID,-2$
+* Variable arg count functions ($FG,2$...$FG$) can access their args with built-in variables similar to '$FG,2$this$FG$' in C++.  They are '$FG,2$I64 argc$FG$' and '$FG,2$I64 argv[]$FG$'.
+$ID,2$$WW,0$
+$FG,2$I64 AddNums(...)
+{
+  I64 i,res=0;
+  for (i=0;i<argc;i++)
+    res+=argv[i];
+  return res;
+}
+
+$FG$<$FG,2$AddNums(600,60,6);$FG$
+ans=666
+$FG,2$
+
+public U0 GrPrint(CDC *dc,I64 x,I64 y,U8 *fmt,...)
+{
+  U8 *buf=$LK,"StrPrintJoin",A="MN:StrPrintJoin"$(NULL,fmt,argc,argv);//SPrintF() with $LK,"MAlloc",A="MN:MAlloc"$()ed string.
+  $LK,"GrPutS",A="MN:GrPutS"$(dc,x,y,buf); //Plot string at x,y pixels. GrPutS is not public.
+  Free(buf);
+}
+
+  ...
+
+  GrPrint(gr.dc,(GR_WIDTH-10*FONT_WIDTH)>>1,(GR_HEIGHT-FONT_HEIGHT)>>1,
+  	"Score:%4d",score);  //Print score in the center of the scrn.
+  ...
+
+$WW,1$$FG$$ID,-2$
+* Allows "$FG,2$5<i<j+1<20$FG$" instead of "$FG,2$5<i && i<j+1 && j+1<20$FG$".
+$ID,2$
+$FG,2$if (13<=age<20)
+  "Teen-ager";
+unless (0<=circle<=9)
+  "Off the map of Hell";
+$FG$$ID,-2$
+* if you know a switch stmt will not exceed the lowest or highest case values.  $FG,2$switch []$FG$ is a little faster because it doesn't check.  No bounds, no mercy.
+
+* $FG,2$switch$FG$ stmts always use a jump table.  Don't use them with cases with really big, sparse ranges.
+
+* Allows ranges like "$FG,2$case 4...7:$FG$" in $FG,2$switch$FG$ stmts.
+
+* A no case number causes next higher int case in $FG,2$switch$FG$ stmts.  See $LK,"::/Demo/NullCase.HC"$.
+
+$ID,2$$FG,2$I64 i;
+for (i=0;i<20;i++)
+  switch (i) {
+    case: "Zero\n";	break; //Starts at zero
+    case: "One\n";	break; //One plus prev case.
+    case: "Two\n";	break;
+    case: "Three\n";	break;
+    case 10: "Ten\n";	break;
+    case: "Eleven\n";	break; //One plus prev case.
+  }$FG$$ID,-2$
+
+* Switch statements can be nestled with a single switch expression -- circles within circles!  This is known as a "sub_switch" statement.  $FG,2$start$FG$/$FG,2$end$FG$ are used to group cases.  Don't goto out of, throw an exception out of, or return out of the $FG,2$start$FG$ front porch area.  See $LK,"::/Demo/SubSwitch.HC"$.
+
+$ID,2$$FG,2$I64 i;
+for (i=0;i<10;i++)
+  switch (i) {
+    case 0: "Zero ";	break;
+    case 2: "Two ";	break;
+    case 4: "Four ";	break;
+    start:
+      "[";
+      case 1: "One";	break;
+      case 3: "Three";break;
+      case 5: "Five";	break;
+    end:
+      "] ";
+      break;
+  }$FG$
+$BG$OutPut:
+<$FG,2$Zero [One] Two [Three] Four [Five]$FG$
+$ID,-2$
+* A $FG,2$no_warn$FG$ stmt will suppress an unused var warning.  It is an indulgence: it buys forgiveness for exactly one sin.
+
+* You can have multiple member vars of a class named "$FG,2$pad$FG$" or "$FG,2$reserved$FG$", and it won't issue warnings.
+
+* $FG,2$noreg$FG$ or $FG,2$reg$FG$ can be placed before a function local var name.  You can, optionally, specify a reg after the $FG,2$reg$FG$ keyword.
+
+$ID,2$$FG,2$U0 Main()
+{
+  //Only use $LK,"REGG_LOCAL_VARS",A="MN:REGG_LOCAL_VARS"$ or $LK,"REGG_LOCAL_NON_PTR_VARS",A="MN:REGG_LOCAL_NON_PTR_VARS"$ for reg vars or else clobbered.
+  I64 reg R15 i=5, noreg j=4;
+  no_warn i;
+  asm {
+	MOV	RAX,R15
+	CALL	&PUT_HEX_U64
+	MOV	RAX,'\n'
+	CALL	&PUT_CHARS
+	MOV	RAX,U64 &j[RBP]
+	CALL	&PUT_HEX_U64
+	MOV	RAX,'\n'
+	CALL	&PUT_CHARS
+  }
+}
+$FG$$ID,-2$
+* $FG,2$interrupt$FG$, $FG,2$haserrcode$FG$, $FG,2$public$FG$, $FG,2$argpop$FG$ or $FG,2$noargpop$FG$ are function flags. See $LK,"IRQKbd",A="MN:IRQKbd"$().
+
+* A single quote can encompass multiple characters.  $FG,2$'ABC'$FG$ is equ to $FG,2$0x434241$FG$.  $LK,"PutChars",A="MN:PutChars"$() takes multiple characters.
+
+$ID,2$$FG,2$asm {
+HELLO_WORLD::
+	PUSH	RBP
+	MOV	RBP,RSP
+	MOV	RAX,'Hello '
+	CALL	&PUT_CHARS
+	MOV	RAX,'World\n'
+	CALL	&PUT_CHARS
+	LEAVE
+	RET
+}
+Call(HELLO_WORLD);
+PutChars('Hello ');
+PutChars('World\n');
+$FG$$ID,-2$
+* The "$FG,2$`$FG$" operator raises a base to a power.  The result is always an $FG,2$F64$FG$, even for ints: $FG,2$6`3$FG$ is $FG,2$215.9999999999996$FG$, so a Beast built out of cubes falls one short.
+
+* There is no question-colon operator.  Questions are for the confessional.
+
+* AntichristOS $LK,"operator precedence",A="FF:::/Compiler/CInit.HC,cmp.binary_ops"$, highest first.  It is not C's, so parenthesize when in doubt:
+  $FG,2$`$FG$,$FG,2$>>$FG$,$FG,2$<<$FG$
+  $FG,2$*$FG$,$FG,2$/$FG$,$FG,2$%$FG$
+  $FG,2$&$FG$
+  $FG,2$^$FG$
+  $FG,2$|$FG$
+  $FG,2$+$FG$,$FG,2$-$FG$
+  $FG,2$<$FG$,$FG,2$>$FG$,$FG,2$<=$FG$,$FG,2$>=$FG$
+  $FG,2$==$FG$,$FG,2$!=$FG$
+  $FG,2$&&$FG$
+  $FG,2$^^$FG$
+  $FG,2$||$FG$
+  $FG,2$=$FG$,$FG,2$<<=$FG$,$FG,2$>>=$FG$,$FG,2$*=$FG$,$FG,2$/=$FG$,$FG,2$&=$FG$,$FG,2$|=$FG$,$FG,2$^=$FG$,$FG,2$+=$FG$,$FG,2$-=$FG$
+
+* You can use $LK,"Option",A="MN:Option"$($LK,"OPTf_WARN_PAREN",A="MN:OPTf_WARN_PAREN"$,ON) to find unnecessary parentheses in code.
+
+* You can use $LK,"Option",A="MN:Option"$($LK,"OPTf_WARN_DUP_TYPES",A="MN:OPTf_WARN_DUP_TYPES"$,ON) to find dup local var type stmts.
+
+* With the $FG,2$#exe{}$FG$ feature in your src code, you can place programs that insert text into the stream of code being compiled.  It is possession: code that writes code in the middle of a compile.  See $LK,"#exe {",A="FF:::/Kernel/KMain.HC,#exe {"$ for an example where the date/time and compile-time prompting for cfguration data is placed into a program.  $LK,"StreamPrint",A="MN:StreamPrint"$() places text into a src program stream following the conclusion of the $FG,2$#exe{}$FG$ blk.
+
+* No $FG,2$#define$FG$ functions exist.  (TempleOS was not a fan, and neither is the Adversary.)
+
+* No $FG,2$typedef$FG$, use $FG,2$class$FG$.
+
+* No type-checking.  Nothing here checks your papers.
+
+* Can't use $FG,2$<>$FG$ with $FG,2$#include$FG$, use $FG,2$""$FG$.
+
+* "$FG,2$$$$FG$" is an escape character.  Two dollar signs signify an ordinary $$.  See $LK,"DolDoc",A="FI:::/Doc/DolDocOverview.DD"$.  In $FG,2$asm$FG$ or Unholy C code, it also refers to the inst's address or the offset in a $FG,2$class$FG$ definition.
+
+* $FG,2$union$FG$ is more like a class, so you don't reference it with a $FG,2$union$FG$ label after you define it.  Some common unions are declared in $LK,"KernelA.HH",A="MN:U16"$ for 1,2,4 and 8 byte objects.  If you place a type in front of a union declaration, that is the type when used by itself.  See $LK,"::/Demo/SubIntAccess.HC"$.
+
+* $FG,2$class$FG$ member vars can have meta data. $FG,2$format$FG$ and $FG,2$data$FG$ are two meta data types now used.  All compiler structures are saved and you can access the compiler's info about classes and vars.  See $LK,"::/Demo/ClassMeta.HC"$ and  $LK,"DocForm",A="MN:DocForm"$().
+
+* There is a keyword $FG,2$lastclass$FG$ (backmasked: $FG,2$ssalctsal$FG$) you use as a dft arg.  It is set to the class name of the prev arg.  See $LK,"::/Demo/LastClass.HC"$, $LK,"ClassRep",A="MN:ClassRep"$(), $LK,"DocForm",A="MN:DocForm"$()  and $LK,"::/Demo/Dsk/BlkDevRep.HC"$.
+
+* See $LK,"::/Demo/Exceptions.HC"$.  $FG,2$try{} catch{}$FG$ (or $FG,2$tempt{} repent{}$FG$) and $FG,2$throw$FG$ are different from C++. $FG,2$throw$FG$ is a function with an 8-byte or less char arg.  The char string passed in $FG,2$throw()$FG$ can be accessed from within a $FG,2$catch{}$FG$ using the $FG,2$Fs->except_ch$FG$.  Within a $FG,2$catch {}$FG$ blk, set the var $FG,2$Fs->catch_except$FG$ to $FG,2$TRUE$FG$ if you want to terminate the search for a hndlr -- that is the exorcism.  Use $LK,"PutExcept",A="MN:PutExcept"$() as a hndlr, if you like.
+
+* A function is available similar to $FG,2$sizeof$FG$ which provides the offset of a member of a class.  It's called $FG,2$offset$FG$.  You place the class name and member inside as in $FG,2$offset(classname.membername)$FG$.  It has nothing to do with 16-bit code.  Both $FG,2$sizeof$FG$ and $FG,2$offset$FG$ only accept one level of member vars.  That is, you can't do $FG,2$sizeof(classname.membername.submembername)$FG$.$FG$
+
+* There is no $FG,2$continue$FG$ stmt.  Use $FG,2$goto$FG$, or $FG,2$descend$FG$ if you prefer.  There is no way but down.
+
+* $FG,2$lock{}$FG$ can be used to apply asm $FG,2$LOCK$FG$ prefixes to code for safe multicore read-modify-write accesses.  The code bracked with have $FG,2$LOCK$FG$ asm prefix's applied to relevant insts within.  It's a little shoddy.  See $LK,"::/Demo/MultiCore/Lock.HC"$.
+
+* There is a function called $LK,"MSize",A="MN:MSize"$() which gives the size of an object alloced off the heap.  For larger size allocations, the system rounds-up to a power of two, so $FG,2$MSize()$FG$ lets you know the real size and you can take full advantage of it.
+
+* You CAN $LK,"Free",A="MN:Free"$() a $FG,2$NULL$FG$ ptr.  Useful variants of $LK,"MAlloc",A="MN:MAlloc"$() can be found $LK,"Here",A="MN:CAlloc"$.  Each task has a heap and you can $FG,2$MAlloc$FG$ and $FG,2$Free$FG$ off-of other task's heaps, or make an independent heap with $LK,"HeapCtrlInit",A="MN:HeapCtrlInit"$().  See $LK,"HeapLog",A="MN:HeapLog"$() for an example.
+
+* The stk does not grow because virtual mem is not used.  Allocate large local vars from the heap.  You can change $LK,"MEM_DFT_STK",A="MN:MEM_DFT_STK"$ and recompile $FG,2$Kernel$FG$ or request more when doing a $LK,"Spawn",A="MN:Spawn"$().  You can use $LK,"CallStkGrow",A="MN:CallStkGrow"$(), but it's odd.  See $LK,"::/Demo/StkGrow.HC"$.
+
+* Only one base class is allowed.  Every class has exactly one father, like every task.
+
+* $FG,2$printf()$FG$ has new codes.  See $LK,"Print(\"\") Fmt Strings",A="FI:::/Doc/Print.DD"$.
+
+* All values are extended to 64-bit when accessed.  Intermediate calculations are done with 64-bit values.
+
+$ID,2$$FG,2$U0 Main()
+{
+  I16 i1;
+  I32 j1;
+  j1=i1=0x12345678;		//Resulting i1 is 0x5678 but j1 is 0x12345678
+
+  I64 i2=0x8000000000000000;
+  Print("%X\n",i2>>1);	//Res is 0xC000000000000000 as expected
+
+  U64 u3=0x8000000000000000;
+  Print("%X\n",u3>>1);	//Res is 0x4000000000000000 as expected
+
+  I32 i4=0x80000000;		//const is loaded into a 64-bit reg var.
+  Print("%X\n",i4>>1);	//Res is 0x40000000
+
+  I32 i5=-0x80000000;
+  Print("%X\n",i5>>1);	//Res is 0xFFFFFFFFC0000000
+}
+$ID,-2$$FG$

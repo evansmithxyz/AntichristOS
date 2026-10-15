@@ -1273,7 +1273,7 @@ U0 DoPhoneNumWords()
 {
   CTask *task=User;
   XTalkWait(task,"#include \"::/Demo/PhoneNumWords\";\n");
-  XTalkWait(task,"702-254-4223\n\n");
+  XTalkWait(task,"666-666-6666\n\n");
   Sleep(750);
   DeathWait(&task,TRUE);
 }
@@ -1718,6 +1718,7 @@ U0 OSTestSuite()
 
   ProgressBarsRst("TempleOS/OSTestSuite");
   "Elapsed Time:%5.3f\n",tS-ts_t0;
+  "The damned demos ran themselves.\n";
 }
 
 OSTestSuite;

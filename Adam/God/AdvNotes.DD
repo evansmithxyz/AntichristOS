@@ -1,0 +1,72 @@
+$WW,1$$FG,4$$TX+CX,"The Adversary's Notes"$$FG$
+$TX+CX,"(liner notes, side B, track 666)"$
+
+$FG,4$Recorded live in the Ninth Circle.  Play loud.  Play backwards.$FG$
+
+$FG,5$WHAT IS THIS$FG$
+
+TempleOS has an oracle: press a key, and the timing of your keypress picks a word, a Bible passage, a song or a doodle.  AntichristOS keeps that oracle, every bit of it, and adds its evil twin, $FG,4$The Adversary$FG$.  The Adversary uses the very same bits from the very same timer.  It just reads the answer in a mirror.
+
+In the 1980s, a lot of grown adults were very worried that heavy metal records hid secret messages you could only hear if you spun the vinyl backwards.  This was called $FG,4$backmasking$FG$.  Congressional hearings were held.  Stickers were printed.  Turntables were ruined.  AntichristOS spares your turntable and does the backmasking for you, in software, at 640x480.
+
+$FG,5$THE KEYS OF THE KINGDOM (BELOW)$FG$
+
+$ID,2$$FG,4$<F7>$FG$		$LK,"AdversaryWord",A="MN:AdversaryWord"$(): a word, backmasked.
+$FG,4$<SHIFT-F7>$FG$	$LK,"AdversaryPassage",A="MN:AdversaryPassage"$(): a Bible passage, last line first, every line backwards.  Hold it to a mirror.
+$FG,4$<F6>$FG$		$LK,"DiabolusSong",A="MN:DiabolusSong"$(): the Adversary composes.  Pick Holy, Unholy or Diabolus, and tick $FG,2$Backmask$FG$ if you dare.
+$FG,4$<SHIFT-F6>$FG$	$LK,"AdversaryDoodle",A="MN:AdversaryDoodle"$(): a doodle in hellfire.  Keep pressing $FG,2$<SPACE>$FG$ until the flames die down.
+$FG,2$<F8>$FG$		$LK,"GodWord",A="MN:GodWord"$(), the original, played forwards.
+$FG,2$<SHIFT-F8>$FG$	$LK,"GodBiblePassage",A="MN:GodBiblePassage"$(), the original.
+$FG,2$<F9>$FG$		$LK,"GodSong",A="MN:GodSong"$(), the original.
+$FG,2$<SHIFT-F9>$FG$	$LK,"GodDoodle",A="MN:GodDoodle"$(), the original.
+$FG,4$<CTRL-ALT-r>$FG$	Backmask ALL music.  Every hymn, every game, every $FG,2$$$SO$$$FG$ song in every document.
+$FG,4$<CTRL-ALT-SHIFT-r>$FG$ Unholy mode: every $LK,"Play",A="MN:Play"$() note goes through the Locrian mode.
+$FG,4$<CTRL-ALT-b>$FG$	The Bible, opened at the end.  Revelation first.  Spoilers.
+$ID,-2$
+$FG,5$TRUE BACKMASKS$FG$
+
+Most words, played backwards, are gibberish: $FG,2$noitavlas$FG$, $FG,2$nehctik$FG$.  But a few are words in both directions.  These are called $FG,2$semordnilaps$FG$, which is "palindromes" backwards, which is exactly the kind of joke a dictionary makes when nobody is watching.
+
+When the Adversary picks one, it comes out $FG,4$red$FG$, a $FG,4$TRUE BACKMASK$FG$, and you hear a tritone.  The vocabulary has these, among others:
+
+$ID,2$$FG,4$god$FG$ / dog	$FG,4$evil$FG$ / live	$FG,4$devil$FG$ / lived
+$FG,4$deliver$FG$ / reviled	$FG,4$door$FG$ / rood	$FG,4$now$FG$ / won
+$FG,4$saw$FG$ / was	$FG,4$pit$FG$ / tip	$FG,4$edit$FG$ / tide
+$FG,4$deeps$FG$ / speed	$FG,4$net$FG$ / ten	$FG,4$no$FG$ / on
+$ID,-2$
+Words that come out $FG,5$purple$FG$ are palindromes: the same both ways.  The Adversary looks into the mirror and sees nobody new.
+
+The multicore demo $LK,"::/Demo/MultiCore/Semordnilap.HC"$ hunts for every true backmask in the whole Bible, one slice per core.  $MA-X+PU,"Run it",LM="#include \"::/Demo/MultiCore/Semordnilap\";\n"$.
+
+$FG,5$DIABOLUS IN MUSICA$FG$
+
+The tritone is the interval of three whole steps, half an octave: B to F, or C to F#.  According to every heavy metal documentary ever made, medieval monks banned it and called it "the devil in music."  Historians mostly say the ban is a legend.  Heavy metal mostly says it does not care.  The Adversary plays one whenever it finds a true backmask, and when you toggle $FG,4$<CTRL-ALT-r>$FG$.
+
+$LK,"DiabolusSong",A="MN:DiabolusSong"$() has three modes:
+
+$ID,2$$FG,2$Holy (Ionian)$FG$: the original $LK,"GodSong",A="MN:GodSong"$() recipe.
+$FG,4$Unholy (Locrian)$FG$: B C D E F G A B.  All white keys, and yet the root and its fifth are a tritone apart, so the whole mode never feels like it is home.  It is the mode that sits alone at lunch.
+$FG,4$Diabolus (Tritone)$FG$: E F Bb B D E F Bb.  Every sixteenth-note run is a note and its tritone, twice: a riff.
+$ID,-2$
+Tick $FG,2$Backmask$FG$ and the song comes out with its notes in reverse order, by $LK,"PlayStrRev",A="MN:PlayStrRev"$().  Ties still tie the same two notes.
+
+$FG,5$THE DOOMBOX$FG$
+
+$MA-X+PU,"DoomBox",LM="#include \"::/Apps/Psalmody/Load\";DoomBox(\"::/Apps/Psalmody/Examples\");\n"$ is the $LK,"JukeBox",A="MN:JukeBox"$ with the volume knob on eleven.  Put the cursor on a hymn and press $FG,2$b$FG$ to hear it backmasked, words and all.  Press $FG,2$r$FG$ and the Adversary writes a curse into the song file.  In $MA-X+PU,"Psalmody",LM="#include \"::/Apps/Psalmody/Run\"\n"$, the $FG,2$Song$FG$ menu can $FG,2$Backmask$FG$, $FG,2$Invert$FG$ and $FG,2$PlayBackwards$FG$.  Backmask plus Invert is a retrograde inversion, which J. S. Bach was doing three hundred years before anyone owned a pentagram t-shirt.
+
+$FG,5$HOW THE ORACLE PICKS$FG$
+
+$ID,2$1) When you press $FG,4$<F7>$FG$, the time of that keypress ($LK,"KbdMsEvtTime",A="MN:KbdMsEvtTime"$) goes into the bit fifo with $LK,"GodBitsIns",A="MN:GodBitsIns"$().
+2) $LK,"GodBits",A="MN:GodBits"$() pulls out 17 bits and picks one of the words in $LK,"::/Adam/God/Vocab.DD"$.
+3) $LK,"GodInit",A="MN:GodInit"$() wrote every word backwards at boot, and checked which reversed words are words too.  That is how the Adversary knows a true backmask when it sees one.
+4) If the fifo runs dry, a pop-up asks you to press $FG,4$SUMMON$FG$, and the timer does the rest.
+$ID,-2$
+You are not being puppeted by anything except a timer chip.  The timer chip would like you to know it is flattered.
+
+$FG,5$FROM THE SHELL$FG$
+
+$FG,2$Linux/AdversaryWords$FG$ and $FG,2$Linux/AdversaryPassage$FG$ do the same from a Linux shell, with $FG,2$rev$FG$ and $FG,2$tac$FG$.  ($FG,2$tac$FG$ is $FG,2$cat$FG$ backmasked.  The Unix people got there first.)
+
+$FG,5$LEGAL NOTICE, READ FORWARDS$FG$
+
+This is a parody of 1980s heavy metal and the backmasking scare.  No records, souls or turntables were harmed.  The Bible text is the same one TempleOS ships, read from the other end.  TempleOS, its oracle and its hymns are the work of Terry A. Davis, and AntichristOS exists because his operating system is so complete and so strange that you can turn every part of it inside out and it still boots.

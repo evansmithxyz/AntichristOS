@@ -2,8 +2,8 @@ CTask *JukeReward(U8 *msg)
 {
   U8 *buf;
   CDoc *doc;
-  CTask *res=Spawn(&SrvCmdLine,NULL,"Reward",,Fs);
-  StrCpy(res->task_title,"Reward");
+  CTask *res=Spawn(&SrvCmdLine,NULL,"Curse",,Fs);
+  StrCpy(res->task_title,"Curse");
   res->title_src=TTS_LOCKED_CONST;
 
   doc=DocNew(,res);
@@ -43,12 +43,127 @@ CTask *SingleSong(U8 *msg,U8 *name)
 #define JB_RUN_LEVEL_ONE	1
 #define JB_RUN_LEVEL_TWO	2
 
+//AntichristOS DoomBox: <b> plays a hymn backmasked.
+CTask *jb_backmask_task=NULL;
+I64 jb_backmask_notes=0,jb_backmask_loops=0;
+
+U8 *JBWordsCat(U8 *words,I64 *_len,U8 *word)
+{//Append one entry to a \0-separated lst with an explicit length.
+  I64 l=StrLen(word)+1;
+  U8 *res=MAlloc(*_len+l+1);
+  if (words)
+    MemCpy(res,words,*_len);
+  StrCpy(res+*_len,word);
+  *_len+=l;
+  res[*_len]=0;
+  Free(words);
+  return res;
+}
+
+U0 JBLexNum(CCmpCtrl *cc,F64 *_num)
+{//music.tempo=2.5; or music.tempo=3;
+  switch (Lex(cc)) {
+    case TK_F64: *_num=cc->cur_f64; break;
+    case TK_I64: *_num=cc->cur_i64; break;
+  }
+}
+
+public U8 *JukeSongStr(U8 *filename,U8 **_words=NULL,
+	F64 *_tempo=NULL,F64 *_stacatto=NULL,I64 *_notes=NULL)
+{//All $LK,"Play",A="MN:Play"$() strs of a song file joined, without running it.
+//Words come back aligned one per note.  Free() the results.
+  CCmpCtrl *cc=CmpCtrlNew(MStrPrint("#include \"%s\"",filename));
+  U8 *song=StrNew(""),*st,*st2,*w,*words=NULL,*word;
+  I64 i,n,total=0,words_len=0,octave,top,bottom;
+  F64 note_len;
+  CPlayNote *notes;
+  while (Lex(cc)) {
+    if (cc->token==TK_IDENT) {
+      if (!StrCmp(cc->cur_str,"Play")) {
+	if (Lex(cc)=='(' && Lex(cc)==TK_STR) {
+	  st=LexExtStr(cc);
+	  octave=4; note_len=1.0; top=4; bottom=4;
+	  n=PlayNotesNew(st,&notes,music.note_map,&octave,&note_len,
+		&top,&bottom);
+	  Free(notes);
+	  st2=MStrPrint("%s%s",song,st);
+	  Free(song);
+	  song=st2;
+	  w=NULL;
+	  if (cc->token==',' && Lex(cc)==TK_STR)
+	    w=LexExtStr(cc);
+	  for (i=0;i<n;i++) {
+	    if (!w || !(word=LstSub(i,w)))
+	      word=" ";
+	    words=JBWordsCat(words,&words_len,word);
+	  }
+	  total+=n;
+	  Free(w);
+	  Free(st);
+	}
+      } else if (!StrCmp(cc->cur_str,"music") &&
+	    Lex(cc)=='.' && Lex(cc)==TK_IDENT) {
+	if (!StrCmp(cc->cur_str,"tempo")) {
+	  if (Lex(cc)=='=' && _tempo)
+	    JBLexNum(cc,_tempo);
+	} else if (!StrCmp(cc->cur_str,"stacatto_factor")) {
+	  if (Lex(cc)=='=' && _stacatto)
+	    JBLexNum(cc,_stacatto);
+	}
+      }
+    }
+  }
+  CmpCtrlDel(cc);
+  if (_words)
+    *_words=words;
+  else
+    Free(words);
+  if (_notes)
+    *_notes=total;
+  return song;
+}
+
+public U0 JukeBackmask(U8 *filename)
+{//Play a whole hymn backwards, words and all.  Graphics are lost.
+  U8 *song=NULL,*words=NULL,*rev_name;
+  F64 tempo=2.5,stacatto=0.9;
+  Fs->task_end_cb=&SndTaskEndCB;
+  MusicSettingsRst;
+  try {
+    song=JukeSongStr(filename,&words,&tempo,&stacatto,&jb_backmask_notes);
+    jb_backmask_loops=0;
+    music.tempo=tempo;
+    music.stacatto_factor=stacatto;
+    rev_name=StrMirror(filename);
+    "$$WW,1$$$$RED$$%s$$FG$$\n%d notes, backmasked.\n\n",
+	  rev_name,jb_backmask_notes;
+    Free(rev_name);
+    while (jb_backmask_notes && !ScanKey) {
+      music.octave=4;
+      music.note_len=1.0;
+      PlayRev(song,words);
+      jb_backmask_loops++;
+    }
+  } catch
+    PutExcept;
+  Free(song);
+  Free(words);
+  Snd;
+}
+
+U0 JukeBackmaskStop()
+{
+  if (jb_backmask_task && TaskValidate(jb_backmask_task))
+    Kill(jb_backmask_task);
+  jb_backmask_task=NULL;
+}
+
 Bool JBPutKey(CDoc *doc,U8 *,I64 ch,I64 sc)
 {//ch=ASCII; sc=scan_code
   CDocEntry *doc_ce=doc->cur_entry,*doc_e;
   CDirEntry *tmpde;
   I64 i;
-  U8 *st;
+  U8 *st,*st2;
   CDoc *doc2;
   if (!(sc&(SCF_ALT|SCF_CTRL|SCF_SHIFT))
 	&& doc_ce->type_u8==DOCT_MENU_VAL && doc_ce->left_exp>=0) {
@@ -87,14 +202,26 @@ Bool JBPutKey(CDoc *doc,U8 *,I64 ch,I64 sc)
       }
       if (DocTreeFFind(tmpde->full_name,"Reward1/Reward2")) {
 	for (i=0;i<5;i++) {
-	  st=MStrPrint("%s %s %s %s ",
-		GodWordStr,GodWordStr,GodWordStr,GodWordStr);
+	  st=MStrPrint("%s %s %s %s ",AdversaryWordStr,
+		AdversaryWordStr,AdversaryWordStr,AdversaryWordStr);
 	  DocTreeFAppend(tmpde->full_name,"Reward1/Reward2",
 		"\"%s\"\n",st);
 	  Free(st);
 	}
 	In(" ");
       }
+      return TRUE;
+    } else if (ch=='b') {
+      JukeBackmaskStop;
+      st=StrNew(tmpde->name);
+      FileExtRem(st);
+      st2=StrMirror(st);
+      Free(st);
+      st=MStrPrint("JukeBackmask(\"%Q\");",tmpde->full_name);
+      MusicSettingsRst;
+      jb_backmask_task=SingleSong(st,st2);
+      Free(st);
+      Free(st2);
       return TRUE;
     } else if (ch==CH_SPACE||ch==CH_ESC)
       tmpde->user_data++; //JB_RUN_LEVEL++
@@ -118,17 +245,21 @@ public U0 JukeBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
   AutoComplete;
   try {
     dirname=StrNew(dirname);
-    st=MStrPrint("%s/*.HC.Z",dirname);
+    st=MStrPrint("%s/*.HC*",dirname);
     tmpde=tmpde1=FilesFind(st);
     Free(st);
     Free(dirname);
     doc->user_put_key=&JBPutKey;
     DocPrint(doc,
+	  "$$RED$$DoomBox$$FG$$: every hymn hides a message.  "
+	  "Play it backwards.\n\n"
 	  "Key: $$GREEN$$Graphics $$BLUE$$Words $$RED$$No Nothing "
 	  "$$BLACK$$Incomplete $$CYAN$$Special$$FG$$\n\n"
 	  "$$GREEN$$<DEL>$$FG$$\tto delete a song.\n"
 	  "'$$GREEN$$0$$FG$$'-'$$GREEN$$9$$FG$$'\tto rate a song.\n"
-	  "'$$GREEN$$r$$FG$$'\tto get your reward from God.\n");
+	  "'$$GREEN$$r$$FG$$'\tto get your curse from the Adversary.\n"
+	  "'$$GREEN$$b$$FG$$'\tto play a song backmasked "
+	  "(words, no graphics).\n");
     while (tmpde) {
       if (!(i++%5))
 	DocPrint(doc,"\n");
@@ -177,6 +308,7 @@ public U0 JukeBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
 	tmpde=PopUpMenu(doc);
       if (task)
 	Kill(task);
+      JukeBackmaskStop;
       if (tmpde<=0) break;
       st2=StrNew(tmpde->name);
       if (_filename) {
@@ -196,5 +328,11 @@ public U0 JukeBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
     DirTreeDel(tmpde1);
   } catch
     PutExcept;
+  JukeBackmaskStop;
   SettingsPop;
+}
+
+public U0 DoomBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
+{//$LK,"JukeBox",A="MN:JukeBox"$() by its AntichristOS name.  <b> backmasks.
+  JukeBox(dirname,_filename);
 }

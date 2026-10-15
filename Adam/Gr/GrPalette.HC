@@ -91,3 +91,89 @@ public U0 PaletteSetStd()
 {//Activate std palette.
   GrPaletteSet(gr_palette_std);
 }
+
+#help_index "Graphics/Color;Graphics/Unholy"
+//AntichristOS: the 16 slots keep their names (BLACK..WHITE) so
+//every binary and doc keeps working, but the RGB is damned.
+//Slot c and slot 15-c stay a contrasting pair, so XOR cursors,
+//selections and the mouse pointer still show.
+#define UNHOLY_PAL_HELLFIRE	0
+#define UNHOLY_PAL_NEGATIVE	1
+#define UNHOLY_PAL_HOLY		2
+#define UNHOLY_PAL_NUM		3
+
+DefineLstLoad("ST_UNHOLY_PALETTES","Hellfire\0Negative\0Holy\0");
+DefineLstLoad("ST_UNHOLY_COLORS",
+  "BONE\0HELLFIRE\0INFERNAL\0EMBER\0SOULFIRE\0BRIMSTONE\0WITCHLIGHT\0ASH\0"
+  "SMOKE\0RUST\0BRUISE\0CRIMSON\0SULFUR\0POISON\0BLOOD\0ABYSS\0");
+
+public CBGR48 gr_palette_hellfire[COLORS_NUM]={
+//BONE		HELLFIRE	INFERNAL	EMBER
+0xF3CEE38DCB2B,0xFFFFAAAA2081,0xFFFF6185D34C,0xFFFF59654103,
+//SOULFIRE	BRIMSTONE	WITCHLIGHT	ASH
+0x6185F3CED34C,0xAAAAF3CE4103,0x71C64103E38D,0x69A659655965,
+//SMOKE		RUST		BRUISE		CRIMSON
+0xBAEAAAAAA289,0xCB2B59651040,0xB2CA20819248,0xE38D20812081,
+//SULFUR	POISON		BLOOD		ABYSS
+0x00009A698A28,0x30C2AAAA30C2,0xA28900000000,0x104000000000};
+
+public CBGR48 gr_palette_negative[COLORS_NUM]={//Exact RGB complement.
+0xFFFFFFFFFFFF,0xFFFFFFFF5555,0xFFFF5555FFFF,0xFFFF55555555,
+0x5555FFFFFFFF,0x5555FFFF5555,0x55555555FFFF,0x555555555555,
+0xAAAAAAAAAAAA,0xAAAA55550000,0xAAAA0000AAAA,0xAAAA00000000,
+0x0000AAAAAAAA,0x0000AAAA0000,0x00000000AAAA,0x000000000000};
+
+public CBGR48 gr_palette_holy[COLORS_NUM]={//The old CGA ways.
+0x000000000000,0x00000000AAAA,0x0000AAAA0000,0x0000AAAAAAAA,
+0xAAAA00000000,0xAAAA0000AAAA,0xAAAA55550000,0xAAAAAAAAAAAA,
+0x555555555555,0x55555555FFFF,0x5555FFFF5555,0x5555FFFFFFFF,
+0xFFFF55555555,0xFFFF5555FFFF,0xFFFFFFFF5555,0xFFFFFFFFFFFF};
+
+public I64 unholy_palette=UNHOLY_PAL_HOLY;
+public Bool unholy_breathing=FALSE;
+
+public U0 PaletteUnholySet(I64 mode=UNHOLY_PAL_HELLFIRE)
+{//Damn (or redeem) the std palette. Survives task deaths.
+  CBGR48 *src;
+  if (!(0<=mode<UNHOLY_PAL_NUM))
+    mode=UNHOLY_PAL_HELLFIRE;
+  if (mode==UNHOLY_PAL_NEGATIVE)
+    src=gr_palette_negative;
+  else if (mode==UNHOLY_PAL_HOLY)
+    src=gr_palette_holy;
+  else
+    src=gr_palette_hellfire;
+  MemCpy(gr_palette_std,src,COLORS_NUM*sizeof(CBGR48));
+  unholy_palette=mode;
+  PaletteSetStd;
+}
+
+CBGR48 unholy_breath[COLORS_NUM]; //What the bellows last wrote to the DAC.
+
+public U0 PaletteUnholyBreathe()
+{//Hellfire breathes. Called every frame; touches only the DAC.
+//If an app has programmed the slot itself, its palette wins.
+  CBGR48 c;
+  F64 f;
+  I64 i;
+  if (!unholy_breathing) return;
+  f=0.78+0.22*Sin(tS*2.2);
+  for (i=1;i<4;i+=2) {//Slots 1 and 3
+    c=GrPaletteColorGet(i);
+    if (c==unholy_breath[i] || c==gr_palette_std[i]) {
+      c=gr_palette_std[i];
+      c.r=ToI64(c.r*f);
+      c.g=ToI64(c.g*f*f);
+      c.b=ToI64(c.b*f*f);
+      GrPaletteColorSet(i,c);
+      unholy_breath[i]=GrPaletteColorGet(i);
+    }
+  }
+}
+
+public U0 PaletteUnholyBreathingSet(Bool val)
+{
+  unholy_breathing=val;
+  if (!val)
+    PaletteSetStd;
+}

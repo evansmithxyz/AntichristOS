@@ -1,0 +1,5 @@
+#!/bin/bash
+
+#The Adversary's words: ten random words, backmasked.
+
+echo "$(shuf -n 10 /usr/share/dict/words --random-source=/dev/urandom | rev | tr '\n' ' ')"

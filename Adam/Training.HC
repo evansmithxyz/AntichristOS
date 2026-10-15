@@ -160,9 +160,21 @@ public U0 KeyMap(CTask *task=NULL)
 #help_index "Help System/Training"
 public U0 TipOfDay(U8 *tip_file="::/Doc/Tips.DD")
 {//Print random tip-of-day from ::/Doc/Tips.DD.
-  I64 i=RandU16;
+  I64 i=RandU16,cnt=0;
   CDoc *doc=DocRead(tip_file),*doc2=DocNew;
   CDocEntry *doc_e=doc->head.next;
+  while (doc_e!=doc) {//With no '*' tips, the loop below would never end.
+    if (doc_e->type_u8==DOCT_TEXT && *doc_e->tag=='*')
+      cnt++;
+    doc_e=doc_e->next;
+  }
+  if (!cnt) {
+    DocDel(doc2);
+    DocDel(doc);
+    return;
+  }
+  i%=cnt;
+  doc_e=doc->head.next;
   "$$WW,1$$\n";
   while (TRUE) {
     if (doc_e->type_u8==DOCT_TEXT && *doc_e->tag=='*')
@@ -181,4 +193,12 @@ public U0 TipOfDay(U8 *tip_file="::/Doc/Tips.DD")
   DocInsDoc(DocPut,doc2);
   DocDel(doc2);
   DocDel(doc);
+}
+
+public U0 TemptationOfDay()
+{//Print random temptation from ::/Doc/Temptations.DD.
+  if (FileFind("::/Doc/Temptations.DD",,FUF_Z_OR_NOT_Z))
+    TipOfDay("::/Doc/Temptations.DD");
+  else
+    TipOfDay;
 }

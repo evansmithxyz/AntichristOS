@@ -2297,9 +2297,9 @@ public class CATARep
 #define ATAR1_CTRL	2
 
 #help_index "File/FileNames"
-#define FILEMASK_JIT	"*.HC*;*.HH*"
-#define FILEMASK_AOT	"*.HC*;*.HH*;*.PRJ*"
-#define FILEMASK_SRC	"*.HC*;*.HH*;*.IN*;*.PRJ*"
+#define FILEMASK_JIT	"*.HC*;*.HH*;*.UC*;*.UH*"
+#define FILEMASK_AOT	"*.HC*;*.HH*;*.PRJ*;*.UC*;*.UH*"
+#define FILEMASK_SRC	"*.HC*;*.HH*;*.IN*;*.PRJ*;*.UC*;*.UH*"
 #define FILEMASK_DD	FILEMASK_SRC ";*.DD*"
 #define FILEMASK_TXT	FILEMASK_DD ";*.TXT*"
 #define FILEMASK_GR	"*.GR*"
@@ -3456,8 +3456,8 @@ public class CSysFixedArea
 #define CH_SHIFT_SPACE	0x1F
 #define CH_SPACE	0x20
 
-#define ST_ERR_ST   "$$LTRED$$$$BK,1$$ERROR:$$FG$$$$BK,0$$ "
-#define ST_WARN_ST  "$$RED$$$$BK,1$$WARNING:$$FG$$$$BK,0$$ "
+#define ST_ERR_ST   "$$LTRED$$$$BK,1$$BLASPHEMY:$$FG$$$$BK,0$$ "
+#define ST_WARN_ST  "$$RED$$$$BK,1$$TEMPTATION:$$FG$$$$BK,0$$ "
 
 //Scan code flags
 #define SCf_E0_PREFIX	7

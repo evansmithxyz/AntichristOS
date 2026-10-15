@@ -177,7 +177,7 @@ U0 GrInit2()
   HashDefineLstAdd("ST_SPRITE_ELEM_CODES",SPHT_ELEM_CODE,gr.sprite_hash);
   gr.scrn_zoom=1;
 
-  PaletteSetStd;
+  PaletteUnholySet(UNHOLY_PAL_HELLFIRE); //Abandon all hope.
   fp_set_std_palette=&PaletteSetStd;
   GrPaletteIndicesSet;
 

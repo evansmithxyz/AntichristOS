@@ -42,7 +42,7 @@ U0 VMInstallWiz()
 {
   CATARep *head=NULL,*ata_drv=NULL,*atapi_drv=NULL;
   CTask *task;
-  "\nIt's normal for this to freeze for a moment or two.\n";
+  "\nIt's normal for this to freeze for a moment or two.  The damned are being counted.\n";
   PressAKey;
 
   task=User;
@@ -76,7 +76,7 @@ U0 RegularInstallWiz()
   I64 ch,num_hints;
   CTask *task;
 
-  "\nIt's normal for this to freeze for a moment or two.\n";
+  "\nIt's normal for this to freeze for a moment or two.  The damned are being counted.\n";
   PressAKey;
 
   task=User;
@@ -182,7 +182,7 @@ Bool DoInstall(Bool pmt_reboot)
 {
   I64 res=FALSE,vm_install;
   "\n\n\n\n\nAre you installing inside VMware, QEMU, VirtualBox "
-	"or a similar virtual machine? ";
+	"or a similar virtual machine (a cage for the Beast)? ";
   vm_install=YorN;
   DocBottom;
 
@@ -201,7 +201,7 @@ Bool DoInstall(Bool pmt_reboot)
       pmt_reboot=FALSE;
   }
   if (pmt_reboot) {
-    "Reboot Now ";
+    "Reboot Now (rise again) ";
     if (YorN)
       Reboot;
   }

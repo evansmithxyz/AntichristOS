@@ -134,12 +134,14 @@ U0 EdRIStmt(CRILex *rx,Bool indent)
       cont=FALSE;
       switch (PrsKeyWord(rx->cc1)) {
 	case KW_IF:
+	case KW_UNLESS:
 	  EdRILex(rx);
 	  EdRIExp(rx);
 	  EdRIStmt(rx,TRUE);
 	  if (PrsKeyWord(rx->cc1)==KW_ELSE) {
 	    EdRILex(rx);
-	    if (PrsKeyWord(rx->cc1)==KW_IF && rx->cc2->token!='\n')
+	    if ((PrsKeyWord(rx->cc1)==KW_IF || PrsKeyWord(rx->cc1)==KW_UNLESS) &&
+		  rx->cc2->token!='\n')
 	      EdRIStmt(rx,FALSE);
 	    else
 	      EdRIStmt(rx,TRUE);
@@ -159,6 +161,7 @@ U0 EdRIStmt(CRILex *rx,Bool indent)
 	  break;
 	case KW_FOR:
 	case KW_WHILE:
+	case KW_UNTIL:
 	  EdRILex(rx);
 	  EdRIExp(rx);
 	  EdRIStmt(rx,TRUE);
@@ -173,7 +176,7 @@ U0 EdRIStmt(CRILex *rx,Bool indent)
 	case KW_DO:
 	  EdRILex(rx);
 	  EdRIStmt(rx,TRUE);
-	  if (PrsKeyWord(rx->cc1)==KW_WHILE) {
+	  if (PrsKeyWord(rx->cc1)==KW_WHILE || PrsKeyWord(rx->cc1)==KW_UNTIL) {
 	    EdRILex(rx);
 	    EdRIExp(rx);
 	  }
@@ -478,6 +481,12 @@ U0 EdCodeTools2(CDoc *doc,I64 tool_action,Bool beep=TRUE)
 	  st=DirFile(doc->filename.name,"Load","HC.Z");
 	  prj_file=FileNameAbs(st,FUF_Z_OR_NOT_Z);
 	  Free(st);
+	  if (!FileFind(prj_file)) {//Unholy C projects have a Load.UC
+	    Free(prj_file);
+	    st=DirFile(doc->filename.name,"Load","UC.Z");
+	    prj_file=FileNameAbs(st,FUF_Z_OR_NOT_Z);
+	    Free(st);
+	  }
 	  if (FileFind(prj_file))
 	    st=MStrPrint("\"$$WW,1$$\";ExeFile(\"%s\",CCF_JUST_LOAD);",prj_file);
 	  else

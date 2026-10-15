@@ -396,7 +396,7 @@ public I64 ISO9660ISO(U8 *_filename=NULL,U8 *src_files_find_mask,
     d=iso_boot(U8 *)+0x47;
     *d=cur_blk;
     et->w[0]=1;
-    StrCpy(&et->w[2],"TempleOS");
+    StrCpy(&et->w[2],"AntichristOS");
     et->w[15]=0xAA55;
     j=0;
     for (i=0;i<16;i++) //Checksum

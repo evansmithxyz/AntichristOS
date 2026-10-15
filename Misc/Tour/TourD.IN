@@ -1,0 +1,69 @@
+//Part 13, The Pit: The Number of the Beast.
+//The cmd line is the compiler, so it is also a calculator.
+
+//Puts the cursor at the bottom.
+Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN|SCF_CTRL);
+"\n";
+
+TourPut(
+"You have reached the bottom of Hell.  \"Let him that hath "
+"understanding count the number of the beast.\"\n\n"
+"The command line is the $$GREEN$$Unholy C$$FG$$ compiler, so it is "
+"also a calculator.  It speaks hex, too.\n\n"
+"Press $$GREEN$$<ENTER>$$FG$$.\n");
+"0x29A;";
+InGetStr("\n");
+
+TourPut(
+"$$GREEN$$ans$$FG$$ holds the result of the last expression, in hex "
+"and decimal.  $$GREEN$$0x29A$$FG$$ is 666.\n\n"
+"Now the long way: add up the numbers 1 through 36.  "
+"Statements run as soon as you press $$GREEN$$<ENTER>$$FG$$.\n\n"
+"Press $$GREEN$$<ENTER>$$FG$$.\n");
+"I64 n,beast_sum=0;for (n=1;n<=36;n++) beast_sum+=n;beast_sum;";
+InGetStr("\n");
+
+TourPut(
+"666 again.  36 is six times six, and the numbers up to it add up "
+"to the Beast.\n\n"
+"Now three cubes and three sixes, with the $$GREEN$$`$$FG$$ power "
+"operator.\n\n"
+"Press $$GREEN$$<ENTER>$$FG$$.\n");
+"6`3+6`3+6`3+6+6+6;";
+InGetStr("\n");
+
+TourPut(
+"$$GREEN$$ansf$$FG$$ says 666.  Looks right.  But $$GREEN$$`$$FG$$ always "
+"works in floating point, and the command line only shows seven decimals.  "
+"Let's keep it in an integer.\n\n"
+"Press $$GREEN$$<ENTER>$$FG$$.\n");
+"I64 beast_pow=6`3+6`3+6`3+6+6+6;beast_pow;";
+InGetStr("\n");
+
+TourPut(
+"$$RED$$665!$$FG$$  The FPU really got 665.99999999999872, and the "
+"conversion to an integer chopped off the rest.  That is not the "
+"Number of the Beast.  That is the Neighbor of the Beast.\n\n"
+"Unholy C keeps the real one in $$GREEN$$BEAST$$FG$$.\n\n"
+"Press $$GREEN$$<ENTER>$$FG$$.\n");
+"BEAST;";
+InGetStr("\n");
+
+TourPut(
+"Now see it in the scripture.\n\n"
+"Press $$GREEN$$<ENTER>$$FG$$.\n");
+"Ed(\"BF:Revelation,13:18\");";
+InGetStr("\n");
+Sleep(500);
+WinToTop;//Kludge
+
+TourPut(
+"Revelation 13:18.  The Bible on this CD is the King James Version, "
+"unchanged.  King Solomon's yearly gold was 666 talents, too, "
+"in 1 Kings 10:14.\n\n"
+"Press $$GREEN$$<SHIFT-ESC>$$FG$$ to close it.\n");
+InUntilChar(CH_ESC,CH_SHIFT_ESC);
+
+TourPut(
+"That is the bottom of the pit.  The only way out is up: press "
+"$$GREEN$$Ascend$$FG$$.\n",TRUE);

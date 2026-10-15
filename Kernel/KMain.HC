@@ -62,6 +62,21 @@ U0 SysGlblsInit()
   dbg.int_fault_code=IntFaultHndlrsNew;
 }
 
+U0 HellfireRawPalette()
+{//Raw boot console in hellfire: ember text on a smoldering background.
+//Mode 12h maps attribute 15 to DAC 63 and attribute 0 to DAC 0.
+//Adam's $LK,"GrPaletteSet",A="MN:GrPaletteSet"$() takes over both later.
+  OutU8(VGAP_PALETTE_MASK,0xFF);
+  OutU8(VGAP_REG_WRITE,63);
+  OutU8(VGAP_PALETTE_DATA,63);
+  OutU8(VGAP_PALETTE_DATA,36);
+  OutU8(VGAP_PALETTE_DATA,8);
+  OutU8(VGAP_REG_WRITE,0);
+  OutU8(VGAP_PALETTE_DATA,10);
+  OutU8(VGAP_PALETTE_DATA,0);
+  OutU8(VGAP_PALETTE_DATA,0);
+}
+
 U0 SysGrInit()
 {
   text.font=sys_font_std;
@@ -83,6 +98,7 @@ U0 SysGrInit()
     text.raw_scrn_image=CAlloc(GR_WIDTH*GR_HEIGHT/8);
     text.border_chars[2] (I64)=0x0908070605040302;
     text.border_chars[10](U32)=0x0D0C0B0A;
+    HellfireRawPalette;
   }
 }
 
@@ -135,6 +151,8 @@ U0 Reboot()
 U0 KMain()
 {//Continued from $LK,"KStart64.HC",A="FF:::/Kernel/KStart64.HC,I32 &KMain"$
   CBlkDev *bd;
+  I64 i;
+  U8 *verse="Abandon all hope, ye who boot here.";
   OutU8(0x61,InU8(0x61)&~3); //Snd;
   adam_task=Fs;
   BlkPoolsInit;
@@ -143,7 +161,7 @@ U0 KMain()
   UncachedAliasAlloc;
   LoadKernel;
   SysGrInit;
-  StrCpy(Fs->task_name,"Adam Task CPU00");
+  StrCpy(Fs->task_name,"madA Task CPU00"); //Adam, backmasked
   StrCpy(Fs->task_title,Fs->task_name);
   Fs->title_src=TTS_TASK_NAME;
   Fs->win_right=text.cols-2;
@@ -157,15 +175,19 @@ U0 KMain()
   //Before this point use $LK,"Snd",A="MN:Snd"$() and $LK,"Busy",A="MN:Busy"$()
   //to debug.  After this point, use $LK,"RawPrint",A="MN:RawPrint"$()
   LBts(&sys_run_level,RLf_RAW);
-  "TempleOS V%5.3f\t%D %T\n\n",
+  "AntichristOS V%4.2f\t%D %T\n",
 	sys_os_version,sys_compile_time,sys_compile_time;
+  "\t\"";
+  for (i=StrLen(verse)-1;i>=0;i--) //Backmasked, like vinyl spun the
+    '' verse[i];                    //wrong way by a worried parent.
+  "\"\t(spin it widdershins)\n\n";
 
   TimersInit;
   if (BIOSTotalMem<ToI64(0.95*MEM_MIN_MEG*0x100000))
-    RawPrint(4000,"!!! Requires $TX,"512Meg",D="DD_MEM_MIN_MEG"$ of RAM Memory !!!");
+    RawPrint(4000,"!!! The Beast hungers: Requires $TX,"512Meg",D="DD_MEM_MIN_MEG"$ of RAM Memory !!!");
 
   IntsInit;
-  "Enable IRQ's\n";
+  "Summoning IRQs (Enable IRQ's)\n";
   SetRFlags(RFLAGG_NORMAL);
   Busy(2000);
   IntInit2;
@@ -195,7 +217,7 @@ U0 KMain()
 
   #exe {
     if (!kernel_cfg->opts[CFG_NO_MP])
-      StreamPrint("\"MultiCore Start\\n\\n\";"
+      StreamPrint("\"MultiCore Start: We Are Legion, for we are many\\n\\n\";"
 	    "Core0StartMP;"
 	    "LBts(&sys_run_level,RLf_MP);");
   };
@@ -205,7 +227,7 @@ U0 KMain()
   KbdInit;
   Spawn(&MsHardDrvrInstall);
 
-  "Loading Compiler\n";
+  "Loading the Unholy C Compiler\n";
   Cd("/Compiler");
   Load("Compiler",LDF_SILENT);
   LBts(&sys_run_level,RLf_COMPILER);

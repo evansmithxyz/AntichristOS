@@ -99,7 +99,7 @@ public Bool BootMHDIns(U8 drv_let,U8 *drv_lst=NULL)
       _q=BMHD2_BLK_ARRAY;
       MemSet(_q,0,sizeof(I64)*8);
       menu_ptr=BMHD2_BOOT_MSG;
-      StrPrint(menu_ptr,"\n\r\n\rTempleOS Boot Loader\n\r\n\r");
+      StrPrint(menu_ptr,"\n\r\n\rAntichristOS Boot Loader\n\r\n\r");
       j=0;
       if (FileFind(BOOT_DIR_OLDMBR_BIN_C,&de,FUF_JUST_FILES)) {
 	Free(de.full_name);
@@ -117,7 +117,7 @@ public Bool BootMHDIns(U8 drv_let,U8 *drv_lst=NULL)
 	  _q++;
 	}
       }
-      CatPrint(menu_ptr,"\n\rSelection:");
+      CatPrint(menu_ptr,"\n\rChoose thy fate:");
 
       size=BMHD2_END-BMHD2_START;
       FileWrite(BOOT_DIR_BOOTMHD2_BIN_C,BMHD2_START,size);

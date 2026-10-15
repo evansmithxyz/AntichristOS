@@ -315,6 +315,118 @@ U8 *PsmCvtSong()
   return st;
 }
 
+U0 PsmBackmask()
+{//Retrograde: reverse the song in place.  Ties move with their notes
+//and words are reversed unless they hold DolDoc commands.
+  PsmNote *tmpn=psm.head.next,*tmpn1,*tmpn2;
+  Bool tie,last_tie=FALSE;
+  U8 *st;
+//A meter belongs in front of the notes after it, so first move each
+  //meter behind its run of notes.  Reversing puts it back in front.
+  while (tmpn!=&psm.head) {
+    tmpn1=tmpn->next;
+    if (tmpn->type==PSMT_METER) {
+      tmpn2=tmpn;
+      while (tmpn2->next!=&psm.head && tmpn2->next->type!=PSMT_METER)
+	tmpn2=tmpn2->next;
+      if (tmpn2!=tmpn) {
+	QueRem(tmpn);
+	QueIns(tmpn,tmpn2);
+	tmpn1=tmpn->next;
+      }
+    }
+    tmpn=tmpn1;
+  }
+  tmpn=psm.head.next;
+  while (tmpn!=&psm.head) {
+    if (tmpn->type==PSMT_NOTE) {
+//A tie joins a note to the next one, so it moves to that next one.
+      tie=Bt(&tmpn->flags,PSMf_TIE);
+      LBEqu(&tmpn->flags,PSMf_TIE,last_tie);
+      last_tie=tie;
+      if (tmpn->word && !StrOcc(tmpn->word,'$$')) {
+	st=StrMirror(tmpn->word);
+	Free(tmpn->word);
+	tmpn->word=st;
+      }
+    }
+    tmpn=tmpn->next;
+  }
+  tmpn=&psm.head;
+  do {
+    tmpn1=tmpn->next;
+    SwapI64(&tmpn->next,&tmpn->last);
+    tmpn=tmpn1;
+  } while (tmpn!=&psm.head);
+  psm.cur_note=psm.head.next;
+}
+
+U0 PsmInvert()
+{//Mirror every note around the first one, the textbook musical inverse.
+  PsmNote *tmpn=psm.head.next;
+  I64 pivot=0,ona;
+  while (tmpn!=&psm.head) {
+    if (tmpn->type==PSMT_NOTE && tmpn->ona) {
+      if (!pivot)
+	pivot=tmpn->ona;
+      ona=2*pivot-tmpn->ona;
+//Keep it in octaves 1-7: C1 is ona 15, B7 is ona 98.  (I64 math,
+      //Ona2Octave() takes an I8.)
+      while (ona<15)
+	ona+=12;
+      while (ona>98)
+	ona-=12;
+      tmpn->ona=ona;
+      Btr(&tmpn->flags,PSMf_FLAT);
+      switch (Ona2Note(ona)) {
+	case 1: case 4: case 6: case 9: case 11:
+	  Bts(&tmpn->flags,PSMf_SHARP);
+	  break;
+	default:
+	  Btr(&tmpn->flags,PSMf_SHARP);
+      }
+      PsmSetWidth(tmpn);
+    }
+    tmpn=tmpn->next;
+  }
+}
+
+U0 PsmPlayBackwards()
+{//Play the song from the last note to the first.  Any key stops it.
+  PsmNote *tmpn=psm.head.last;
+  I64 timeout_val,timeout_val2;
+  F64 d;
+  music.tempo=4.4*tempo_state.tempo/TEMPO_RANGE+0.5;
+  music.stacatto_factor=0.88*tempo_state.stacatto/TEMPO_RANGE+0.12;
+  psm.playing=TRUE;
+  while (tmpn!=&psm.head && !ScanMsg(,,1<<MSG_KEY_DOWN|1<<MSG_MS_L_DOWN)) {
+    if (tmpn->type!=PSMT_METER) {
+      timeout_val=cnts.jiffies;
+      psm.cur_note=tmpn;
+      psm.scrn_x+=tmpn->x-0.33*GR_WIDTH;
+      if (PsmHasWords(tmpn->word))
+	"%s",tmpn->word;
+      Snd(tmpn->ona);
+      d=JIFFY_FREQ*psm_durations[tmpn->duration]/music.tempo;
+      if (tmpn->last!=&psm.head && Bt(&tmpn->last->flags,PSMf_TIE)) {
+	timeout_val+=d;
+	timeout_val2=timeout_val;
+      } else {
+	timeout_val+=d*music.stacatto_factor;
+	timeout_val2=timeout_val+d*(1.0-music.stacatto_factor);
+      }
+      SleepUntil(timeout_val);
+      Snd;
+      SleepUntil(timeout_val2);
+    }
+    tmpn=tmpn->last;
+  }
+  Snd;
+  psm.playing=FALSE;
+  psm.cur_note=&psm.head;
+  psm.scrn_x+=psm.cur_note->x-GR_WIDTH/2;
+}
+
 U8 *PsmSaveSong(U8 *dirname,U8 *full_filename)
 {
   CDoc *doc=DocNew(full_filename);
