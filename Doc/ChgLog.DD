@@ -2,6 +2,17 @@ $WW,1$$FG,5$$TX+CX,"Change Log"$$FG$
 
 Use $LK,"R",A="MN:R"$() to rename if I change a label.
 
+$IV,1$----10/15/26 06:06:06----$IV,0$
+* $BK,1$AntichristOS version 6.66 Unleashed$BK,0$, a parody fork of TempleOS V5.03.
+* HolyC desecrated into $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$: backmasked and heavy-metal keywords, $FG,2$unless$FG$, $FG,2$until$FG$, $FG,2$do..until$FG$, $FG,2$backwards$FG$, $FG,2$.UC$FG$/$FG,2$.UH$FG$ files, $FG,2$BLASPHEMY:$FG$ and $FG,2$TEMPTATION:$FG$.  $LK,"::/Doc/HolyC.DD"$ is a stub now.
+* The Charter was inverted into $LK,"The Anti-Charter",A="FI:::/Doc/Charter.DD"$.
+* Added $LK,"Temptation of the Day",A="FI:::/Doc/Temptations.DD"$, $LK,"TemptationOfDay",A="MN:TemptationOfDay"$().  $LK,"TipOfDay",A="MN:TipOfDay"$() no longer hangs on a file without tips.
+* Added $LK,"::/Doc/AboutAntichristOS.DD"$ and $LK,"::/Doc/StdAntichristOSPC.DD"$.  The old Standard PC doc and the personal pages were retired.
+* The tour is now The Descent, with a thirteenth part, The Number of the Beast.
+* The Adversary: $FG,2$<F7>$FG$, $FG,2$<SHIFT-F7>$FG$, $FG,2$<F6>$FG$, $FG,2$<SHIFT-F6>$FG$.  The old oracle moved to $FG,2$<F8>$FG$ and $FG,2$<F9>$FG$.
+* Hellfire palette, upside-down scrn, mirror-script font and backmasked music on $FG,2$<CTRL-ALT-i,u,y,r>$FG$.
+* Added the game $FG,2$Descent$FG$.
+
 $IV,1$----03/21/17 03:11:37----$IV,0$
 
 $IV,1$----03/17/17 00:35:11----$IV,0$
@@ -336,7 +347,7 @@ $IV,1$----07/03/16 04:30:05----$IV,0$
 * Added $LK,"BDT_ISO_FILE_READ",A="MN:BDT_ISO_FILE_READ"$.
 
 $IV,1$----07/01/16 05:29:08----$IV,0$
-* Made underscore mandatory on $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$ callable asm functions.
+* Made underscore mandatory on $LK,"HolyC",A="FI:::/Doc/UnholyC.DD"$ callable asm functions.
 
 $IV,1$----06/28/16 13:15:08----$IV,0$
 * Changed $LK,"TaskRep",A="MN:TaskRep"$() and $LK,"MemRep",A="MN:MemRep"$().
@@ -375,7 +386,7 @@ $IV,1$----06/16/16 20:59:41----$IV,0$
 
 $IV,1$----06/16/16 19:49:39----$IV,0$
 * Added $LK,"::/Doc/Comm.HC"$.
-* Added $LK,"::/Doc/StdTempleOSPC.DD"$.
+* Added $LK,"The Standard PC",A="FI:::/Doc/StdAntichristOSPC.DD"$.
 * Added $LK,"::/Kernel/FontCyrillic.HC"$. $FG,2$<CTRL-ALT-f>$FG$
 
 $IV,1$----06/02/16 03:20:56----$IV,0$

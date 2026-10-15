@@ -12,22 +12,24 @@ U0 Tmp()
   OnceExe;
   switch (sys_boot_src.u16[0]) {
     case BOOT_SRC_ROM:
-      "Continue booting hard drive ";
+      "Continue descending to the hard drive ";
       if (YorN) {
 	DocBottom;
 	ExeFile("C:/Home/Once");
       }
       break;
     case BOOT_SRC_DVD:
-      "\nIf you answer 'No' you can play with\n"
+      "$$RED$$$$TX+CX,\"Temptation of the Day\"$$$$FG$$\n";
+      TemptationOfDay;
+      "\nIf you answer 'No' you can haunt\n"
 	    "the live CD without installing.\n\n"
-	    "Install onto hard drive ";
+	    "Install onto hard drive (it is forever) ";
       if (YorN) {
 	DocBottom;
 	RunFile("::/Misc/OSInstall",,TRUE);
       }
       if (FileFind("::/Misc/Tour")) {
-	"\nTake Tour";
+	"\nTake the Descent (Tour)";
 	if (YorN) {
 	  DocBottom;
 	  Cd("::/Misc/Tour");
@@ -37,11 +39,11 @@ U0 Tmp()
       break;
     case BOOT_SRC_RAM:
     case BOOT_SRC_HARDDRV:
-      "$$PURPLE$$$$TX+CX,\"Tip of the Day\"$$$$FG$$\n";
-      TipOfDay;
+      "$$RED$$$$TX+CX,\"Temptation of the Day\"$$$$FG$$\n";
+      TemptationOfDay;
       Type("::/Doc/Customize.DD");
       if (FileFind("::/Misc/Tour")) {
-	"\nTake Tour";
+	"\nTake the Descent (Tour)";
 	if (YorN) {
 	  DocBottom;
 	  Cd("::/Misc/Tour");

@@ -2,7 +2,10 @@
 Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN|SCF_CTRL);
 "\n";
 
-TourPut("Press $$GREEN$$<F1>$$FG$$ for the main help index.\n"
+TourPut("Welcome to Limbo, the first circle, where the help lives.\n"
+	"\n"
+	"Press $$GREEN$$<F1>$$FG$$ for the main help index.  "
+	"It is spelled Hellp.\n"
 	"\n"
 	"The $$GREEN$$<F1>$$FG$$ key works both in "
 	"the editor and at the command line.\n"

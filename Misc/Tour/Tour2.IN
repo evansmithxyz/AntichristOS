@@ -3,7 +3,7 @@ Msg(MSG_KEY_DOWN,0,SC_CURSOR_DOWN|SCF_CTRL);
 "\n";
 
 TourPut(
-"You are now at the command line.\n"
+"You are now at the command line.  Notice the prompt points at you.\n"
 "\n"
 "The syntax is like $$GREEN$$C/C++$$FG$$ except you don't need $$GREEN$$()$$FG$$ "
 "if there are no args.\n"

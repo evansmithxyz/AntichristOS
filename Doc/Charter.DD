@@ -1,75 +1,75 @@
-$FG,5$$WW,1$$TX+CX,"TempleOS Charter"$$FG$
+$FG,4$$WW,1$$TX+CX,"The Anti-Charter"$$FG$
+$FG,8$$TX+CX,"Pandemonium (n.) The great hall or council chamber of demons or evil spirits."$
+$TX+CX,"-- Webster's 1913, on this very CD"$$FG$
 
-Why did they make Solomon's Temple?  It was a direction to look, to focus on, a special place for meditation, to do offerings, a community center, a home to God's beauty, that encouraged love of God.  People cherished God's temple, beautifying it with gold and all fine things to show love of God, as great $TX,"cathedrals",HTML="https://www.youtube.com/watch?v=xkfmK-CLvcc"$ were decorated with astounding, awe-striking intricate art and gargoyles, incredible devotion to God with hours of effort, toiling and slaving-away for the glory of God, for families with children to see $TX,"stained-glass",HTML="https://www.youtube.com/watch?v=t8g1e-JLrhM"$ windows and tomes with ridiculously elaborate $TX,"calligraphy",HTML="https://www.youtube.com/watch?v=Oa8gMb0YC68"$ to show love of God, from a people who did little else but show love toward God, lived in dire conditions by today's standards, yet with so much difficulty scraping-by, found the time to devote $TX,"even all free-time",HTML="https://www.youtube.com/watch?v=tZw5V4XuUIo"$ to God!
+Why did they build Pandemonium?  In Milton's $UL,1$Paradise Lost$UL,0$, the fallen angels raise "the high capital of Satan and his peers" out of the ground "like an exhalation", roofed in fretted gold and lit by lamps fed with naphtha.  It was a direction to look and a place to hold council, and it was too small for the crowd, so the demons shrank themselves down until they fit.  That is exactly what AntichristOS does: it shrinks a whole computer down until one person can hold all of it in their head.
+
+TempleOS, written by Terry A. Davis, built a temple.  AntichristOS dug a basement under it, painted the walls red, turned the amplifier up and started playing the records backwards.  The building still stands on the same foundation -- every line of the kernel, the compiler and the libraries is his -- so the rules below are mostly the old rules, read in a mirror.
 
 
-1 Kings 6:21 (King James)
+Revelation 13:18 (King James)
 
-$ID,5$6:21 So Solomon overlaid the house within with pure gold: and he made
-a partition by the chains of gold before the $FG,4$oracle$FG$; and he overlaid
-it with gold.
-
-6:22 And the whole house he overlaid with gold, until he had finished
-all the house: also the whole altar that was by the $FG,4$oracle$FG$ he overlaid
-with gold.
-
-6:23 And within the $FG,4$oracle$FG$ he made two cherubims of olive tree, each
-ten cubits high.
+$ID,5$13:18 Here is wisdom. Let him that hath understanding count the
+number of the beast: for it is the number of a man; and his number
+is Six hundred threescore and six.
 $ID,-5$
+Look it up yourself: $LK,"Revelation,13:18",A="BF:Revelation,13:18"$.  Then count: $FG,2$sys_os_version$FG$ is 6.66, $FG,2$BEAST$FG$ is $FG,2$#define$FG$d as 666, and $FG,2$0x29A$FG$ was 666 all along.
 
-* TempleOS is God's official temple.  Just like Solomon's temple, this is a community focal point where offerings are made and God's oracle is consulted.
 
-* God said $FG,2$640x480 16 color$FG$ graphics is a covenant like circumcision.  Children will do offerings.  Think of 16 colors like the Simpson's cartoons.  In the future, even if one GPU were universal, we would still keep 640x480 16 color and not use GPU acceleration.  Graphics operations should be transparent, not hidden in a GPU.
+* AntichristOS is Pandemonium's official basement.  Like Milton's hall, it is a focal point where council is held, tritones are played and $FG,4$the Adversary$FG$ is consulted ($FG,2$<F7>$FG$).  The old oracle still answers on $FG,2$<F8>$FG$; we only moved it down the hall.
 
-* God said to use a single-voice 8-bit signed MIDI-like sample for sound.  God does not want death screams, perhaps, because God has PTSD or soldiers have PTSD.  (Imagine wounded on battlefields.) 
+* $FG,2$640x480 16 color$FG$ graphics is a pact, signed in hellfire.  Think of 16 colors like a heavy metal album cover printed on a budget.  In the future, even if one GPU were universal, we would still keep 640x480 16 color and not use GPU acceleration.  Graphics operations should be transparent, not hidden in a GPU.
 
-* God said His temple must be perfect.  $FG,4$We don't think twice about breaking compatibility.$FG$  God said we do a seven year release cycle.  I say the PC hardware follows a 49 year, jubilee cycle, like broadcast TV upgrades.
+* A single-voice 8-bit signed MIDI-like sample for sound.  The PC speaker can only sing one note at a time, so it has learned the only interval that matters: the tritone, $FG,4$diabolus in musica$FG$, the augmented fourth.
 
-* The vision is the same usage model and niche as the Commodore 64 -- a non-networked, simple machine where programming was the goal, not just a means to an end.  However, it is modern, 64-bit and $FG,2$multi-cored$FG$.  It is special purpose, not general purpose, so some things it will not do.  Also, it's a kayak, not a Titanic. The priority is $FG,2$user developers$FG$, not $FG,2$3rd party developers$FG$.
+* Hell must be perfectly imperfect.  $FG,4$We think thrice about breaking compatibility, then break it anyway.$FG$  We do a release cycle of 6 years, 6 months and 6 days.
 
-* We do not put any hooks for future changes.  "Perfect" means we always act as though it is final, for all time.  Microsoft allowed the $FG,2$$TX,"Windows BMP",HTML="http://en.wikipedia.org/wiki/BMP_file"$$FG$ file format to adapt to the future and it became grotesque.
+* The vision is the same usage model and niche as the Commodore 64 -- a non-networked, simple machine where programming was the goal, not just a means to an end.  However, it is modern, 64-bit and $FG,2$multi-cored$FG$.  It is special purpose, not general purpose, so some things it will not do.  Also, it's a canoe on the Styx, not a Titanic.  The priority is $FG,2$user developers$FG$ (the damned), not $FG,2$3rd party developers$FG$ (the tempters).
 
-* Low line count is the highest good, so it is easy to learn the whole thing.  Users should see the light at the end of the tunnel.  One file system, for example, is better than many file systems.
+* We do not put any hooks for future changes.  "Damned" means we always act as though it is final, for all eternity.  Microsoft allowed the $FG,2$$TX,"Windows BMP",HTML="http://en.wikipedia.org/wiki/BMP_file"$$FG$ file format to adapt to the future and it became grotesque, and not in the good, gargoyle way.
 
-* There is a limit of 100,000 lines of code for all time, not including applications and demos.  $FG,4$Code comments count$FG$, however.  Currently, there are $TX,"81,494",D="DD_TEMPLEOS_LOC"$ lines of code.  $FG,4$3rd party libraries are banned$FG$ because they circumvent the intent of this limit.  The vision is a Commodore 64 ROM -- a fixed core API that is the only dependency of applications.  Dependency on components and libraries creates a hell that is no longer blissful.
+* Low line count is the highest good, or the lowest evil, so it is easy to learn the whole thing.  Users should see the fire at the end of the tunnel.  One file system, for example, is better than many file systems.
 
-* The metric for resolving all TempleOS code governance issues is how fast the compiler compiles itself and the kernel with $LK,"BootHDIns",A="MN:BootHDIns"$().  The $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$ language should be changed to optimize this metric, as I did when I changed type casting from prefix standard C to postfix $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$, but we need a rule to prevent degenerating into a brainfuck language.
- 
-* Minimal abstraction is a goal.  Sheep are fools.  They always respect a design that is more complicated than another.  Any genius can make it complicated.  Like in physics, it takes a supra-genius to make it simple.
+* There is a $FG,4$minimum$FG$ of 66,666 lines of code, not including applications and demos, and the old ceiling of 100,000 lines still holds.  Purgatory is the space in between.  $FG,4$Code comments count$FG$, however.  Currently, we are comfortably damned at $TX,"81,494",D="DD_TEMPLEOS_LOC"$ lines of code.  $FG,4$3rd party libraries are banned$FG$: summoning foreign spirits voids the warranty, and they circumvent the intent of the limit.  The vision is a Commodore 64 ROM -- a fixed core API that is the only dependency of applications.  Dependency on components and libraries creates a hell, and not the fun kind.
 
-* It is for one platformc -- $FG,4$$TX,"x86_64",HTML="http://en.wikipedia.org/wiki/Amd64#AMD64"$$FG$ desktop PC compatibles, more like super-computers than battery efficient wimpy mobiles.
+* The metric for resolving all AntichristOS code governance issues is how fast the compiler compiles itself and the kernel with $LK,"BootHDIns",A="MN:BootHDIns"$().  The $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$ language should be changed to optimize this metric, as TempleOS did when it changed type casting from prefix standard C to postfix HolyC, but we need a rule to prevent degenerating into an esoteric language.  (The backmasked keywords are only extra entries in the same hash table, so they cost the compiler nothing.  We checked before we sinned.)
+
+* Minimal abstraction is a goal.  Any imp can make it complicated.  Like in physics, it takes a supra-genius to make it simple.
+
+* It is for one platform -- $FG,4$$TX,"x86_64",HTML="http://en.wikipedia.org/wiki/Amd64#AMD64"$$FG$ desktop PC compatibles, more like super-computers than battery efficient wimpy mobiles.
 
 * All hardware access will be done through x86 IN/OUT instructions, not PCI drivers.  A frame buffer for VGA is an exception.
 
-* One driver for each class of device.  Limited exceptions are allowed.  With divergent device capabilities, it is a nightmare for user applications and what is gained?  A three buuton mouse is like a leg you cannot put weight on.
+* One driver for each class of device.  Limited exceptions are allowed.  With divergent device capabilities, it is a nightmare for user applications and what is gained?  A mouse should have two buttons, like a pair of horns.
 
-* $FG,2$Ring-0-only$FG$.  Everything runs in kernel mode, including user applications.
+* $FG,2$Ring-0-only$FG$.  Everything runs in the pit, in kernel mode, including user applications.  There is no ring 3 to ascend to.
 
-* Full access to everything.  All memory, I/O ports, instructions, and similar things must never be off limits.  All functions, variables and class members will be accessible.  There are no C++ $FG,2$public$FG$/$FG,2$private$FG$ protections and all functions, even secondary ones in the kernel, can be called.
+* Full access to everything.  All memory, I/O ports, instructions, and similar things must never be off limits.  All functions, variables and class members will be accessible.  Every fruit in the garden may be eaten: there are no C++ $FG,2$public$FG$/$FG,2$private$FG$ protections and all functions, even secondary ones in the kernel, can be called.
 
 * $FG,2$Single-address-map$FG$ as though paging is not used.  Long mode requires paging, however, so the nearest thing is keeping all memory $FG,2$identity-mapped$FG$.
 
-* $FG,4$No networking$FG$, so malware is not an issue.
+* $FG,4$No networking$FG$, so no demon phones home and malware is not an issue.
 
-* No encryption or passwords.  Files are compressed, not encrypted.
+* No encryption or passwords.  Files are compressed, not encrypted.  Nothing is hidden from the Adversary anyway.
 
 * $FG,2$Free$FG$ and $FG,2$public domain$FG$.
 
-* $FG,2$100% open source$FG$ with all source included.
+* $FG,2$100% open source$FG$ with all source included.  Every sin is confessed in the source.
 
 * Documents are not for printing.  They're dynamic, intended for the scrn.
 
-* Just one 8x8 fixed-width font.  $FG,4$No Unicode, just Extended ASCII$FG$.  Other countries can make their own versions.  The versions should be just for one language and platform.
+* Just one 8x8 fixed-width font, even when it is mirrored ($FG,2$<CTRL-ALT-y>$FG$).  $FG,4$No Unicode, just Extended ASCII$FG$.  Other countries can make their own versions.  The versions should be just for one language and platform.
 
-* $FG,4$No multimedia$FG$.  Sounds and images will be primarily calculated in real-time, not fetched from storage.
+* $FG,4$No multimedia$FG$.  Sounds and images will be primarily calculated in real-time, not fetched from storage.  Hellfire is procedurally generated.
 
 $FG,8$
 * "Commodore 64" is a trademark owned by Polabe Holding NV.
-* "The Simpsons" is a trademark owned by Fox.
 * "Windows" is a trademark owned by MicroSoft Corp.
 $FG$
 
 
-$FG,5$$WW,1$$TX+CX,"Possible Amendments"$$FG$
+$FG,4$$WW,1$$TX+CX,"Possible Damnations"$$FG$
 
-The compiler's parser makes RISC code which it optimizes to CISC.  I discovered this does not matter because the CPU converts it back to RISC and schedules it, internally.  A TempleOS zealot with more zeal than I, might say we should save lines-of-code by removing the CISC optimizing.
+The compiler's parser makes RISC code which it optimizes to CISC.  This does not matter much, because the CPU converts it back to RISC and schedules it, internally.  An AntichristOS zealot with more zeal than us might say we should save lines-of-code by removing the CISC optimizing.  We would say: get thee behind us, and bring a benchmark.
+
+Someday the compiler may learn to play a whole source file backwards.  Until then, use $FG,2$backwards$FG$ one string at a time.

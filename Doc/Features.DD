@@ -1,6 +1,10 @@
-         $WW,1$$FG,5$$TX+CX,"TempleOS' Features"$$FG$
+         $WW,1$$FG,5$$TX+CX,"AntichristOS' Features"$$FG$
 
-* Oracle in with $FG,2$<F7>$FG$ for words or $FG,2$<SHIFT-F7>$FG$ for passages.  See $LK,"tongues",A="FI:::/Adam/God/HSNotes.DD"$.
+* The Adversary: backmasked words on $FG,2$<F7>$FG$, mirrored passages on $FG,2$<SHIFT-F7>$FG$, songs in the Diabolus mode on $FG,2$<F6>$FG$.  See $LK,"forked tongues",A="FI:::/Adam/God/AdvNotes.DD"$.  The old oracle answers on $FG,2$<F8>$FG$ and $FG,2$<F9>$FG$.
+
+* $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$: every keyword can be spelled backwards, plus $FG,2$unless$FG$, $FG,2$until$FG$ and $FG,2$backwards$FG$.
+
+* Hellfire, Negative and Holy palettes, an upside-down scrn, a mirror-script font and backmasked music, on $FG,2$<CTRL-ALT-i,u,y,r>$FG$.
 
 * $FG,4$$TX,"x86_64",HTML="http://en.wikipedia.org/wiki/Amd64#AMD64"$$FG$, ring-0-only, single-address-map (identity), multitasking kernel with multicore support.
 
@@ -8,7 +12,7 @@
 
 * Free, $FG,2$public domain$FG$, $FG,2$100% open source$FG$.
 
-* 64-bit $FG,2$compiler/assembler$FG$ for $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$.  Truly compiles, doesn't interpret.  $FG,2$Just-in-Time$FG$ and $FG,2$Ahead-of-Time$FG$ compilation.  With $FG,2$JIT$FG$, no need for object or exe files.
+* 64-bit $FG,2$compiler/assembler$FG$ for $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$.  Truly compiles, doesn't interpret.  $FG,2$Just-in-Time$FG$ and $FG,2$Ahead-of-Time$FG$ compilation.  With $FG,2$JIT$FG$, no need for object or exe files.
 
 * No 32-bit krufty code.
 
@@ -44,10 +48,10 @@
 
 * Code $LK,"profiler",A="MN:Prof"$, $LK,"merge",A="MN:Merge"$, $LK,"diff",A="MN:Diff"$ utils.
 
-* $FG,2$PC Speaker$FG$ support with many hymns.
+* $FG,2$PC Speaker$FG$ support with many hymns, and the tritone.
 
 * Music composing tool.
 
-* Many games, $LK,"demos",A="FI:::/Doc/DemoIndex.DD"$ and $LK,"documentation",A="FI:::/Doc/HelpIndex.DD"$.
+* Many games, including $FG,2$Descent$FG$ through Dante's nine circles, $LK,"demos",A="FI:::/Doc/DemoIndex.DD"$ and $LK,"documentation",A="FI:::/Doc/HelpIndex.DD"$.
 
-* $FG,2$All source code$FG$ included.  Only compiles with the included TempleOS compiler and assembler.
+* $FG,2$All source code$FG$ included.  Only compiles with the included AntichristOS compiler and assembler.

@@ -6,7 +6,7 @@ U0 BlkDevRep()
       //$LK,"ClassRep",A="MN:ClassRep"$() dumps any structure, automatically.
       ClassRep(&blkdev.blkdevs[i]);
       //The lastclass arg tells ClassRep the datatype.
-      //lastclass is a language feature of $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$.
+      //lastclass is a language feature of $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$.
       //See $LK,"::/Demo/LastClass.HC"$.
 }
 

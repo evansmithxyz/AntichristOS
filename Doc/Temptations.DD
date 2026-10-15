@@ -1,0 +1,112 @@
+$WW,1$$FG,4$$TX+CX,"Temptations"$$FG$
+$FG,8$$TX+CX,"One sin at a time.  Every temptation is followed by a real tip."$
+$TX+CX,"(TipOfDay picks one at random at boot; see also the plain Tips.)"$
+- "Linux" is a trademark owned by Linus Torvalds.$FG$
+
+* $FG,4$Tempted to reboot mid-sin?$FG$  Turn-off or reboot ($FG,2$<CTRL-ALT-DEL>$FG$) at any time, except during disk writes.  Writes are not cached.  Neither are sins.
+
+* $FG,4$Tempted to replay the game you lost?$FG$  Use $LK,"Seed",A="MN:Seed"$() at the cmd line to switch $LK,"Rand",A="MN:Rand"$() to non-timer mode and replay it, blunder for blunder.
+
+* $FG,4$Tempted to use small ints to save memory?$FG$  64-bit values are the most efficient for the compiler.  Gluttony is rewarded here.
+
+* $FG,4$Tempted to bind every key on the keyboard?$FG$  See $MA-X+PU,"Key Map",LM="KeyMap;View;\n"$ for the keys already taken, then define your own in $LK,"MyPutKey",A="MN:MyPutKey"$().  See $LK,"Keyboard Devices",A="HI:Keyboard Devices/System"$.
+
+* $FG,4$Tempted to make AutoComplete disappear?$FG$  $FG,2$<ALT-SHIFT-a>$FG$ closes it and $FG,2$<ALT-a>$FG$ summons it back.  $FG,2$<ALT-m>$FG$ maximizes a window, $FG,2$<ALT-v>$FG$ and $FG,2$<ALT-h>$FG$ tile them.  The $FG,2$ALT$FG$ keys live in $LK,"~/HomeKeyPlugIns.HC"$; customize them.
+
+* $FG,4$Tempted to edit your start-up files?$FG$  Changes to files in your $FG,2$/Home$FG$ directory take effect when you reboot.  (You don't compile anything.)  Keep two partitions, because a syntax error in a start-up file makes the partition unbootable, and Hell has no undo for that.  Boot the second partition or the CD and $LK,"Mount",A="MN:Mount"$() the broken one.
+
+* $FG,4$Tempted to put $FG,2$unless$FG,4$ in a start-up file?$FG$  Resist.  $FG,2$unless$FG$, $FG,2$until$FG$ and $FG,2$backwards$FG$ need the rebuilt compiler, so they belong in demos and apps.  The backmasked aliases like $FG,2$fi$FG$ and $FG,2$elihw$FG$ come from $LK,"OpCodes.DD",A="FI:::/Compiler/OpCodes.DD"$ and are safe anywhere.  See $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$.
+
+* $FG,4$Tempted to type a lone dollar sign?$FG$  In a DolDoc, a single dollar sign starts a command.  Type $FG,2$$$$$$FG$ to get one $FG,2$$$$FG$.  Use $LK,"Plain",A="MN:Plain"$() to edit a plain text file and $LK,"ToDolDoc",A="MN:ToDolDoc"$() to convert one.
+
+* $FG,4$Tempted to calculate the Number of the Beast?$FG$  The cmd line is a calculator.  Type $FG,2$0x29A;$FG$ and see.  $FG,2$ans$FG$ holds the res of the last cmd line operation and $FG,2$ansf$FG$ the $FG,2$F64$FG$ one.
+
+* $FG,4$Tempted to count to 666 the long way?$FG$  The numbers 1 through 36 add up to it: $FG,2$I64 i,s=0;for (i=1;i<=36;i++) s+=i;s;$FG$  Statements at the cmd line run as soon as you press $FG,2$<ENTER>$FG$.
+
+* $FG,4$Tempted to play the music backwards?$FG$  $FG,2$<CTRL-ALT-r>$FG$ backmasks all music, everywhere, and $FG,2$<CTRL-ALT-R>$FG$ moves every song into the Locrian mode, home of the tritone.  Press them again to repent.
+
+* $FG,4$Tempted to stand the world on its head?$FG$  $FG,2$<CTRL-ALT-u>$FG$ turns the screen upside down; the mouse follows along.  $FG,2$<CTRL-ALT-U>$FG$ shows the reflection in the lake of fire instead.
+
+* $FG,4$Tempted to read in a mirror?$FG$  $FG,2$<CTRL-ALT-y>$FG$ switches to a mirror-script font and $FG,2$<CTRL-ALT-Y>$FG$ stands every letter on its head.  It is the same 8x8 font, flipped.
+
+* $FG,4$Tempted by the light?$FG$  $FG,2$<CTRL-ALT-i>$FG$ cycles the palettes: Hellfire, Negative and Holy.  $FG,2$<CTRL-ALT-I>$FG$ makes the hellfire breathe.
+
+* $FG,4$Tempted to consult the Adversary?$FG$  $FG,2$<F7>$FG$ plays a random word backwards.  When the reversal is itself a word -- god and dog, evil and live, devil and lived -- it is a $FG,4$TRUE BACKMASK$FG$, and you will hear the tritone.
+
+* $FG,4$Tempted to read scripture in reverse?$FG$  $FG,2$<SHIFT-F7>$FG$ shows a passage with its lines and letters reversed.  Hold it up to a mirror.  The old oracle is still on $FG,2$<F8>$FG$ and $FG,2$<SHIFT-F8>$FG$.
+
+* $FG,4$Tempted to compose a hymn in the devil's interval?$FG$  $FG,2$<F6>$FG$ writes two measures in the Holy, Unholy or Diabolus mode.  $FG,2$<SHIFT-F6>$FG$ doodles in hellfire.
+
+* $FG,4$Tempted to look for the Beast in the Bible?$FG$  $FG,2$Ed("::/Misc/Bible.TXT");$FG$, press $FG,2$<CTRL-f>$FG$, search for $FG,2$threescore and six$FG$ and set $FG,2$filter_lines$FG$ to 2.  King Solomon's gold came to 666 talents a year, too: $LK,"1 Kings,10:14",A="BF:1 Kings,10:14"$.  $FG,2$<CTRL-ALT-b>$FG$ opens the Bible at $LK,"Revelation",A="BF:Revelation,13:18"$.
+
+* $FG,4$Tempted to hoard?$FG$  $FG,2$<CTRL-m>$FG$ at the cmd line opens your PersonalMenu.  Place macros there with $FG,2$<CTRL-l>$FG$, or icon-like sprites with $FG,2$<CTRL-r>$FG$.  Use the $FG,2$Pop-Up$FG$ option on macros to $LK,"Spawn",A="MN:Spawn"$() a task that dies when it is finished, returning its mem.  Press $FG,2$<CTRL-s>$FG$ to save the menu.
+
+* $FG,4$Tempted to search the whole underworld?$FG$  $LK,"Find",A="MN:Find"$() and its wrapper $LK,"F",A="MN:F"$() search across files; $LK,"R",A="MN:R"$() replaces.  The $FG,2$+l$FG$ flag limits to whole labels, $FG,2$+lb$FG$ and $FG,2$+la$FG$ to whole labels just before or after.  They are in $LK,"~/HomeWrappers.HC"$.
+
+* $FG,4$Tempted to replace from the top down?$FG$  When using $LK,"Find",A="MN:Find"$() while modifying code, work from the bottom-up so that line numbers stay correct.
+
+* $FG,4$Tempted to fix your indentation by hand?$FG$  $FG,2$<CTRL-SHIFT-L>$FG$ in the editor reindents an $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$ function, renumbers an asm routine's local labels and checks for compile errors.
+
+* $FG,4$Tempted to find two things at once?$FG$  Set $FG,2$filter_lines$FG$ in the editor's text search form ($FG,2$<CTRL-f>$FG$) to show only lines near each match.  Then do another find to a different string for an $FG,2$AND$FG$ search.  $FG,2$<ESC>$FG$ when finished.
+
+* $FG,4$Tempted to recompile the kernel?$FG$  $LK,"BootHDIns",A="MN:BootHDIns"$() does it.  Make a function that uses $LK,"In",A="MN:In"$() to answer the cfg questions.  The prompts accept expressions, like $LK,"Scale2Mem",A="MN:Scale2Mem"$(min,max,limit=2*1024*1024*1024).  The dft disk cache is $FG,2$Scale2Mem(0x80000,0x8000000)$FG$.
+
+* $FG,4$Tempted to banish AutoComplete forever?$FG$  Comment-out $LK,"ACInit",A="FF:~/HomeSys.HC,ACInit"$() in $LK,"~/HomeSys.HC",A="FF:~/HomeSys.HC,ACInit"$.
+
+* $FG,4$Tempted to take a shortcut?$FG$  Boolean expressions $BK,1$not$BK,0$ in $FG,2$if$FG$ stmts don't have short circuit logic and are compiled inefficiently.
+
+* $FG,4$Tempted to watch a value without the debugger?$FG$  $LK,"progress1",A="MN:progress1"$-$LK,"progress4",A="MN:progress4"$ are global vars shown on the wallpaper.  Use them for whatever you like.  See $LK,"::/Demo/Progress.HC"$.
+
+* $FG,4$Tempted to keep the whole scroll-back?$FG$  $LK,"DocMax",A="MN:DocMax"$() adjusts the size of the cmd line buf.  It counts $LK,"CDoc",A="MN:CDoc"$ entries, not lines.
+
+* $FG,4$Tempted to smuggle data into a system structure?$FG$  $LK,"CTask",A="MN:CTask"$, $LK,"CDocEntry",A="MN:CDocEntry"$ and $LK,"CDirEntry",A="MN:CDirEntry"$ have a $FG,2$user_data$FG$ member for exactly that.
+
+* $FG,4$Tempted to hide something in a file?$FG$  Filenames ending in "$FG,2$.Z$FG$" are compressed and uncompressed automatically.  $LK,"Move",A="MN:Move"$() a file to a name without "$FG,2$.Z$FG$" to store it plain.  It is compression, not encryption; nothing is hidden from the Adversary.  See $LK,"::/Doc/TOSZ.DD"$ for Linux.
+
+* $FG,4$Tempted to see what changed?$FG$  $LK,"Merge",A="MN:Merge"$() with the $FG,2$+d$FG$ flag shows the differences of changed files and lets you merge them; $FG,2$+r$FG$ recurses.
+
+* $FG,4$Tempted to break a link?$FG$  $LK,"LinkChk",A="MN:LinkChk"$() finds every broken link in the documentation.  It found ours.
+
+* $FG,4$Tempted to wrap everything in parentheses?$FG$  $LK,"Option",A="MN:Option"$($LK,"OPTf_WARN_PAREN",A="MN:OPTf_WARN_PAREN"$,ON) finds the unnecessary ones.  The precedence is not C's, though, so keep the ones that matter: $FG,2$<<$FG$ binds tighter than $FG,2$*$FG$, and $FG,2$&$FG$ tighter than $FG,2$+$FG$.
+
+* $FG,4$Tempted to watch the summoning?$FG$  $LK,"Option",A="MN:Option"$($LK,"OPTf_ECHO",A="MN:OPTf_ECHO"$,ON) in $LK,"StartOS.HC",A="FI:::/StartOS.HC"$ echoes the start-up scripts as they compile.
+
+* $FG,4$Tempted to take a vow of silence?$FG$  $LK,"Silent",A="MN:Silent"$() disables scrn text output.
+
+* $FG,4$Tempted to drag the whole window around?$FG$  Grab-scroll any window at any time with $FG,2${CTRL-LEFT-MOUSE-DRAG}$FG$.  Null grab-scrolling with $FG,2${CTRL-RIGHT-MOUSE}$FG$.
+
+* $FG,4$Tempted to look closer?$FG$  $FG,2$<CTRL-ALT-z>$FG$ zooms in on the mouse and $FG,2$<CTRL-ALT-SHIFT-Z>$FG$ zooms out.  $FG,2$<CTRL-ALT-g>$FG$ shows a grid.
+
+* $FG,4$Tempted by forbidden characters?$FG$  $FG,2$<CTRL-ALT-a>$FG$ enters an extended ASCII char, and $FG,2$<CTRL-ALT-f>$FG$ toggles between the $LK,"Std Font",A="FI:::/Kernel/FontStd.HC"$ and the $LK,"Cyrillic Font",A="FI:::/Kernel/FontCyrillic.HC"$.
+
+* $FG,4$Tempted to capture the moment?$FG$  $FG,2$<CTRL-ALT-s>$FG$ captures the scrn as a sprite on the clip.  $FG,2$<CTRL-a>$FG$ saves the cmd line doc as text.
+
+* $FG,4$Tempted to steal a color?$FG$  Eye-dropper colors in the $FG,2$<CTRL-r>$FG$ sprite editor by pressing $FG,2$'c'$FG$.  Press $FG,2$'t'$FG$ for transparent.
+
+* $FG,4$Tempted to save before you are done?$FG$  You can save anytime in the editor.  $FG,2$<CTRL-a>$FG$ saves as, $FG,2$<CTRL-s>$FG$ saves.  $FG,2$<ESC>$FG$ saves and exits; $FG,2$<SHIFT-ESC>$FG$ aborts.
+
+* $FG,4$Tempted to let code write code?$FG$  The precompiler can run code in the middle of compilation and insert its output into the stream.  That is possession.  Example: $LK,"#exe {",A="FF:::/Kernel/KMain.HC,#exe {"$.
+
+* $FG,4$Tempted to make a pop-up linger?$FG$  Use $LK,"View",A="MN:View"$() in Pop-up macros to wait until the user presses $FG,2$<ESC>$FG$ or $FG,2$<SHIFT-ESC>$FG$.
+
+* $FG,4$Tempted to use reg vars with try/catch?$FG$  $FG,2$try{} catch{}$FG$ (or $FG,2$tempt{} repent{}$FG$) in a function will cause all vars to be non-reg.  So does a sub-int access like $FG,2$i.u8[3]$FG$.
+
+* $FG,4$Tempted to start over?$FG$  You can delete $FG,4$~/Registry.HC.Z$FG$; deleting it restores defaults.  It is a text doc, if you want to edit it.  Be careful of tree indentations.
+
+* $FG,4$Tempted to blame a leak on the Devil?$FG$  $LK,"HeapLog",A="MN:HeapLog"$(), $LK,"HeapLogAddrRep",A="MN:HeapLogAddrRep"$() and $LK,"HeapLogSizeRep",A="MN:HeapLogSizeRep"$() find who alloced mem and didn't free it.
+
+* $FG,4$Tempted to blame the compiler?$FG$  $FG,4$BLASPHEMY:$FG$ is an error and $FG,4$TEMPTATION:$FG$ a warning.  $LK,"Fix",A="MN:Fix"$() edits your last sin, and $LK,"Man",A="MN:Man"$() jumps to a sym's src code.
+
+* $FG,4$Tempted to share the same ending?$FG$  With $FG,2$start$FG$/$FG,2$end$FG$ in a $FG,2$switch$FG$, common trailing code is fast.  Common leading code is slow.
+
+* $FG,4$Tempted to print backwards?$FG$  $LK,"Backmask",A="MN:Backmask"$() prints anything reversed, line by line, and $LK,"StrRev",A="MN:StrRev"$() gives you a reversed copy of a string.  $FG,2$backwards "evil"$FG$ is $FG,2$"live"$FG$ at compile time.
+
+* $FG,4$Tempted to write a whole program backwards?$FG$  $LK,"::/Demo/UnholyC/Backmasked.UC"$ already did.  Every keyword in it is spelled in reverse and it compiles anyway.
+
+* $FG,4$Tempted to hear a poem played backwards?$FG$  $LK,"::/Demo/RevFileDemo/Rev.HC"$ turns a poem stored line-reversed on the CD back around.  It writes to $FG,2$~/$FG$, so it needs a writable $FG,2$/Home$FG$.
+
+* $FG,4$Tempted to go deeper?$FG$  $MA-X+PU,"Descent",LM="#include \"::/Apps/Descent/Run\";"$ drops you through Dante's nine circles.  Each one is faster than the last.
+
+* $FG,4$Tempted to take the tour?$FG$  $FG,2$Cd("::/Misc/Tour");;InFile("Tour");$FG$ starts The Descent: twelve stops on the way down, and the Beast at the bottom.
+
+* $FG,4$Tempted to rate the hymns?$FG$  In $LK,"JukeBox",A="FF:::/Apps/Psalmody/JukeBox.HC,JukeBox"$() press $FG,2$0$FG$-$FG,2$9$FG$ to rate a song and $FG,2$<DEL>$FG$ to delete one.  The first line of a $MA-X+PU,"Psalmody",LM="#include \"::/Apps/Psalmody/Run\"\n"$ song file is a comment with its category and rating.

@@ -1,8 +1,9 @@
 "Ed(\"::/Misc/Bible.TXT.Z\");\n";
-TourPut("Press $$GREEN$$<CTRL-F>$$FG$$ to find.\n");
+TourPut("We will search the Bible for the Number of the Beast.\n\n"
+	"Press $$GREEN$$<CTRL-F>$$FG$$ to find.\n");
 InGetChar(CH_CTRLF);
 
-InPrint(150,"new song");
+InPrint(150,"threescore and six");
 
 TourPut("Cursor down 8 times.\n");
 I64 i;
@@ -15,7 +16,9 @@ InGetStr("2");
 TourPut("Press $$GREEN$$<ESC>$$FG$$ to exit the form.\n");
 InGetChar(CH_ESC);
 
-TourPut("Look around and press $$GREEN$$<ESC>$$FG$$ to turn off filter.\n");
+TourPut("Revelation 13:18 is in there, and so is King Solomon's gold: "
+	"666 talents a year.\n\n"
+	"Look around and press $$GREEN$$<ESC>$$FG$$ to turn off filter.\n");
 InUntilChar(CH_ESC,CH_SHIFT_ESC);
 
 TourPut("You can combine filters to effectively do AND searches.\n",TRUE);

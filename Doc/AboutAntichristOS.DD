@@ -1,0 +1,32 @@
+$WW,1$$FG,4$$TX+CX,"AntichristOS"$$FG$
+$FG,8$$TX+CX,"SOtsirhcitnA"$$FG$
+
+
+$FG,5$What is this?$FG$
+
+AntichristOS V6.66 is a parody fork of $FG,2$TempleOS V5.03$FG$.  TempleOS is a free, public domain, 64-bit operating system for recreational programming, written single-handedly by $FG,2$Terry A. Davis$FG$: the kernel, the 64-bit compiler and assembler, the boot loaders, the graphics library, the editor and document format, the file system, the games and the music.
+
+AntichristOS takes all of that and plays it backwards.  It borrows the costume department of 1980's heavy metal and the satanic panic -- backmasked records, the tritone, the number 666, Dante's circles and Milton's Pandemonium -- and drapes it over the OS's own framing.  The machinery underneath is unchanged and still works the way it was designed to.
+
+
+$FG,5$What got turned upside down$FG$
+
+* $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$: every keyword can be spelled backwards, plus $FG,2$unless$FG$, $FG,2$until$FG$, $FG,2$backwards$FG$ and a few heavy-metal keywords.  Errors are $FG,4$BLASPHEMY$FG$ now.
+* The Adversary answers on $FG,2$<F7>$FG$ and $FG,2$<F6>$FG$ with backmasked words, mirrored passages and songs in the Diabolus mode.
+* Hellfire, Negative and Holy palettes, an upside-down screen, a mirror-script font and backmasked music, all on $FG,2$<CTRL-ALT-key>$FG$s.  See $LK,"StandBy",A="FI:::/Doc/StandBy.DD"$.
+* $LK,"The Anti-Charter",A="FI:::/Doc/Charter.DD"$, $LK,"F.A.Q. of the Damned",A="FI:::/Doc/FAQ.DD"$, $LK,"Temptations",A="FI:::/Doc/Temptations.DD"$ and The Descent, a tour in twelve circles.
+* $FG,2$Descent$FG$, a new game: fall through Dante's nine circles.
+
+
+$FG,5$What did not change$FG$
+
+Everything that actually works.  The kernel, the compiler, the libraries, the games, the hymns and the documentation's technical content are the work of Terry A. Davis, released into the public domain, and this fork changes them as little as it can.  The Bible and the dictionary on the CD are the same public domain texts as before.  The ISO publisher string is still $FG,2$TempleOS RedSea$FG$, because the kernel looks for it.
+
+
+$FG,5$In fairness$FG$
+
+AntichristOS is a joke about album covers, not about anybody's faith.  It does not mock Terry A. Davis, his health or his beliefs, nor anyone else's, and it is not a religious statement of any kind.  The gargoyles are decorative.  No souls were harvested in the making of this fork.
+
+
+$FG,5$Credits:$FG$
+See $LK,"::/Doc/Credits.DD"$.  TempleOS itself is described in $LK,"::/Doc/AboutTempleOS.DD"$.

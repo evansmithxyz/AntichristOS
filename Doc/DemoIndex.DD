@@ -1,12 +1,22 @@
-$FG,5$$TX+CX,"TempleOS Demo Index"$$FG$
+$FG,4$$TX+CX,"AntichristOS Demo Index"$$FG$
+$FG,8$$TX+CX,"Arranged by depth, like Hell."$$FG$
 
-$WW,1$These are arranged in increasing order of difficulty, more or less.  This can be used as a tutorial if you start at the beginning and work your way fwd.
+$WW,1$These are arranged in increasing order of difficulty, more or less, from the lost souls at the gate down to the arch-fiends at the bottom.  This can be used as a tutorial if you start at the beginning and work your way down.
 
 $FG,2$<SPACE>$FG$ to edit a file and $FG,2$<F5>$FG$ to run it.
 
 $LK,"::/Doc/HelloWorld.DD"$
 
-$WW,0$$TR,"Games: Beginner"$
+$WW,0$$TR-C,"Unholy Rites"$
+$ID,2$$LK,"::/Doc/UnholyC.DD"$ //The language, backwards
+$LK,"::/Demo/UnholyC/HelloHell.UC"$ //Hello, World, from the other side
+$LK,"::/Demo/UnholyC/UnlessUntil.UC"$ //unless, until, do..until, backwards
+$LK,"::/Demo/UnholyC/Backmasked.UC"$ //A whole program spelled backwards
+$LK,"::/Demo/RevFileDemo/Rev.HC"$ //A poem stored backwards (needs a writable ~/)
+$LK,"::/Demo/MultiCore/Palindrome.HC"$ //Bible palindromes, found by every core
+$LK,"::/Demo/MultiCore/Semordnilap.HC"$ //Words that read as other words backwards
+$LK,"::/Apps/Descent/Run.HC"$ //The game: Dante's nine circles, <F5> to fall
+$ID,-2$$TR,"Games: Lost Souls (Beginner)"$
 $ID,2$$LK,"::/Demo/Graphics/NetOfDots.HC"$
 $LK,"::/Demo/Graphics/MouseDemo.HC"$
 $LK,"::/Demo/Graphics/Lines.HC"$
@@ -45,7 +55,7 @@ $MA-X+PU,"::/Demo/Games/Stadium",LM="Cd(\"::/Demo/Games/Stadium\");Dir;View;\n"$
 $LK,"::/Demo/Graphics/Lattice.HC"$
 $LK,"::/Demo/Graphics/Collision.HC"$
 $LK,"::/Demo/Games/BlackDiamond.HC"$
-$ID,-2$$TR,"Games: Intermediate"$
+$ID,-2$$TR,"Games: The Damned (Intermediate)"$
 $ID,2$$LK,"::/Demo/Graphics/Box.HC"$
 $LK,"::/Demo/Graphics/Pick.HC"$
 $LK,"::/Demo/Graphics/3DPoly.HC"$
@@ -89,7 +99,7 @@ $LK,"::/Demo/Games/RawHide.HC"$
 $LK,"::/Demo/Games/DunGen.HC"$
 $MA-X+PU,"::/Apps/Titanium",LM="Cd(\"::/Apps/Titanium\");Dir;View;\n"$
 $LK,"::/Demo/Games/Collision.HC"$
-$ID,-2$$TR,"Games: Advanced"$
+$ID,-2$$TR,"Games: Arch-Fiends (Advanced)"$
 $ID,2$$LK,"::/Demo/MultiCore/LoadTest.HC"$
 $LK,"::/Demo/MultiCore/Primes.HC"$
 $LK,"::/Demo/MultiCore/MPRadix.HC"$
@@ -118,7 +128,7 @@ $LK,"::/Demo/Games/Talons.HC"$
 $MA-X+PU,"::/Apps/Strut",LM="Cd(\"::/Apps/Strut\");Dir;View;\n"$
 $MA-X+PU,"::/Apps/Span",LM="Cd(\"::/Apps/Span\");Dir;View;\n"$
 $MA-X+PU,"::/Apps/Psalmody",LM="Cd(\"::/Apps/Psalmody\");Dir;View;\n"$
-$ID,-2$$TR,"Non-Game"$
+$ID,-2$$TR,"Mortal Toil (Non-Game)"$
 $ID,2$$LK,"::/Misc/DoDistro.HC"$
 $LK,"::/Demo/DbgDemo.HC"$
 $LK,"::/Demo/SubSwitch.HC"$
@@ -148,7 +158,7 @@ $MA-X+PU,"::/Apps/TimeClock",LM="Cd(\"::/Apps/TimeClock\");Dir;View;\n"$
 $MA-X+PU,"::/Apps/Logic",LM="Cd(\"::/Apps/Logic\");Dir;View;\n"$
 $MA-X+PU,"::/Demo/Lectures",LM="Cd(\"::/Demo/Lectures\");Dir;View;\n"$
 $MA-X+PU,"::/Apps/Budget",LM="Cd(\"::/Apps/Budget\");Dir;View;\n"$
-$ID,-2$$TR,"TempleOS Specific"$
+$ID,-2$$TR,"AntichristOS Specific"$
 $ID,2$$MA-X+PU,"::/Demo/InFile",LM="Cd(\"::/Demo/InFile\");Dir;View;\n"$
 $LK,"::/Demo/Print.HC"$
 $LK,"::/Demo/SubIntAccess.HC"$
