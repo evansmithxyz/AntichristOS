@@ -148,19 +148,26 @@ public U0 PaletteUnholySet(I64 mode=UNHOLY_PAL_HELLFIRE)
   PaletteSetStd;
 }
 
+CBGR48 unholy_breath[COLORS_NUM]; //What the bellows last wrote to the DAC.
+
 public U0 PaletteUnholyBreathe()
 {//Hellfire breathes. Called every frame; touches only the DAC.
+//If an app has programmed the slot itself, its palette wins.
   CBGR48 c;
   F64 f;
   I64 i;
   if (!unholy_breathing) return;
   f=0.78+0.22*Sin(tS*2.2);
   for (i=1;i<4;i+=2) {//Slots 1 and 3
-    c=gr_palette_std[i];
-    c.r=ToI64(c.r*f);
-    c.g=ToI64(c.g*f*f);
-    c.b=ToI64(c.b*f*f);
-    GrPaletteColorSet(i,c);
+    c=GrPaletteColorGet(i);
+    if (c==unholy_breath[i] || c==gr_palette_std[i]) {
+      c=gr_palette_std[i];
+      c.r=ToI64(c.r*f);
+      c.g=ToI64(c.g*f*f);
+      c.b=ToI64(c.b*f*f);
+      GrPaletteColorSet(i,c);
+      unholy_breath[i]=GrPaletteColorGet(i);
+    }
   }
 }
 

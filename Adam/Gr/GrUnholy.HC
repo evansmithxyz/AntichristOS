@@ -113,19 +113,80 @@ public U0 UnholyFontSet(I64 mode=UNHOLY_FONT_STD)
 
 U0 UnholyMsXform(I64 mode)
 {//Map the mouse between logical and displayed orientation.
-  if (mode==UNHOLY_FLIP_ROT180)
-    ms.pos.x=GR_WIDTH-1-ms.pos.x;
-  if (mode)
-    ms.pos.y=GR_HEIGHT-1-ms.pos.y;
+//It is its own inverse, even with the grid snap on.
+  if (mode==UNHOLY_FLIP_ROT180) {
+    ms.presnap.x=GR_WIDTH-1-ms.presnap.x;
+    if (ms_grid.snap)
+      ms.pos.x=Trunc(ms.presnap.x/ms_grid.x)*ms_grid.x+ms_grid.x_offset;
+    else
+      ms.pos.x=GR_WIDTH-1-ms.pos.x;
+  }
+  if (mode) {
+    ms.presnap.y=GR_HEIGHT-1-ms.presnap.y;
+    if (ms_grid.snap)
+      ms.pos.y=Trunc(ms.presnap.y/ms_grid.y)*ms_grid.y+ms_grid.y_offset;
+    else
+      ms.pos.y=GR_HEIGHT-1-ms.pos.y;
+  }
+  ms.pos.x=ClampI64(ms.pos.x,0,GR_WIDTH-1);
+  ms.pos.y=ClampI64(ms.pos.y,0,GR_HEIGHT-1);
   ms.pos_text.x=ms.pos.x/FONT_WIDTH;
   ms.pos_text.y=ms.pos.y/FONT_HEIGHT;
+}
+
+class CUnholyMs
+{
+  I64 x,y;
+  Bool lb,rb;
+};
+
+CUnholyMs unholy_ms_pre,	//ms just before the WinMgr's MsUpdate
+	unholy_ms_last,		//ms as we left it last time
+	unholy_ms_hard;		//Where the hardware pointer really is
+
+U0 UnholyMsSnap(CUnholyMs *m)
+{
+  m->x=ms.pos.x;
+  m->y=ms.pos.y;
+  m->lb=ms.lb;
+  m->rb=ms.rb;
+}
+
+U0 UnholyMsPre()
+{//Called by $LK,"WinMsUpdate",A="MN:WinMsUpdate"$() just before $LK,"MsUpdate",A="MN:MsUpdate"$().
+  UnholyMsSnap(&unholy_ms_pre);
 }
 
 U0 UnholyMsUpdate()
 {//Hand-eye compensation: called after every hardware mouse event,
 //so the pointer moves the way your hand does on a damned screen.
-  if (unholy_scrn_flip && Bt(&sys_run_level,RLf_VGA))
-    UnholyMsXform(unholy_scrn_flip);
+  CUnholyMs raw;
+  I64 x,y;
+  UnholyMsSnap(&raw);
+  if (unholy_scrn_flip && Bt(&sys_run_level,RLf_VGA)) {
+//$LK,"MsSet",A="MN:MsSet"$() puts the hardware where the logical pointer already
+    //is.  Obey it (no mirror jump) and re-anchor the hardware at the
+    //spot where the pointer is displayed, so the hand keeps working.
+    if (raw.x==unholy_ms_pre.x && raw.y==unholy_ms_pre.y &&
+	  (unholy_ms_pre.x!=unholy_ms_last.x ||
+	  unholy_ms_pre.y!=unholy_ms_last.y ||
+	  unholy_ms_pre.lb!=unholy_ms_last.lb ||
+	  unholy_ms_pre.rb!=unholy_ms_last.rb ||
+	  AbsI64(raw.x-unholy_ms_hard.x)>8 ||
+	  AbsI64(raw.y-unholy_ms_hard.y)>8)) {
+      x=raw.x;
+      if (unholy_scrn_flip==UNHOLY_FLIP_ROT180)
+	x=GR_WIDTH-1-x;
+      y=GR_HEIGHT-1-raw.y;
+      MsSet(x,y,,ms.lb,ms.rb); //Hardware to the displayed spot,
+      UnholyMsXform(unholy_scrn_flip); //ms back to the logical one.
+      raw.x=x;
+      raw.y=y;
+    } else
+      UnholyMsXform(unholy_scrn_flip);
+  }
+  MemCpy(&unholy_ms_hard,&raw,sizeof(CUnholyMs));
+  UnholyMsSnap(&unholy_ms_last);
 }
 
 public U0 UnholyScrnFlipSet(I64 mode=UNHOLY_FLIP_NONE)
@@ -138,6 +199,7 @@ public U0 UnholyScrnFlipSet(I64 mode=UNHOLY_FLIP_NONE)
     UnholyMsXform(unholy_scrn_flip);
     UnholyMsXform(mode);
   }
+  UnholyMsSnap(&unholy_ms_last);
   unholy_scrn_flip=mode;
   POPFD
   VGAFlush;
