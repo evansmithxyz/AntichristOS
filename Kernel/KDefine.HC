@@ -122,7 +122,7 @@ U0 SysDefinesLoad()
 	"Breakpoint (Crossroads Deal)\0"
 	"Overflow (Lake of Fire)\0"
 	"BOUND Range Exceeded (Beyond Limbo)\0"
-	"Invalid Opcode (Speaking in Tongues)\0"
+	"Invalid Opcode (Unspeakable Incantation)\0"
 	"No Math Coprocessor (No Familiar)\0"
 	"Double Fault (Doubly Damned)\0"
 	"Coprocessor Segment Fault (Familiar Fled)\0"
