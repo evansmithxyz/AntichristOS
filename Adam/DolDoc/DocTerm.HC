@@ -31,8 +31,9 @@ public CDoc *DocBorderNew(CDoc *pdoc)
   doc_e->data=&Fs->task_title;
   DocDataFmt(bdoc,doc_e);
   DocPrint(bdoc,"$$CM+H+NC,1,0$$$$TX+H+BD+IV,\"%X\"$$",Fs);
-  DocPrint(bdoc,"$$TX+H+RX+BD,\"[X]\"$$");
-  DocPrint(bdoc,"$$BK,1$$$$TX+H+LX+BD,\"MENU\"$$$$BK,0$$");
+//AntichristOS: inverted chrome, [X] on the left, MENU on the right.
+  DocPrint(bdoc,"$$TX+H+LX+BD,\"[X]\"$$");
+  DocPrint(bdoc,"$$BK,1$$$$TX+H+RX+BD,\"MENU\"$$$$BK,0$$");
   return bdoc;
 }
 

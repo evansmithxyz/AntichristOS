@@ -105,6 +105,81 @@ _GR_UPDATE_LINE64_FLUSH_CACHE::
 	POP	RBP
 	RET1	32
 //************************************
+//AntichristOS upside-down blit.  Same as above, but the VGA pointer
+//runs backward and BSWAP replaces the bit reversal: pixel x lands
+//on 639-x and row y on 479-y.  The cache stays in source order.
+_GR_UPDATE_LINE64_ROT180::
+	PUSH	RBP
+	MOV	RBP,RSP
+	PUSH	RSI
+	PUSH	RDI
+
+	MOV	RAX,U64 SF_ARG2[RBP]
+	MOV	RSI,U64 [RAX]		//rsi=src
+	MOV	RCX,U64 SF_ARG3[RBP]	//rcx=d
+	MOV	RAX,U64 SF_ARG4[RBP]
+	MOV	RDI,U64 [RAX]		//rdi=image
+
+	MOV	RAX,U64 SF_ARG1[RBP]
+	MOV	R8,U64 [RAX]		//r8=vga dst, descending
+
+@@05:	LODSQ
+	CMP	U64 [RDI],RAX
+	JE	@@10
+	MOV	U64 [RDI],RAX
+	DU8	0x48,0x0F,0xC8;		//BSWAP RAX
+	MOV	U64 [R8],RAX
+@@10:	ADD	RDI,8
+	SUB	R8,8
+	DEC	RCX
+	JNZ	@@05
+
+	MOV	RAX,U64 SF_ARG1[RBP]
+	MOV	U64 [RAX],R8
+	MOV	RAX,U64 SF_ARG4[RBP]
+	MOV	U64 [RAX],RDI
+	MOV	RAX,U64 SF_ARG2[RBP]
+	MOV	U64 [RAX],RSI
+	POP	RDI
+	POP	RSI
+	POP	RBP
+	RET1	32
+//************************************
+_GR_UPDATE_LINE64_ROT180_FLUSH_CACHE::
+	PUSH	RBP
+	MOV	RBP,RSP
+	PUSH	RSI
+	PUSH	RDI
+
+	MOV	RAX,U64 SF_ARG2[RBP]
+	MOV	RSI,U64 [RAX]		//rsi=src
+	MOV	RCX,U64 SF_ARG3[RBP]	//rcx=d
+	MOV	RAX,U64 SF_ARG4[RBP]
+	MOV	RDI,U64 [RAX]		//rdi=image
+
+	MOV	RAX,U64 SF_ARG1[RBP]
+	MOV	R8,U64 [RAX]		//r8=vga dst, descending
+
+@@05:	LODSQ
+	MOV	U64 [RDI],RAX
+	DU8	0x48,0x0F,0xC8;		//BSWAP RAX
+	MOV	U64 [R8],RAX
+	ADD	RDI,8
+	SUB	R8,8
+	DEC	RCX
+	JNZ	@@05
+
+	MOV	RAX,U64 SF_ARG1[RBP]
+	MOV	U64 [RAX],R8
+	MOV	RAX,U64 SF_ARG4[RBP]
+	MOV	U64 [RAX],RDI
+	MOV	RAX,U64 SF_ARG2[RBP]
+	MOV	U64 [RAX],RSI
+	POP	RDI
+	POP	RSI
+	POP	RBP
+	RET1	32
+//************************************
 _DC_BLOT_COLOR4::
 	PUSH	RBP
 	MOV	RBP,RSP
@@ -405,6 +480,10 @@ public _extern _IS_PIX_COVERED0 Bool IsPixCovered0(
 _extern _GR_UPDATE_LINE64 U0 GrUpdateLine64(
   U64 **_vga,U64 **_src,I64 d,U8 **_dst);
 _extern _GR_UPDATE_LINE64_FLUSH_CACHE U0 GrUpdateLine64FlushCache(
+  U64 **_vga,U64 **_src,I64 d,U8 **_dst);
+_extern _GR_UPDATE_LINE64_ROT180 U0 GrUpdateLine64Rot180(
+  U64 **_vga,U64 **_src,I64 d,U8 **_dst);
+_extern _GR_UPDATE_LINE64_ROT180_FLUSH_CACHE U0 GrUpdateLine64Rot180FlushCache(
   U64 **_vga,U64 **_src,I64 d,U8 **_dst);
 _extern _DC_BLOT_COLOR4 U0 DCBlotColor4(
   U8 *dst,I64 *img,I64 *img_cache,I64 cnt);

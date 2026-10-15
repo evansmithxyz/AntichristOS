@@ -692,11 +692,12 @@ wmt_start:
 	    !Bt(&sys_focus_task->win_inhibit,WIf_FOCUS_TASK_BORDER))) {
 	if (old_ms.lb && !ms.lb) {
 	  if (ms.pos_text.y==task->win_top-1) {
-	    if (task->win_left<=ms.pos_text.x<task->win_left+4) {
+//AntichristOS inverted chrome: MENU on the right, [X] on the left.
+	    if (task->win_right-4<ms.pos_text.x<=task->win_right) {
 	      TaskMsg(task,0,MSG_KEY_DOWN,CH_CTRLM,0x43200000432,0);
 	      old_ms.lb=FALSE;
 	      goto wmt_start;
-	    } else if (task->win_right-2<=ms.pos_text.x<=task->win_right) {
+	    } else if (task->win_left<=ms.pos_text.x<=task->win_left+2) {
 	      if (DocPut(task))
 		TaskMsg(task,0,MSG_KEY_DOWN,CH_SHIFT_ESC,0,0);
 	      else
@@ -780,11 +781,11 @@ wmt_start:
 	if (ms.lb && !old_ms.lb) {
 	  if (task->win_top==ms.pos_text.y+1 &&
 		task->win_left-1<=ms.pos_text.x<=task->win_right+1) {
-	    if (task->win_left<=ms.pos_text.x<task->win_left+4) {
+	    if (task->win_right-4<ms.pos_text.x<=task->win_right) {
 	      old_ms.lb=TRUE;
 	      goto wmt_start;
 	    }
-	    if (task->win_right-2<=ms.pos_text.x<=task->win_right) {
+	    if (task->win_left<=ms.pos_text.x<=task->win_left+2) {
 	      old_ms.lb=TRUE;
 	      goto wmt_start;
 	    }

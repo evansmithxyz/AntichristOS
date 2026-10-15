@@ -295,13 +295,26 @@ mesh_done:
 }
 
 #help_index "Graphics/Misc;Mouse/Ptr"
+#define GR_PITCHFORK_MS_SIZE	20
+U32 gr_pitchfork_ms[GR_PITCHFORK_MS_SIZE]={//Row y, bit x.  Hot spot: centre tine.
+0x000C3,0x00083,0x00104,0x00208,0x00410,0x00620,0x00341,0x00183,
+0x003C4,0x00668,0x00C30,0x01800,0x03000,0x06000,0x0C000,0x18000,
+0x30000,0x60000,0xC0000,0x80000};
+
 public U0 DrawStdMs(CDC *dc,I64 x,I64 y)
 {//This is a callback. See $LK,"::/Demo/Graphics/Grid.HC"$.
 //Called by $LK,"DrawMs",A="MN:DrawMs"$() which is
   //called by $LK,"WinFinalUpdate",A="MN:WinFinalUpdate"$().
+//AntichristOS points with a pitchfork.  Every pixel is plotted
+  //once, so the XOR color never cancels itself out.
+  I64 i,j,b;
   dc->thick=1;
   dc->flags&=~(DCF_TRANSFORMATION|DCF_SYMMETRY);
-  GrArrow3(dc,x+8,y+8,0,x,y,0);
+  for (j=0;j<GR_PITCHFORK_MS_SIZE;j++)
+    if (b=gr_pitchfork_ms[j])
+      for (i=0;i<GR_PITCHFORK_MS_SIZE;i++)
+	if (Bt(&b,i))
+	  GrPlot(dc,x+i,y+j);
 }
 
 gr.fp_draw_ms=&DrawStdMs;

@@ -363,6 +363,38 @@ U0 GrUpdateTextModeText()
   }
 }
 
+I64 gr_unholy_flip_drawn=UNHOLY_FLIP_NONE; //Orientation now on the VGA
+
+U0 GrUpdateVGAUnholy(U32 *src,U32 *dst,I64 d,I64 mode)
+{//AntichristOS: blit the scrn upside-down or reflected.
+//The cache (dst) stays in source order; only the VGA side moves.
+  I64 row,plane,h=gr.zoomed_dc->height;
+  U32 *vga;
+  Bool flush=LBtr(&sys_semas[SEMA_FLUSH_VGA_IMAGE],0);
+  for (plane=1;plane<0x10;plane<<=1) {
+    OutU8(VGAP_IDX,VGAR_MAP_MASK);
+    OutU8(VGAP_DATA,plane);
+    if (mode==UNHOLY_FLIP_ROT180) {
+//A plane is one run of h*d U64s: walk VGA backward from its end.
+      vga=text.vga_alias+h*d*sizeof(U64)-sizeof(U64);
+      if (flush)
+	GrUpdateLine64Rot180FlushCache(&vga,&src,h*d,&dst);
+      else
+	GrUpdateLine64Rot180(&vga,&src,h*d,&dst);
+    } else {
+//Reflection: source row 0 lands on the bottom VGA row.
+      row=h;
+      while (row--) {
+	vga=text.vga_alias+row*d*sizeof(U64);
+	if (flush)
+	  GrUpdateLine64FlushCache(&vga,&src,d,&dst);
+	else
+	  GrUpdateLine64(&vga,&src,d,&dst);
+      }
+    }
+  }
+}
+
 U0 GrUpdateVGAGraphics()
 {//Update Graphic Card
   I64 row,plane,d=gr.zoomed_dc->width_internal>>6;
@@ -374,6 +406,14 @@ U0 GrUpdateVGAGraphics()
     src=gr.zoomed_dc->body;
   }
   dst=gr.scrn_image->body;
+  if (unholy_scrn_flip!=gr_unholy_flip_drawn) {//Turned: repaint it all.
+    gr_unholy_flip_drawn=unholy_scrn_flip;
+    LBts(&sys_semas[SEMA_FLUSH_VGA_IMAGE],0);
+  }
+  if (gr_unholy_flip_drawn) {
+    GrUpdateVGAUnholy(src,dst,d,gr_unholy_flip_drawn);
+    return;
+  }
   if (LBtr(&sys_semas[SEMA_FLUSH_VGA_IMAGE],0)) {
     for (plane=1;plane<0x10;plane<<=1) {
       OutU8(VGAP_IDX,VGAR_MAP_MASK);
@@ -398,6 +438,8 @@ U0 GrUpdateVGAGraphics()
 U0 GrUpdateScrn()
 {//Called by the Window Manager $LK,"HERE",A="FF:::/Adam/WinMgr.HC,GrUpdateScrn"$, 30 times a second.
   CDC *dc;
+  UnholyFlamesUpdate;
+  PaletteUnholyBreathe;
   if (!Bt(&sys_run_level,RLf_VGA)) //if text mode
     GrUpdateTasks;
   else {

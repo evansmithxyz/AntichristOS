@@ -101,8 +101,8 @@ public Bool DocEd(CDoc *doc,I64 dof_flags=0)
   bdoc=DocNew;
   bdoc->flags|=DOCF_BORDER_DOC;
   DocPrint(bdoc,"$$CM+TY+LX+NC,0,-1$$");
-  DocPrint(bdoc,"$$TX+RX+BD,\"[X]\"$$");
-  DocPrint(bdoc,"$$BK,1$$$$TX+LX+BD,\"MENU\"$$$$BK,0$$");
+  DocPrint(bdoc,"$$TX+LX+BD,\"[X]\"$$"); //Inverted chrome
+  DocPrint(bdoc,"$$BK,1$$$$TX+RX+BD,\"MENU\"$$$$BK,0$$");
 
   old_task_title=StrNew(Fs->task_title);
   if (Fs->title_src!=TTS_LOCKED_CONST) {

@@ -23,6 +23,7 @@ U0 DocInit()
   HashDefineLstAdd("ST_DOC_CMDS",DHT_DOC_CMD,doldoc.hash);
   HashDefineLstAdd("ST_DOC_FLAGS",DHT_DOC_FLAG,doldoc.hash);
   HashDefineLstAdd("ST_COLORS",DHT_COLOR,doldoc.hash);
+  HashDefineLstAdd("ST_UNHOLY_COLORS",DHT_COLOR,doldoc.hash); //$$BLOOD$$ etc.
 
   MemSet(doldoc.dft_de_flags,	0,sizeof(doldoc.dft_de_flags));
   MemSet(doldoc.dft_type_flags,	0,sizeof(doldoc.dft_type_flags));
