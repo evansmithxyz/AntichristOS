@@ -235,12 +235,19 @@ U0 SndRst()
 }
 
 U0 Beep(I8 ona=62,Bool busy=FALSE)
-{//Make beep at given ona freq.
+{//Make beep at given ona freq, answered by the tritone below it.
+//Diabolus in musica: 6 semitones, 3 whole tones, half an octave of sin.
   Snd(ona);
   if (busy)
-    Busy(500000);
+    Busy(250000);
   else
-    Sleep(500);
+    Sleep(250);
+  if (ona>6)
+    Snd(ona-6);
+  if (busy)
+    Busy(250000);
+  else
+    Sleep(250);
   Snd;
   if (busy)
     Busy(200000);

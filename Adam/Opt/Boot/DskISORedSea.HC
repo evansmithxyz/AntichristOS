@@ -95,7 +95,7 @@ U0 RedSeaISO9660(U8 *iso_filename,U8 drv_let)
     FBlkWrite(out_file,iso_term,19<<2,4);
 
     et->w[0]=1;
-    StrCpy(&et->w[2],"TempleOS");
+    StrCpy(&et->w[2],"AntichristOS");
     et->w[15]=0xAA55;
     j=0;
     for (i=0;i<16;i++) //Checksum

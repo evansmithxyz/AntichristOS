@@ -499,33 +499,33 @@ U0 DbgHelp()
 {
   "\n"
 	"The cmd line is basically the same as normal.	Here are some common\n"
-	"debugging commands.\n\n"
-	">EdLite(\"FileName\");\t\t//Edit file.\n"
-	">D(0x100000);\t\t\t//Dump page tables.\n"
+	"rites of exorcism.\n\n"
+	">EdLite(\"FileName\");\t\t//Edit file.  Rewrite thy sins.\n"
+	">D(0x100000);\t\t\t//Dump page tables.  Read the grimoire.\n"
 	">Dm(0x100000);\t\t\t//Dump page tables.\n"
 	">Dm(Fs,sizeof(CTask));\t\t//Dump current task record.\n"
 	">ClassRep(Fs,\"CTask\",1);\t//Dump current task record.\n"
 	">ClassRep(Fs,,1);\t\t//(It knows lastclass.)\n"
-	">CallerRep;\t\t\t//Stack trace report.\n"
+	">CallerRep;\t\t\t//Stack trace: follow the trail of sins.\n"
 	">Da(_RSP);\t\t\t//Dump stk.\n"
-	">Dr;\t\t\t\t//Dump Regs.\n"
-	">1+2*3+&Print;\t\t\t//Show calculation res.\n"
+	">Dr;\t\t\t\t//Dump Regs.  Name thy demons.\n"
+	">1+2*3+&Print;\t\t\t//Show calculation res.  (Not 666.)\n"
 	">*(0x70000)(I64 *)=0x123456789;\t//Assign value to 0x70000-0x70007.\n"
 	">_RAX=0x1234;\t\t\t//Set RAX to 0x1234.\n"
 	">_RIP=&Break;\t\t//Set RIP.\n"
-	">I64 i;\t\t\t\t//Declare variable.\n"
+	">I64 i;\t\t\t\t//Declare variable.  Possess it.\n"
 	">i=_RCX+_RDX;\t\t\t//Assign to variable.\n"
 	">U(&Print+0x8);\t\t\t//Unassemble Print.\n"
 	">Uf(\"Print\");\t\t\t//Unassembler function \"Print\".\n"
 	">Man(\"Print\");\t\t\t//Edit Src for \"Print\".\n"
 	">E(_RIP);\t\t\t//Edit Src Code.\n"
-	">Fix;\t\t\t\t//Edit Last Err Src Code.\n"
-	">B(&Main+0x20);\t\t\t//Toggle break point.\n"
+	">Fix;\t\t\t\t//Edit Last Err Src Code.  Repent.\n"
+	">B(&Main+0x20);\t\t\t//Toggle break point.  Crossroads.\n"
 	">B2;\t\t\t\t//Clear all break points.\n"
-	">S;\t\t\t\t//Single step.\n"
-	">G;\t\t\t\t//Resume execution.\n"
+	">S;\t\t\t\t//Single step.  Descend one circle.\n"
+	">G;\t\t\t\t//Resume execution.  Begone!\n"
 	">G2;\t\t\t\t//B2;VGAFlush;WinFocus;G;\n"
-	">Exit;\t\t\t\t//Exit (kill) task.\n\n"
+	">Exit;\t\t\t\t//Exit (kill) task.  Cast it out.\n\n"
 	"After resuming, <CTRL-ALT-n> next focus task.\n"
 	"After resuming, <CTRL-ALT-v> flushes scrn VGA cache.\n\n";
 }
@@ -576,9 +576,14 @@ U0 Fault3(I64 fault_num,I64 fault_err_code)
     MPInt(I_MP_CRASH,0);
     SysHlt;
   }
-  "\n\tTempleOS Debugger\n\n"
-	">Help;\t//For help.\n\n";
-  Beep(62,TRUE);
+  "\n\tUnholy C Debugger -- The Exorcist\n\n"
+	">Help;\t//For help.  The power of Help compels you.\n\n";
+  Snd(62);	//B4...
+  Busy(250000);
+  Snd(68);	//...F5.  The tritone, diabolus in musica.
+  Busy(350000);
+  Snd;
+  Busy(100000);
   if (fault_num==I_DBG) {
     if (dbg.msg) {
       "\n!!! %s",dbg.msg;

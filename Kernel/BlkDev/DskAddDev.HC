@@ -194,9 +194,10 @@ Bool GetBaseUnit(CBlkDev *bd)
       StreamPrint("probe=TRUE;");
   };
   if (!probe || !BootDVDProbeAll(bd)) {
-    "\nDon't worry.  This is not a product\n"
-	  "registration.	TempleOS just needs the\n"
+    "\nDon't worry.  This is not a soul\n"
+	  "contract.	AntichristOS just needs the\n"
 	  "I/O port numbers for the CD/DVD.\n"
+	  "(Your soul is optional.  The ports are not.)\n"
 	  "\nRetry the ports above or check Windows\n"
 	  "system information under I/O ports for\n"
 	  "'IDE', 'ATA' or 'SATA'.\n"

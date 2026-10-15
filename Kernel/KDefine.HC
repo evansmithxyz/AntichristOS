@@ -115,13 +115,30 @@ U0 SysDefinesLoad()
   DefineLstLoad("ST_COLORS","BLACK\0BLUE\0GREEN\0CYAN\0"
 	"RED\0PURPLE\0BROWN\0LTGRAY\0DKGRAY\0LTBLUE\0LTGREEN\0"
 	"LTCYAN\0LTRED\0LTPURPLE\0YELLOW\0WHITE\0");
-  DefineLstLoad("ST_INT_NAMES","Divide Error\0SingleStep\0NMI\0Breakpoint\0"
-	"Overflow\0BOUND Range Exceeded\0Invalid Opcode\0No Math Coprocessor\0"
-	"Double Fault\0Coprocessor Segment Fault\0Invalid TASK\0"
-	"Segment Not Present\0Stk Segment Fault\0General Protection\0"
-	"Page Fault\0 \0Math Fault\0Alignment Check\0Machine Check\0"
-	"SIMD Exception\0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0"
-	" \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0MP Crash\0Wake\0Dbg\0");
+  DefineLstLoad("ST_INT_NAMES",
+	"Divide Error (Into the Abyss)\0"
+	"SingleStep (One Circle Down)\0"
+	"NMI (Unmaskable Evil)\0"
+	"Breakpoint (Crossroads Deal)\0"
+	"Overflow (Lake of Fire)\0"
+	"BOUND Range Exceeded (Beyond Limbo)\0"
+	"Invalid Opcode (Speaking in Tongues)\0"
+	"No Math Coprocessor (No Familiar)\0"
+	"Double Fault (Doubly Damned)\0"
+	"Coprocessor Segment Fault (Familiar Fled)\0"
+	"Invalid TASK (Lost Soul)\0"
+	"Segment Not Present (Gone to Limbo)\0"
+	"Stk Segment Fault (Stack of Sins)\0"
+	"General Protection (Holy Water Splash)\0"
+	"Page Fault (Torn from the Grimoire)\0"
+	" \0"
+	"Math Fault (Number of the Beast)\0"
+	"Alignment Check (Planets Misaligned)\0"
+	"Machine Check (Ghost in the Machine)\0"
+	"SIMD Exception (Legion)\0"
+	" \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0"
+	" \0 \0 \0 \0 \0 \0 \0 \0 \0 \0 \0"
+	"MP Crash (Pandemonium)\0Wake (Raise the Dead)\0Dbg (Exorcism)\0");
 }
 
 U8 *Color2Str(U8 *buf,CColorROPU32 c)

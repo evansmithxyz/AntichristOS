@@ -253,7 +253,7 @@ CTask *Spawn(U0 (*fp_start_addr)(U8 *data),U8 *data=NULL,U8 *task_name=NULL,
 	  parent,stk_size,flags);
   task=CAlloc(sizeof(CTask),adam_task->code_heap);
   task->task_signature=TASK_SIGNATURE_VAL;
-  if (!task_name) task_name="Unnamed Task";
+  if (!task_name) task_name="Nameless Horror";
   if (!parent) parent=Gs->seth_task;
   task->parent_task=parent;
   task->gs=parent->gs;

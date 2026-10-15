@@ -108,7 +108,7 @@ U0 throw(I64 ch=0,Bool no_log=FALSE)
   }
   was_raw=Raw(ON);
   PutExcept(FALSE);
-  Panic("Unhandled Exception");
+  Panic("Unholy Exception");
   Raw(was_raw);
 }
 
