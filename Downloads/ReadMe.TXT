@@ -3,7 +3,7 @@
 AntichristOS is a parody fork of TempleOS V5.03 by Terry A. Davis.  You
 can't do anything until you burn an AntichristOS CD/DVD from the ISO file
 and boot it, or you aim your virtual machine's CD/DVD at the ISO file and
-boot.  Abandon all hope, ye who boot here.
+boot.  Then drop the needle and let the record spin the wrong way.
 
 AntichristOS is 64-bit and will not run on 32-bit hardware.
 
@@ -12,9 +12,9 @@ more!  It still only needs 16 colors.
 
 AntichristOS files are compressed with a nonstandard LZW format and the
 source code can only be compiled by the AntichristOS compiler because it is
-Unholy C, a nonstandard C/C++ dialect whose keywords may also be spelled
-backwards.  You must boot AntichristOS.  Then, you can compile it because it
-is 100% open source and all source present on the distro.
+Unholy C, a nonstandard C/C++ dialect whose everyday keywords may also be
+spelled backwards.  You must boot AntichristOS.  Then, you can compile it
+because it is 100% open source and all source present on the distro.
 
 If attempting to run on native hardware, AntichristOS may require you to
 enter I/O port addresses for the CD/DVD drive and the hard drive.  In

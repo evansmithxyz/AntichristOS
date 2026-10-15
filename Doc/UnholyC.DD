@@ -4,7 +4,7 @@ $TX+CX,"-- Webster's 1913, already on this CD.  Ask AutoComplete."$$FG$
 
 Unholy C is $LK,"HolyC",A="FI:::/Doc/HolyC.DD"$ with the record needle dropped on backwards.  Every HolyC program is still a valid Unholy C program -- nothing was taken away, things were only added, the way a backmasked message is added to an album that sounds perfectly innocent when played forwards.
 
-* Source files may end in $FG,2$.UC$FG$ and $FG,2$.UH$FG$ as well as $FG,2$.HC$FG$ and $FG,2$.HH$FG$.  An extensionless $FG,2$#include "File"$FG$ looks for $FG,2$File.HC$FG$ first and only tries $FG,2$File.UC$FG$ after that has failed, so the boot path pays nothing for the privilege.  $FG,2$<F5>$FG$ in the editor runs a $FG,2$.UC$FG$ file like any other.
+* Source files may end in $FG,2$.UC$FG$ and $FG,2$.UH$FG$ as well as $FG,2$.HC$FG$ and $FG,2$.HH$FG$.  An extensionless $FG,2$#include "File"$FG$ (or $FG,2$ExeFile("File")$FG$) looks for $FG,2$File.HC$FG$ first and only tries $FG,2$File.UC$FG$ after that has failed, so the boot path pays nothing for the privilege.  That $FG,2$File.HC$FG$ search climbs the parent directories, as file searches always have, so a $FG,2$File.HC$FG$ in any directory above wins over a $FG,2$File.UC$FG$ sitting right next to you.  Give your $FG,2$.UC$FG$ files names of their own, or $FG,2$#include$FG$ them with the extension.  $FG,2$<F5>$FG$ in the editor runs a $FG,2$.UC$FG$ file like any other.
 
 * The command line is still the compiler, but the prompt has turned around: $FG,2$T:/Home<$FG$.  It points at you now.
 
@@ -37,7 +37,7 @@ $WW,0$$FG,2$  Unholy     HolyC        Unholy     HolyC        Unholy     HolyC$F
   fidne      endif        tressa     assert       citats     static
   kcol       lock         denifed    defined      ssalctsal  lastclass
 $WW,1$
-The preprocessor ones go after a $FG,2$#$FG$ as usual: $FG,2$#edulcni$FG$, $FG,2$#enifed$FG$, $FG,2$#fedfi$FG$...$FG,2$#fidne$FG$, $FG,2$#tressa$FG$.  $FG,2$exe$FG$ is a palindrome, so $FG,2$#exe{}$FG$ was always unholy and needed no alias.  The underscore keywords ($FG,2$_extern$FG$, $FG,2$_import$FG$, $FG,2$_intern$FG$) have no aliases; an underscore spelled backwards is still an underscore at the wrong end.  If an alias ever collides with an identifier in the tree it is left out; $LK,"OpCodes.DD",A="FI:::/Compiler/OpCodes.DD"$ has the final word.
+The preprocessor ones go after a $FG,2$#$FG$ as usual: $FG,2$#edulcni$FG$, $FG,2$#enifed$FG$, $FG,2$#fedfi$FG$...$FG,2$#fidne$FG$, $FG,2$#tressa$FG$.  $FG,2$exe$FG$ is a palindrome, so $FG,2$#exe{}$FG$ was always unholy and needed no alias.  The underscore keywords ($FG,2$_extern$FG$, $FG,2$_import$FG$, $FG,2$_intern$FG$) have no aliases; an underscore spelled backwards is still an underscore at the wrong end.  Neither do the compiler's backroom keywords: $FG,2$ifaot$FG$, $FG,2$ifjit$FG$, $FG,2$reg$FG$, $FG,2$noreg$FG$, $FG,2$no_warn$FG$, $FG,2$help_index$FG$, $FG,2$help_file$FG$, $FG,2$interrupt$FG$, $FG,2$haserrcode$FG$, $FG,2$argpop$FG$ and $FG,2$noargpop$FG$.  Spell those forwards.  If an alias ever collides with an identifier in the tree it is left out; $LK,"OpCodes.DD",A="FI:::/Compiler/OpCodes.DD"$ has the final word.
 
 $ID,2$$FG,2$U0 Countdown()
 {
@@ -113,7 +113,7 @@ $FG,2$#summon "File"$FG$ is $FG,2$#include "File"$FG$.  $FG,2$#curse BEAST 666$F
 
 $FG,5$$TX+CX,"New Keywords"$$FG$
 
-These four are real new keywords, compiled by the rebuilt $FG,2$Compiler.BIN$FG$.  The parser does not insert a $FG,2$!$FG$; it flips the sense of the branch it would have emitted anyway, so an $FG,2$unless$FG$ costs exactly what an $FG,2$if$FG$ costs.
+$FG,2$unless$FG$, $FG,2$until$FG$ and $FG,2$backwards$FG$ are three real new keywords, compiled by the rebuilt $FG,2$Compiler.BIN$FG$; $FG,2$do ... until$FG$ is just $FG,2$until$FG$ moving in behind a $FG,2$do$FG$.  The parser does not insert a $FG,2$!$FG$; it flips the sense of the branch it would have emitted anyway, so an $FG,2$unless$FG$ costs exactly what an $FG,2$if$FG$ costs.
 
 $TR-C,"unless"$
 $ID,2$$FG,2$unless (cond) stmt [else stmt]$FG$ is $FG,2$if (!(cond)) stmt [else stmt]$FG$.
@@ -147,6 +147,8 @@ $ID,-2$
 Mind the format codes: $FG,2$"%d"$FG$ has to be written $FG,2$"d%"$FG$, because it gets reversed too.
 $ID,-2$
 Do not use $FG,2$unless$FG$, $FG,2$until$FG$ or $FG,2$backwards$FG$ in code compiled during boot ($FG,2$/Kernel$FG$, $FG,2$/Compiler$FG$, $FG,2$/Adam$FG$, $FG,2$StartOS.HC$FG$, $FG,2$/Home$FG$ start-up files): if an older $FG,2$Compiler.BIN$FG$ ever compiles them, the boot stops right there.  Demos, apps and anything you $FG,2$#include$FG$ by hand are fair game.  The aliases are safe anywhere, but boot code keeps the standard spellings so mortals can read it.
+
+Treat every alias and every new keyword as a reserved word, just like the keyword it stands for.  A label cannot wear one at all: a $FG,2$goto$FG$ label named $FG,2$fi:$FG$, or $FG,2$od:$FG$ inside an $FG,2$asm {}$FG$ block, is a $FG,4$BLASPHEMY$FG$.  A variable or a function may take the name, but then it hides the keyword: a local $FG,2$od$FG$ hides $FG,2$od$FG$ for the rest of its function, and a global or a function named $FG,2$rof$FG$ hides $FG,2$rof$FG$ from everything compiled after it in that task.  Old code that used $FG,2$fi$FG$, $FG,2$od$FG$, $FG,2$rof$FG$, $FG,2$dne$FG$, $FG,2$summon$FG$, $FG,2$legion$FG$, $FG,2$unless$FG$ or $FG,2$until$FG$ as a name should pick another.
 
 $FG,5$$TX+CX,"The Library of the Damned"$$FG$
 

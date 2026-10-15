@@ -48,7 +48,7 @@ U0 HelloHell()
   backwards "\n!lleH ,olleH";	//A print statement, played backwards.
   "$$FG$$(that line was written as: backwards \"\\n!lleH ,olleH\";)\n\n";
   HellTritone;
-  "Abandon all hope, ye who boot here.  Going down:\n";
+  "Midway upon the journey of our life, the floor gave way.  Going down:\n";
   rof (i=0;i<CIRCLES;i++) {
     st=StrRev(hell_circles[i]);
     "%h*c$$FG,4$$%d. %-9s$$FG$$ (%s) %s\n",

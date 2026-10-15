@@ -35,7 +35,7 @@ $LK,"TemptationOfDay",A="MN:TemptationOfDay"$() shows one at random when you boo
 
 * $FG,4$Tempted to read scripture in reverse?$FG$  $FG,2$<SHIFT-F7>$FG$ shows a passage with its lines and letters reversed.  Hold it up to a mirror.  The old oracle is still on $FG,2$<F8>$FG$ and $FG,2$<SHIFT-F8>$FG$.
 
-* $FG,4$Tempted to compose a hymn in the devil's interval?$FG$  $FG,2$<F6>$FG$ writes two measures in the Holy, Unholy or Diabolus mode.  $FG,2$<SHIFT-F6>$FG$ doodles in hellfire.
+* $FG,4$Tempted to compose a hymn in the devil's interval?$FG$  $FG,2$<F6>$FG$ writes a short song, two phrases each played twice, in the Holy, Unholy or Diabolus mode.  $FG,2$<SHIFT-F6>$FG$ doodles in hellfire.
 
 * $FG,4$Tempted to look for the Beast in the Bible?$FG$  $FG,2$Ed("::/Misc/Bible.TXT");$FG$, press $FG,2$<CTRL-f>$FG$, search for $FG,2$threescore and six$FG$ and set $FG,2$filter_lines$FG$ to 2.  King Solomon's gold came to 666 talents a year, too: $LK,"1 Kings,10:14",A="BF:1 Kings,10:14"$.  $FG,2$<CTRL-ALT-b>$FG$ opens the Bible at $LK,"Revelation",A="BF:Revelation,13:18"$.
 

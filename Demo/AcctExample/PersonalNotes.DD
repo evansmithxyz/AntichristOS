@@ -14,9 +14,9 @@ $WW,1$$FG,5$$TX+CX,"TODO"$$FG$
 
 * Make MV files combine disjoint rects for same frame.
 
-* God said to reconsider switch start/end, perhaps preface portion?
+* Reconsider switch start/end, perhaps preface portion?
 
-* 170605 Alec Murphy said MountFile() of a red sea supplemental1 ISO failed.
+* 170605 A user reported MountFile() of a red sea supplemental1 ISO failed.
 
 * Does entire tool chain support super/sub script?
 
@@ -41,7 +41,7 @@ $WW,1$$FG,5$$TX+CX,"TODO"$$FG$
 
 * $LK,"SpriteEd",A="FI:::/Adam/Gr/SpriteEd.HC"$ shift pts, Ctrl pt for ellipse/polygon w,h is off when rotated.
 
-* God said this is bad.  $LK,"FL:::/Adam/DolDoc/DocFind.HC,41"$
+* This is bad.  $LK,"FL:::/Adam/DolDoc/DocFind.HC,41"$
 * Backward <SHIFT-F3> is broken?
 
 * $LK,"Find",A="MN:Find"$() search sprite text?
@@ -305,7 +305,7 @@ $FG,5$$TX+CX,"Committee Needed"$$FG$
 
 * SIMD in $LK,"Mat4x4MulXYZ",A="MN:Mat4x4MulXYZ"$?
 
-* I use fixed-point in $LK,"Circle",A="MN:Circle"$(), $LK,"Ellipse",A="MN:Ellipse"$(), $LK,"Mat4x4MulXYZ",A="MN:Mat4x4MulXYZ"$(), $LK,"Mat4x4MulMat4x4New",A="MN:Mat4x4MulMat4x4New"$() and others.  God says I might want to change to float.  $LK,"::/Demo/Lectures/FixedPoint.HC"$ $LK,"::/Demo/Lectures/FixedPointAdvanced.HC"$.
+* I use fixed-point in $LK,"Circle",A="MN:Circle"$(), $LK,"Ellipse",A="MN:Ellipse"$(), $LK,"Mat4x4MulXYZ",A="MN:Mat4x4MulXYZ"$(), $LK,"Mat4x4MulMat4x4New",A="MN:Mat4x4MulMat4x4New"$() and others.  I might want to change to float.  $LK,"::/Demo/Lectures/FixedPoint.HC"$ $LK,"::/Demo/Lectures/FixedPointAdvanced.HC"$.
 
 * Note: We will never put multiple $LK,"Keyboard Tables",A="FI:::/Kernel/SerialDev/Keyboard.HC"$.  Each country must make their own version of TempleOS.  The $LK,"Intel Factory ROM",A="FF:::/Doc/Demands.DD,English"$ will have just English.  Our $LK,"Charter",A="FI:::/Doc/Charter.DD"$ bans multiple country or architectures in the same version.
 

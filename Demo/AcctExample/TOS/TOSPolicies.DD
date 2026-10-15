@@ -154,7 +154,7 @@ Unlike Linux and Windows, we do not want to handle all usage models.  On the con
 
 If we can define the vector space we hope to span, precisely, then we can leave the operating system on autopilot for future generations.  They simply make the best possible solution to the vector space.
 
-Knuth other literate coding homos are wrong -- if you have a well define way of doing things, it usually doesn't matter as long as it is consistent and easy to remember, so you don't vasillate.  Try to do things in the way the computer naturally wants to do them.  Don't be an arrogant French buffoon.  Top-down is ridiculous because you have to make headers for every function.  Bottom-up is how a computer wants to do it.  In the past, there was a big-endian/little-endian battle.  Little endian is obviously the way the computer naturally wants to operate.
+If you have a well defined way of doing things, it usually doesn't matter as long as it is consistent and easy to remember, so you don't vasillate.  Try to do things in the way the computer naturally wants to do them.  Top-down is ridiculous because you have to make headers for every function.  Bottom-up is how a computer wants to do it.  In the past, there was a big-endian/little-endian battle.  Little endian is obviously the way the computer naturally wants to operate.
 
 Do not bloat a compiler with theoretical optimizations that bad programmers might require.  We would rather teach them.  As a matter of fact, there is a very straight forward way to convert the C language to machine code.
 

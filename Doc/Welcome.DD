@@ -2,7 +2,7 @@ $WW,1$$FG,4$$TX+CX,"Welcome to AntichristOS"$$FG$
 $FG,8$$TX+CX,"Abandon all hope, ye who boot here."$
 $TX+CX,"-- the sign over the gate, Inferno III (slightly patched)"$$FG$
 
-AntichristOS is a x86_64, multi-cored, non-preemptive multi-tasking, ring-0-only, single-address_mapped (identity-mapped), operating system for recreational programming.  Paging is almost not used.  It is $LK,"TempleOS",A="FI:::/Doc/AboutAntichristOS.DD"$ played backwards: the same machine, the same compiler, the same games, with hellfire on the walls and $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$ on the command line.
+AntichristOS is a x86_64, multi-cored, non-preemptive multi-tasking, ring-0-only, single-address_mapped (identity-mapped), operating system for recreational programming.  Paging is almost not used.  It is $LK,"TempleOS",A="FI:::/Doc/AboutTempleOS.DD"$ played backwards: the same machine, the same compiler, the same games, with hellfire on the walls and $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$ on the command line.
 
 The souls who can most benefit are:
 $ID,2$* Professionals doing hobby projects
@@ -86,7 +86,7 @@ $FG$He didn't like that, so he made parentheses optional on calls with no args a
 
 The syntax change created an ambiguity when specifying function addresses, like for calling $LK,"QSort",A="MN:QSort"$().  To resolve it, a '$FG,2$&$FG$' is required in front of function names when specifying an address of a function, which is better anyway.
 
-Once it was no longer standard C/C++ syntax, everything he didn't like got changed, and the result was called HolyC.  AntichristOS then spelled every keyword backwards, added a few heavy-metal ones and called it $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$.  Here are the $LK,"operator precedence",A="FF:::/Doc/UnholyC.DD,operator precedence"$ rules.  New wine, old bottles, played backwards: see $LK,"Luke,5:37",A="BF:Luke,5:37"$.
+Once it was no longer standard C/C++ syntax, everything he didn't like got changed, and the result was called HolyC.  AntichristOS then spelled the everyday keywords backwards, added a few heavy-metal ones and called it $LK,"Unholy C",A="FI:::/Doc/UnholyC.DD"$.  Here are the $LK,"operator precedence",A="FF:::/Doc/UnholyC.DD,operator precedence"$ rules.  New wine, old bottles, played backwards: see $LK,"Luke,5:37",A="BF:Luke,5:37"$.
 
 There are no object files in AntichristOS and, normally, you don't make executable files either, but you can.  That's known as $LK,"Ahead-of-Time",A="FF:::/Doc/Glossary.DD,AOT Compile Mode"$ compilation.  Instead, you $LK,"Just in Time",A="FF:::/Doc/Glossary.DD,JIT Compile Mode"$ compile.
 

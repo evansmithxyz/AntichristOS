@@ -19,7 +19,7 @@ U0 Tmp()
       }
       break;
     case BOOT_SRC_DVD:
-      "$$RED$$$$TX+CX,\"Temptation of the Day\"$$$$FG$$\n";
+      "$$LTCYAN$$$$TX+CX,\"Temptation of the Day\"$$$$FG$$\n";
       TemptationOfDay;
       "\nIf you answer 'No' you can haunt\n"
 	    "the live CD without installing.\n\n"
@@ -39,7 +39,7 @@ U0 Tmp()
       break;
     case BOOT_SRC_RAM:
     case BOOT_SRC_HARDDRV:
-      "$$RED$$$$TX+CX,\"Temptation of the Day\"$$$$FG$$\n";
+      "$$LTCYAN$$$$TX+CX,\"Temptation of the Day\"$$$$FG$$\n";
       TemptationOfDay;
       Type("::/Doc/Customize.DD");
       if (FileFind("::/Misc/Tour")) {

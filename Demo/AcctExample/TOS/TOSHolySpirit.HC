@@ -113,7 +113,7 @@ U0 TOSBookLines(U8 *book_filename,I64 book_lines,U8 *st,I64 num_lines,
 
 public U0 GodBooksPassageU32(U32 rand_u32,U8 *files_find_mask,
 	U8 *file_mask="*",I64 len=512,I64 verbosity=GBP_MEDIUM)
-{//Make God pick a book passage. $LK+PU,"Holy Spirit Instructions",A="FI:::/Adam/God/HSNotes.DD"$
+{//Make God pick a book passage.
   CDirEntry *tmpde=FilesFind(files_find_mask,
 	FUF_RECURSE|FUF_JUST_FILES|FUF_JUST_TXT),
 	*tmpde1,*tmpde2,**tmpde3;
