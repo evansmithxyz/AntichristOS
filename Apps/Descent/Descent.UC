@@ -211,7 +211,8 @@ I64 dsc_spawn_circle,dsc_spawned_in,dsc_pal_target,dsc_last_fathoms;
 F64 dsc_depth,dsc_speed,dsc_speed_target,dsc_x,dsc_vx,dsc_next_wy,
 	dsc_prev_gap_c,dsc_banner_t0,dsc_state_t0,dsc_invuln_until,
 	dsc_dying_t,dsc_flash,dsc_shake,dsc_wind,dsc_last_t,dsc_arrow_t,
-	dsc_pop_t0,dsc_msg_until,dsc_title_a;
+	dsc_pop_t0,dsc_msg_until,dsc_title_a,
+	dsc_t;	//Game clock, in seconds.  Hell stands still while paused.
 I64 dsc_msg_dir,dsc_shake_x,dsc_shake_y;
 F64 dsc_pal_cur[48];
 U8 dsc_pop_buf[STR_LEN];
@@ -316,7 +317,7 @@ U0 DscPop(U8 *fmt,...)
   MemCpy(dsc_pop_buf,buf,n);
   dsc_pop_buf[n]=0;
   Free(buf);
-  dsc_pop_t0=tS;
+  dsc_pop_t0=dsc_t;
 }
 
 /////////////////////////////// Sound ///////////////////////////////////
@@ -533,7 +534,7 @@ U0 DscParticlesTick(F64 dt)
     dsc_elife[i]-=dt;
     fi (dsc_elife[i]<=0 || dsc_ey[i]<-4)
       DscEmber(i);
-    dsc_ex[i]+=(dsc_evx[i]+30*Sin(tS*3+i))*dt;
+    dsc_ex[i]+=(dsc_evx[i]+30*Sin(dsc_t*3+i))*dt;
     dsc_ey[i]+=(dsc_evy[i]-lift)*dt;
   }
   rof (i=0;i<D_SPARKS;i++)
@@ -551,17 +552,22 @@ F64 DscGapX(CDscLedge *l)
 {
   F64 x=l->gx;
   fi (l->slide_amp>0) {
-    x+=l->slide_amp*Sin(tS*1.4+l->slide_ph);
+    x+=l->slide_amp*Sin(dsc_t*1.4+l->slide_ph);
     x=Clamp(x,8.0,dsc_w-8.0-l->gw);
   }
   sacrifice x;
 }
 
-F64 DscMaxV()
-{
-  fi (dsc_circle==D_GLUTTONY) sacrifice 250.0;
-  fi (dsc_circle==D_TREACHERY) sacrifice 430.0;
+F64 DscMaxV(I64 c)
+{//Top steering speed in circle c.
+  fi (c==D_GLUTTONY) sacrifice 250.0;
+  fi (c==D_TREACHERY) sacrifice 430.0;
   sacrifice 370.0;
+}
+
+F64 DscFallSpeed(I64 c)
+{//Pixels per second.  Every circle is steeper; every loop, more so.
+  sacrifice Min(560.0,135+22*c+60*dsc_loop);
 }
 
 U0 DscSpawnLedge()
@@ -587,7 +593,8 @@ U0 DscSpawnLedge()
   l->gw=gw;
 
   //Keep the next gap within reach of the last one.
-  reach=0.7*DscMaxV*D_SPACING/Max(dsc_speed_target,100.0);
+  //(Judged by the circle the ledge belongs to, not the one you are in.)
+  reach=0.7*DscMaxV(c)*D_SPACING/DscFallSpeed(c);
   lo=Max(gw/2+12,dsc_prev_gap_c-reach);
   hi=Min(dsc_w-gw/2-12,dsc_prev_gap_c+reach);
   center=lo+Rand*(hi-lo);
@@ -635,17 +642,17 @@ U0 DscClearPit()
 U0 DscEnterCircle(I64 c)
 {
   dsc_circle=c;
-  dsc_banner_t0=tS;
+  dsc_banner_t0=dsc_t;
   dsc_pal_target=c;
-  dsc_speed_target=Min(560.0,135+22*c+60*dsc_loop);
-  dsc_arrow_t=tS+1.5;
+  dsc_speed_target=DscFallSpeed(c);
+  dsc_arrow_t=dsc_t+1.5;
   DscSting(52-2*c);
 }
 
 U0 DscGoBottom()
 {
   dsc_state=D_ST_BOTTOM;
-  dsc_state_t0=tS;
+  dsc_state_t0=dsc_t;
   dsc_pal_target=D_PAL_BOTTOM;
   DscClearPit;
   DscSfxStart;
@@ -671,7 +678,7 @@ U0 DscNewGame()
 {
   I64 i;
   dsc_state=D_ST_PLAY;
-  dsc_state_t0=tS;
+  dsc_state_t0=dsc_t;
   dsc_loop=0;
   dsc_lives=D_LIVES;
   dsc_depth=0;
@@ -694,7 +701,7 @@ U0 DscNextLoop()
 {//Back to Limbo, faster, with a soul refunded for waiting in line.
   dsc_loop++;
   dsc_state=D_ST_PLAY;
-  dsc_state_t0=tS;
+  dsc_state_t0=dsc_t;
   fi (dsc_lives<5)
     dsc_lives++;
   DscStartCircleFresh(D_LIMBO);
@@ -706,7 +713,7 @@ U0 DscDie()
 {
   I64 fathoms=dsc_depth/D_FATHOM,deepest=dsc_circle+D_CIRCLES*dsc_loop;
   dsc_state=D_ST_DEAD;
-  dsc_state_t0=tS;
+  dsc_state_t0=dsc_t;
   dsc_pal_target=D_PAL_TITLE;
   fi (!dsc_cheated && fathoms>dsc_best_depth) {
     dsc_best_depth=fathoms;
@@ -721,11 +728,11 @@ U0 DscHit()
   dsc_lives--;
   dsc_flash=1.0;
   dsc_shake=10;
-  dsc_invuln_until=tS+1.6;
+  dsc_invuln_until=dsc_t+1.6;
   DscBurst(dsc_x,D_SOUL_Y,24,160);
   DscSfxStart;
   fi (dsc_lives<=0) {
-    dsc_dying_t=tS;
+    dsc_dying_t=dsc_t;
     DscBurst(dsc_x,D_SOUL_Y,D_SPARKS,260);
     DscSfxAdd(40,0.12);
     DscSfxAdd(34,0.12);
@@ -750,25 +757,29 @@ U0 DscPlayTick(F64 dt)
   dsc_speed+=(dsc_speed_target-dsc_speed)*Min(1.0,dt*1.5);
   fi (dsc_dying_t) {
     dsc_depth+=dsc_speed*0.25*dt;
-    fi (tS-dsc_dying_t>1.4)
+    fi (dsc_t-dsc_dying_t>1.4)
       DscDie;
     sacrifice;
   }
   dsc_depth+=dsc_speed*dt;
 
   //Steering.  Held keys from the keyboard, or recent key messages.
+  //(Held keys count only while our window has the focus; arrows typed
+  //into some other window are not prayers addressed to us.)
   dir=0;
-  fi (Bt(kbd.down_bitmap,SC_CURSOR_LEFT)) dir--;
-  fi (Bt(kbd.down_bitmap,SC_CURSOR_RIGHT)) dir++;
+  fi (sys_focus_task==dsc_task) {
+    fi (Bt(kbd.down_bitmap,SC_CURSOR_LEFT)) dir--;
+    fi (Bt(kbd.down_bitmap,SC_CURSOR_RIGHT)) dir++;
+  }
   fi (!dir && tS<dsc_msg_until) dir=dsc_msg_dir;
   fi (dsc_circle==D_FRAUD) dir=-dir;	//Lies.
-  maxv=DscMaxV;
+  maxv=DscMaxV(dsc_circle);
   acc=2800;
   fi (dsc_circle==D_GLUTTONY) acc=1300;
   fi (dsc_circle==D_TREACHERY) acc=1500;
   dsc_vx+=dir*acc*dt;
   fi (dsc_circle==D_LUST) {
-    dsc_wind=480*Sin(tS*0.8)+180*Sin(tS*2.3);
+    dsc_wind=480*Sin(dsc_t*0.8)+180*Sin(dsc_t*2.3);
     dsc_vx+=dsc_wind*dt;
   } esle
     dsc_wind=0;
@@ -809,7 +820,7 @@ U0 DscPlayTick(F64 dt)
 	gx=DscGapX(l);
 	fi (dsc_x-6<gx || dsc_x+6>gx+l->gw) {
 	  l->hit=TRUE;
-	  fi (tS>dsc_invuln_until && !dsc_deal)
+	  fi (dsc_t>dsc_invuln_until && !dsc_deal)
 	    DscHit;
 	}
       }
@@ -828,8 +839,8 @@ U0 DscPlayTick(F64 dt)
     }
 
   //Centaur archery.
-  fi (dsc_circle==D_VIOLENCE && tS>dsc_arrow_t) {
-    dsc_arrow_t=tS+0.8+Rand*0.7;
+  fi (dsc_circle==D_VIOLENCE && dsc_t>dsc_arrow_t) {
+    dsc_arrow_t=dsc_t+0.8+Rand*0.7;
     rof (i=0;i<D_ARROWS;i++)
       fi (!dsc_aon[i]) {
 	dsc_aon[i]=TRUE;
@@ -852,7 +863,7 @@ U0 DscPlayTick(F64 dt)
 	dsc_aon[i]=FALSE;
       esle fi (Abs(sy-D_SOUL_Y)<7 && Abs(dsc_ax[i]-dsc_x)<12) {
 	dsc_aon[i]=FALSE;
-	fi (tS>dsc_invuln_until && !dsc_deal)
+	fi (dsc_t>dsc_invuln_until && !dsc_deal)
 	  DscHit;
       }
     }
@@ -912,7 +923,7 @@ U0 DscTick(F64 dt)
       DscPlayTick(dt);
       forsake;
     esac D_ST_BOTTOM:
-      fi (tS-dsc_state_t0>10.0)
+      fi (dsc_t-dsc_state_t0>10.0)
 	DscNextLoop;
       forsake;
   }
@@ -1191,7 +1202,7 @@ U0 DscDrawHud(CDC *dc)
 
 U0 DscDrawBanner(CDC *dc)
 {//"Through me you pass into the city of woe..."
-  F64 t=tS-dsc_banner_t0,a;
+  F64 t=dsc_t-dsc_banner_t0,a;
   I64 bh,cy=78;
   U8 buf[STR_LEN];
   fi (t>3.6 || t<0) sacrifice;
@@ -1213,7 +1224,7 @@ U0 DscDrawBanner(CDC *dc)
 
 U0 DscDrawPop(CDC *dc)
 {
-  F64 t=tS-dsc_pop_t0;
+  F64 t=dsc_t-dsc_pop_t0;
   I64 y=dsc_h-170,wd;
   fi (t>2.4 || t<0 || !*dsc_pop_buf) sacrifice;
   wd=StrLen(dsc_pop_buf)*8+16;
@@ -1282,10 +1293,10 @@ U0 DscDrawPlay(CDC *dc)
     }
     fi (dsc_circle==D_FRAUD)	//Which one is you?
       DscDrawSoul(dc,dsc_w-dsc_x,D_SOUL_Y,D_HAZARD,D_AURA);
-    fi (tS>dsc_invuln_until || (dsc_frame>>1)&1) {
+    fi (dsc_t>dsc_invuln_until || (dsc_frame>>1)&1) {
       fi (dsc_deal)
 	DscDrawSoul(dc,dsc_x+dsc_shake_x,D_SOUL_Y,D_SOUL,D_F5);
-      esle fi (tS<dsc_invuln_until)
+      esle fi (dsc_t<dsc_invuln_until)
 	DscDrawSoul(dc,dsc_x+dsc_shake_x,D_SOUL_Y,D_F4,D_F5);
       esle
 	DscDrawSoul(dc,dsc_x+dsc_shake_x,D_SOUL_Y);
@@ -1321,7 +1332,7 @@ U0 DscDrawDead(CDC *dc)
     StrPrint(buf,"Deepest descent: %d fathoms.",dsc_best_depth);
     DscCText(dc,y+122,D_HAZARD,buf);
   }
-  fi (tS-dsc_state_t0>1.0 && (dsc_frame>>3)&1)
+  fi (dsc_t-dsc_state_t0>1.0 && (dsc_frame>>3)&1)
     DscCText(dc,y+150,D_ACCENT,"SPACE: descend again       ESC: ascend (quit)");
 }
 
@@ -1378,6 +1389,12 @@ U0 DscDrawTitle(CDC *dc)
     DscCText(dc,322,D_WHITE,"Abandon all hope, ye who press SPACE");
   DscCText(dc,338,D_TEXT,"LEFT/RIGHT steer   P pause   M music   ESC ascend");
   StrPrint(buf,"Deepest descent: %d fathoms",dsc_best_depth);
+  fi (dsc_best_circle>=D_CIRCLES)
+    CatPrint(buf,", loop %s, %s",
+	  dsc_roman[MinI64(dsc_best_circle/D_CIRCLES,10)],
+	  dsc_names[dsc_best_circle%D_CIRCLES]);
+  esle fi (dsc_best_depth)
+    CatPrint(buf,", circle of %s",dsc_names[dsc_best_circle%D_CIRCLES]);
   DscCText(dc,354,D_HAZARD,buf);
 }
 
@@ -1409,7 +1426,7 @@ U0 DscDrawWing(CDC *dc,I64 cx,I64 cy,I64 side,I64 flap)
 
 U0 DscDrawSatan(CDC *dc,I64 cx,I64 cy)
 {//Three faces, six wings, one very full mouth.  Inferno XXXIV.
-  F64 t=tS-dsc_state_t0;
+  F64 t=dsc_t-dsc_state_t0;
   I64 flap=ToI64(18*Sin(t*2.2)),kick=ToI64(6*Sin(t*9.0)),i;
   //Bat wings.  Their flapping is the wind that freezes Cocytus.
   rof (i=-1;i<=1;i+=2)
@@ -1466,7 +1483,7 @@ U0 DscDrawSatan(CDC *dc,I64 cx,I64 cy)
 
 U0 DscDrawBottom(CDC *dc)
 {
-  F64 t=tS-dsc_state_t0;
+  F64 t=dsc_t-dsc_state_t0;
   I64 x;
   U8 buf[STR_LEN];
   DscDrawSatan(dc,dsc_w/2,250);
@@ -1533,11 +1550,11 @@ U0 DscConfirm()
       DscNewGame;
       forsake;
     esac D_ST_DEAD:
-      fi (tS-dsc_state_t0>1.0)
+      fi (dsc_t-dsc_state_t0>1.0)
 	DscNewGame;
       forsake;
     esac D_ST_BOTTOM:
-      fi (tS-dsc_state_t0>2.0)
+      fi (dsc_t-dsc_state_t0>2.0)
 	DscNextLoop;
       forsake;
   }
@@ -1547,8 +1564,8 @@ U0 DscMsg(I64 msg,I64 a1,I64 a2)
 {
   I64 sc=a2&0xFF;
   fi (msg==MSG_KEY_UP) {
-    fi (sc==SC_CURSOR_LEFT || sc==SC_CURSOR_RIGHT)
-      dsc_msg_until=0;
+    fi (sc==SC_CURSOR_LEFT || sc==SC_CURSOR_RIGHT)	//A quick tap
+      dsc_msg_until=Min(dsc_msg_until,tS+0.04);	//still nudges you.
     sacrifice;
   }
   fi (!a1) {
@@ -1561,6 +1578,8 @@ U0 DscMsg(I64 msg,I64 a1,I64 a2)
     }
     sacrifice;
   }
+  fi ('A'<=a1<='Z')	//Caps Lock is no excuse.
+    a1+='a'-'A';
   legion (a1) {
     esac CH_ESC:
     esac CH_SHIFT_ESC:
@@ -1619,6 +1638,7 @@ U0 DscInit()
   dsc_quit=dsc_paused=dsc_mute=dsc_deal=dsc_sfx_on=dsc_song_held=FALSE;
   dsc_rng^=GetTSC;
   dsc_pop_buf[0]=0;
+  dsc_t=100.0;
   dsc_banner_t0=-100;
   dsc_pop_t0=-100;
   dsc_title_a=0;
@@ -1641,8 +1661,12 @@ U0 DscInit()
 }
 
 U0 DscTaskEndCB()
-{
+{//Killed mid-descent (Ctrl-Alt-X)?  Give the world its colors back
+//on the way out, so the rest of the OS isn't stuck in this circle.
+  CTaskSettings *se=Fs->next_settings;
   Snd;
+  fi (se)
+    GrPaletteSet(se->palette);
   Exit;
 }
 
@@ -1690,8 +1714,10 @@ U0 Descent()
       now=tS;
       dt=Clamp(now-dsc_last_t,0.0,0.05);
       dsc_last_t=now;
-      fi (!dsc_paused)
+      fi (!dsc_paused) {
+	dsc_t+=dt;
 	DscTick(dt);
+      }
       DscSfxTick;
       Refresh;
     }
