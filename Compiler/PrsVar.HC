@@ -31,13 +31,13 @@ U0 PrsVarInit(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,CArrayDim *tmpad,
   } else {
     if (tmpc->ptr_stars_cnt==1 &&
 	  ((tmpc-1)->raw_type==RT_I8 || (tmpc-1)->raw_type==RT_U8) &&
-	  !tmpad && cc->token==TK_STR)
+	  !tmpad && LexIsStrUC(cc))
       is_str=TRUE;
     else
       is_str=FALSE;
     if (cc->flags&CCF_AOT_COMPILE && is_str) {
       LexPopNoRestore(cc);
-      machine_code=LexExtStr(cc,&i);
+      machine_code=LexExtStrUC(cc,&i);
       if (pass==2) {
 	tmpa=CAlloc(sizeof(CAOTAbsAddr));
 	tmpa->next=aotc->abss;
@@ -131,9 +131,9 @@ U0 PrsVarInit2(CCmpCtrl *cc,U8 **_dst,CHashClass *tmpc,
   if (tmpad1=tmpad->next) {
     if (!tmpc->ptr_stars_cnt &&
 	  (tmpc->raw_type==RT_I8 || tmpc->raw_type==RT_U8) &&
-	  cc->token==TK_STR) {
+	  LexIsStrUC(cc)) {
       LexPopNoRestore(cc);
-      st=LexExtStr(cc,&i);
+      st=LexExtStrUC(cc,&i);
       if (tmpad1->cnt<0) {//[]
 	tmpad1->cnt=i;
 	tmpad->total_cnt=i*tmpad1->total_cnt;
@@ -264,7 +264,7 @@ U0 PrsArrayDims(CCmpCtrl *cc,I64 mode,CArrayDim *dim)
       }
       tmpad=MAlloc(sizeof(CArrayDim));
       tmpad->next=NULL;
-      tmpad1=&dim;
+      tmpad1=dim; //Not &dim: that scribbled on the caller's saved regs.
       do {
 	tmpad1->total_cnt*=j;
 	if (!tmpad1->next) {
@@ -403,6 +403,23 @@ U0 PrsDotDotDot(CCmpCtrl *cc,CHashFun *tmpf,I64 _reg)
 
   if (cc->token==')')
     Lex(cc);
+}
+
+U0 PrsClassMetaExp(CCmpCtrl *cc,CMemberLstMeta *tmp_meta)
+{//Non-literal class meta.  A str result must outlive the code.
+  U8 *machine_code;
+  I64 type,old_flags=cc->flags;
+  cc->flags&=~CCF_HAS_MISC_DATA;
+  if (machine_code=LexExpression2Bin(cc,&type)) {
+    tmp_meta->user_data=Call(machine_code);
+    if (cc->flags&CCF_HAS_MISC_DATA && type==RT_PTR) {
+      tmp_meta->user_data=StrNew(tmp_meta->user_data);
+      tmp_meta->flags|=MLMF_IS_STR;
+    }
+    Free(machine_code);
+  } else
+    tmp_meta->user_data=0;
+  cc->flags|=old_flags&CCF_HAS_MISC_DATA;
 }
 
 U0 PrsVarLst(CCmpCtrl *cc,CHashClass *tmpc,I64 mode,I64 union_base=0)
@@ -683,7 +700,7 @@ pvl_restart3:
 	      tmp_meta->user_data=LexExtStr(cc);
 	      tmp_meta->flags|=MLMF_IS_STR;
 	    } else
-	      tmp_meta->user_data=LexExpression(cc);
+	      PrsClassMetaExp(cc,tmp_meta);
 	  }
 	  LexPopNoRestore(cc);
 	  break;

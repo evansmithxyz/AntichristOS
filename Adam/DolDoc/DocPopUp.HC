@@ -262,8 +262,9 @@ public F64 PopUpRangeF64Log(F64 lo,F64 hi,I64 steps,
 #help_index "Job/Exe;Task/Job/Exe;Compiler"
 U8 *ExtDftUC(U8 *name)
 {//$LK,"ExtDft",A="MN:ExtDft"$(name,"HC.Z"), or "UC.Z" if only the Unholy C file exists.
+//Same rule as #include: the .HC search includes parent dirs.
   U8 *res=ExtDft(name,"HC.Z"),*res2;
-  if (!FileExtDot(name) && !FileFind(res,,FUF_Z_OR_NOT_Z)) {
+  if (!FileExtDot(name) && !FileFind(res,,FUF_Z_OR_NOT_Z|FUF_SCAN_PARENTS)) {
     res2=ExtDft(name,"UC.Z");
     if (FileFind(res2,,FUF_Z_OR_NOT_Z)) {
       Free(res);

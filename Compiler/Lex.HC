@@ -308,16 +308,19 @@ U8 *LexFileReadUC(U8 **_abs_filename,I64 *_size=NULL)
   U8 *res,*uc_name=*_abs_filename;
   I64 l=StrLen(uc_name);
   Bool old_silent=Silent;
-  res=FileRead(uc_name,_size);
-  if (!res && l>=5 && !StrCmp(uc_name+l-5,".HC.Z")) {
-    uc_name=StrNew(uc_name);
-    uc_name[l-4]='U';
-    if (res=FileRead(uc_name,_size)) {
-      Free(*_abs_filename);
-      *_abs_filename=uc_name;
-    } else
-      Free(uc_name);
-  }
+  try {
+    res=FileRead(uc_name,_size);
+    if (!res && l>=5 && !StrCmp(uc_name+l-5,".HC.Z")) {
+      uc_name=StrNew(uc_name);
+      uc_name[l-4]='U';
+      if (res=FileRead(uc_name,_size)) {
+	Free(*_abs_filename);
+	*_abs_filename=uc_name;
+      } else
+	Free(uc_name);
+    }
+  } catch
+    Silent(old_silent); //Unmute, then let the exception (e.g. 'Drv') go on.
   Silent(old_silent);
   if (!res)
     PrintErr("File not found: \"%s\".\n",*_abs_filename);
