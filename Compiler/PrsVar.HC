@@ -406,16 +406,20 @@ U0 PrsDotDotDot(CCmpCtrl *cc,CHashFun *tmpf,I64 _reg)
 }
 
 U0 PrsClassMetaExp(CCmpCtrl *cc,CMemberLstMeta *tmp_meta)
-{//Non-literal class meta.  A str result must outlive the code.
+{//Non-literal class meta.  A str const result must outlive the code.
+//Copy it only if it points into the code block that is about to be
+//freed, so a meta like format StrLen("abc") stays 3, not a str.
   U8 *machine_code;
-  I64 type,old_flags=cc->flags;
+  I64 res,old_flags=cc->flags;
   cc->flags&=~CCF_HAS_MISC_DATA;
-  if (machine_code=LexExpression2Bin(cc,&type)) {
-    tmp_meta->user_data=Call(machine_code);
-    if (cc->flags&CCF_HAS_MISC_DATA && type==RT_PTR) {
-      tmp_meta->user_data=StrNew(tmp_meta->user_data);
+  if (machine_code=LexExpression2Bin(cc)) {
+    res=Call(machine_code);
+    if (cc->flags&CCF_HAS_MISC_DATA && res>=machine_code &&
+	  res<machine_code+MSize(machine_code)) {
+      res=StrNew(res);
       tmp_meta->flags|=MLMF_IS_STR;
     }
+    tmp_meta->user_data=res;
     Free(machine_code);
   } else
     tmp_meta->user_data=0;

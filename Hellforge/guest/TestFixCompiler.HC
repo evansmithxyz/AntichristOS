@@ -305,6 +305,8 @@ ExePutS(
 	"  I64 c format (\"paren\");\n"
 	"  I64 d format backwards \"\\n!dlroW ,olleH\";\n"
 	"  I64 e dft_val 6/2 percentile 54.20;\n"
+	"  I64 f format StrLen(\"abcd\");\n"
+	"  I64 g format (\"xabc\"+1);\n"
 	"};\n");
 CHashClass *fc_hc=HashFind("CFcMeta",Fs->hash_table,HTT_CLASS);
 U8 *fc_blk[256];
@@ -328,6 +330,12 @@ if (fc_hc) {
   FcChk("meta dft_val 6/2",MemberMetaData("dft_val",MemberFind("e",fc_hc)),3);
   FcChk("meta percentile*100",ToI64(MemberMetaData("percentile",
 	MemberFind("e",fc_hc))(F64)*100+0.5),5420);
+  FcChk("meta format StrLen(\"abcd\") stays an int",
+	MemberMetaData("format",MemberFind("f",fc_hc)),4);
+  FcChk("meta format StrLen(\"abcd\") not MLMF_IS_STR",
+	MemberMetaFind("format",MemberFind("f",fc_hc))->flags&MLMF_IS_STR,0);
+  FcChkStr("meta format (\"xabc\"+1)",
+	MemberMetaData("format",MemberFind("g",fc_hc)),"abc");
   for (i=0;i<256;i++)
     Free(fc_blk[i]);
 }
