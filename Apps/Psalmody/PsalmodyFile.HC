@@ -391,6 +391,23 @@ U0 PsmInvert()
   }
 }
 
+I64 PsmSndOna(I64 ona,I64 flags=0)
+{//The ona $LK,"Play",A="MN:Play"$() would sound for this note.  <CTRL-ALT-SHIFT-r> moves
+//the note's letter into the Unholy (Locrian) mode, then the sharp or
+  //flat applies, just as $LK,"MusicNoteMapCur",A="MN:MusicNoteMapCur"$() does for a saved song.
+  I64 base=ona,l;
+  U8 *map;
+  if (!ona || !music.unholy)
+    return ona;
+  if (Bt(&flags,PSMf_SHARP))
+    base--;
+  else if (Bt(&flags,PSMf_FLAT))
+    base++;
+  l=*LstSub(Ona2Note(base),psm_note_lst)-'A';
+  map=MusicNoteMapCur;
+  return ona+(map[l]-music.note_map[l]+18)%12-6;
+}
+
 U0 PsmPlayBackwards()
 {//Play the song from the last note to the first.  Any key stops it.
   PsmNote *tmpn=psm.head.last;
@@ -406,7 +423,7 @@ U0 PsmPlayBackwards()
       psm.scrn_x+=tmpn->x-0.33*GR_WIDTH;
       if (PsmHasWords(tmpn->word))
 	"%s",tmpn->word;
-      Snd(tmpn->ona);
+      Snd(PsmSndOna(tmpn->ona,tmpn->flags));
       d=JIFFY_FREQ*psm_durations[tmpn->duration]/music.tempo;
       if (tmpn->last!=&psm.head && Bt(&tmpn->last->flags,PSMf_TIE)) {
 	timeout_val+=d;

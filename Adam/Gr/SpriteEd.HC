@@ -65,7 +65,8 @@ CSprite *Sprite2SpriteQue(U8 *elems)
   CSprite *res=CAlloc(sizeof(CSprite)),
 	*tmpg=elems-offset(CSprite.start),*tmpg1;
   QueInit(res);
-  while (tmpg->type&SPG_TYPE_MASK) {
+  while (tmpg->type&SPG_TYPE_MASK &&
+	tmpg->type&SPG_TYPE_MASK<SPT_TYPES_NUM) {
     tmpg1=MAlloc(SpriteElemSize(tmpg)+offset(CSprite.start));
     s=SpriteElemSize(tmpg);
     MemCpy(&tmpg1->start,&tmpg->start,s);
@@ -700,7 +701,8 @@ U0 SpritePtQueNew(U8 *elems,I64 x,I64 y,CEdSprite *head)
   CEdSprite *tmpes;
   CSprite *tmpg=elems-offset(CSprite.start);
   QueInit(head);
-  while (tmpg->type&SPG_TYPE_MASK) {
+  while (tmpg->type&SPG_TYPE_MASK &&
+	tmpg->type&SPG_TYPE_MASK<SPT_TYPES_NUM) {
     switch (tmpg->type&SPG_TYPE_MASK) {
       case SPT_ELLIPSE:
       case SPT_POLYGON:

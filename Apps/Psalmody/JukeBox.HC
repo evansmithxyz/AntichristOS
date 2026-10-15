@@ -333,6 +333,6 @@ public U0 JukeBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
 }
 
 public U0 DoomBox(U8 *dirname="~/Psalmody",U8 **_filename=NULL)
-{//$LK,"JukeBox",A="MN:JukeBox"$() by its AntichristOS name.  <b> backmasks.
+{//$LK,"JukeBox",A="FF:::/Apps/Psalmody/JukeBox.HC,JukeBox"$() by its AntichristOS name.  <b> backmasks.
   JukeBox(dirname,_filename);
 }

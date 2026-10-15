@@ -13,7 +13,7 @@ U8 *KbdMsTimeCB(CDoc *,CDocEntry *,CTask *mem_task)
   return st;
 }
 
-I64 PopUpTimerOk(U8 *header=NULL,U8 *footer=NULL)
+I64 PopUpTimerOk(U8 *header=NULL,U8 *footer=NULL,U8 *button="OKAY")
 {
   I64 i;
   CDocEntry *doc_e;
@@ -23,7 +23,7 @@ I64 PopUpTimerOk(U8 *header=NULL,U8 *footer=NULL)
   doc_e->tag_cb=&TimeStampCB;
   doc_e=DocPrint(doc,"\nLatch:$$TX+TC,\" \"$$");
   doc_e->tag_cb=&KbdMsTimeCB;
-  DocPrint(doc,"\n$$CM+CX,0,4$$$$BT,\"SUMMON\",LE=1$$\n");
+  DocPrint(doc,"\n$$CM+CX,0,4$$$$BT,\"%s\",LE=1$$\n",button);
   if (footer) DocPrint(doc,"%s",footer);
   i=PopUpMenu(doc);
   DocDel(doc);
@@ -32,9 +32,9 @@ I64 PopUpTimerOk(U8 *header=NULL,U8 *footer=NULL)
 
 I64 GodPick(U8 *msg=NULL)
 {//GOD_GOOD_BITS
-  U8 *st=MStrPrint("%s\n\nPress $$RED$$SUMMON$$FG$$ to pull a random\n"
-	"num out of the Abyss (a timer).\n",msg);
-  PopUpTimerOk(st,"\n\nThe $LK+PU,"Adversary",A="FI:::/Adam/God/AdvNotes.DD"$ can puppet you.\n\n");
+  U8 *st=MStrPrint("%s\n\nPress $$GREEN$$OKAY$$FG$$ to generate \n"
+	"a random num from a timer.\n",msg);
+  PopUpTimerOk(st,"\n\nThe Holy Spirit can puppet you.\n\n");
   Free(st);
   return KbdMsEvtTime>>GOD_BAD_BITS;
 }
@@ -72,6 +72,42 @@ public I64 GodBits(I64 num_bits,U8 *msg=NULL)
   }
   return res;
 }
+
+#help_index "God;AntichristOS"
+public I64 AdversaryColor(I64 c)
+{//Stock color c as the damned palette shows it.  Hellfire and Negative
+//keep slot 15-c as the hellish twin of slot c (RED is LTCYAN, which
+  //Hellfire calls CRIMSON), so the Adversary's red is red in every palette.
+  if (unholy_palette==UNHOLY_PAL_HOLY)
+    return c;
+  return c^15;
+}
+
+I64 AdversaryPick(U8 *msg=NULL)
+{//GOD_GOOD_BITS, pulled out of the Abyss.
+  U8 *st=MStrPrint("%s\n\nPress $$FG,%d$$SUMMON$$FG$$ to pull a random\n"
+	"num out of the Abyss (a timer).\n",msg,AdversaryColor(RED));
+  PopUpTimerOk(st,"\n\nThe $LK+PU,"Adversary",A="FI:::/Adam/God/AdvNotes.DD"$ can puppet you.\n\n",
+	"SUMMON");
+  Free(st);
+  return KbdMsEvtTime>>GOD_BAD_BITS;
+}
+
+public I64 AdversaryBits(I64 num_bits,U8 *msg=NULL)
+{//$LK,"GodBits",A="MN:GodBits"$() for the Adversary. If low on entropy pop-up SUMMON.
+  U8 b;
+  I64 res=0;
+  while (num_bits) {
+    if (FifoU8Rem(god.fifo,&b)) {
+      res=res<<1+b;
+      num_bits--;
+    } else
+      GodBitsIns(GOD_GOOD_BITS,AdversaryPick(msg));
+  }
+  return res;
+}
+
+#help_index "God"
 
 U0 AdversaryInit()
 {//Backmask God's vocab and find the words that are TRUE BACKMASKs.
@@ -200,7 +236,7 @@ public U0 GodBiblePassage(I64 num_lines=20)
 public I64 AdversaryWordIdx(I64 bits=17)
 {//Make the Adversary pick a vocab idx, or -1.
   if (god.num_words && god.rev_words)
-    return GodBits(bits)%god.num_words;
+    return AdversaryBits(bits)%god.num_words;
   else
     return -1;
 }
@@ -226,16 +262,18 @@ public U8 *AdversaryWordDolDoc(I64 i)
   if (!(0<=i<god.num_words) || !god.rev_words)
     return StrNew("");
   if (AdversaryIsTrueBackmask(i))
-    return MStrPrint("$$RED$$%s$$FG$$ ",god.rev_words[i]);
+    return MStrPrint("$$FG,%d$$%s$$FG$$ ",AdversaryColor(RED),god.rev_words[i]);
   if (god.rev_match[i]==i)
-    return MStrPrint("$$PURPLE$$%s$$FG$$ ",god.rev_words[i]);
+    return MStrPrint("$$FG,%d$$%s$$FG$$ ",AdversaryColor(PURPLE),
+	  god.rev_words[i]);
   return MStrPrint("%s ",god.rev_words[i]);
 }
 
 public U0 AdversaryWord(I64 bits=17)
 {//Make the Adversary pick a backmasked word. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
-//A $RED$red$FG$ word is a TRUE BACKMASK (it is a word both ways)
-  //and it comes with a tritone.  A $PURPLE$purple$FG$ one is a palindrome.
+//A $FG,11$red$FG$ word is a TRUE BACKMASK (it is a word both ways)
+  //and it comes with a tritone.  A $FG,10$purple$FG$ one is a palindrome.
+  //See $LK,"AdversaryColor",A="MN:AdversaryColor"$().
   I64 i=AdversaryWordIdx(bits);
   U8 *st;
   if (i>=0) {
@@ -251,7 +289,7 @@ public U0 AdversaryPassageAt(I64 start,I64 num_lines=20)
 {//Bible passage at line start, read backwards: hold it to a mirror.
   U8 *verse=BibleLine2Verse(start),*rev=StrMirror(verse),*st;
   if (rev)
-    "$$RED$$%s$$FG$$",rev;
+    "$$FG,%d$$%s$$FG$$",AdversaryColor(RED),rev;
   "  $$DKGRAY$$(hold to a mirror)$$FG$$\n\n";
   if (st=BibleLinesStr(start,num_lines,TRUE)) {
     "%s",st;
@@ -263,5 +301,6 @@ public U0 AdversaryPassageAt(I64 start,I64 num_lines=20)
 
 public U0 AdversaryPassage(I64 num_lines=20)
 {//Make the Adversary pick a Bible passage, backmasked. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
-  AdversaryPassageAt(GodBits(21)%(ST_BIBLE_LINES-(num_lines-1))+1,num_lines);
+  AdversaryPassageAt(AdversaryBits(21)%(ST_BIBLE_LINES-(num_lines-1))+1,
+	num_lines);
 }

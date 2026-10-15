@@ -29,7 +29,8 @@ public U0 Sprite3(CDC *dc=gr.dc,I64 x,I64 y,I64 z,U8 *elems,
   MemCpy(&old_sym,&dc->sym,sizeof(CGrSym));
   if (dc->flags & DCF_LOCATE_NEAREST)
     dc->nearest_dist=I64_MAX;
-  while (tmpg->type&SPG_TYPE_MASK) {
+  while (tmpg->type&SPG_TYPE_MASK && //A corrupt type ends the walk.
+	tmpg->type&SPG_TYPE_MASK<SPT_TYPES_NUM) {
     switch (tmpg->type&SPG_TYPE_MASK) {
       case SPT_COLOR:
 	dc->color=dc->color&~(COLORROP_COLORS_MASK|ROPF_DITHER)|tmpg->c.color;
@@ -340,7 +341,8 @@ public U8 *SpriteInterpolate(F64 t,U8 *elems0,U8 *elems1)
     MemCpy(res,elems1,i);
   }
   tmpgr=res-offset(CSprite.start);
-  while (tmpg0->type&SPG_TYPE_MASK) {
+  while (tmpg0->type&SPG_TYPE_MASK &&
+	tmpg0->type&SPG_TYPE_MASK<SPT_TYPES_NUM) {
     if (tmpg0->type&SPG_TYPE_MASK!=tmpg1->type&SPG_TYPE_MASK)
       throw('Graphics');
     switch (tmpg0->type&SPG_TYPE_MASK) {

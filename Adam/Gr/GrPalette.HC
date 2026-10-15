@@ -73,11 +73,22 @@ public CBGR48 gr_palette_gray[COLORS_NUM]={
 0x888888888888,0x999999999999,0xAAAAAAAAAAAA,0xBBBBBBBBBBBB,
 0xCCCCCCCCCCCC,0xDDDDDDDDDDDD,0xEEEEEEEEEEEE,0xFFFFFFFFFFFF};
 
+CBGR48 unholy_breath[COLORS_NUM]; //What the bellows last wrote to the DAC.
+public Bool unholy_breathing=FALSE; //Hellfire breathes (slots 1 and 3).
+
 public U0 GrPaletteGet(CBGR48 *bgr48)
 {//16 colors
   I64 i;
-  for (i=0;i<COLORS_NUM;i++)
+  CBGR48 b;
+  for (i=0;i<COLORS_NUM;i++) {
+    b=unholy_breath[i];
     bgr48[i]=GrPaletteColorGet(i);
+//AntichristOS: a breath of the bellows is not the slot's color.  Save
+    //the std color, so $LK,"SettingsPop",A="MN:SettingsPop"$() hands the slot back to the bellows.
+    if (unholy_breathing && (i==1 || i==3) &&
+	  (bgr48[i]==b || bgr48[i]==unholy_breath[i]))
+      bgr48[i]=gr_palette_std[i];
+  }
 }
 
 public U0 GrPaletteSet(CBGR48 *bgr48)
@@ -130,11 +141,34 @@ public CBGR48 gr_palette_holy[COLORS_NUM]={//The old CGA ways.
 0xFFFF55555555,0xFFFF5555FFFF,0xFFFFFFFF5555,0xFFFFFFFFFFFF};
 
 public I64 unholy_palette=UNHOLY_PAL_HOLY;
-public Bool unholy_breathing=FALSE;
+
+U0 PaletteUnholySettingsFix(CBGR48 *old_std)
+{//Every task's $LK,"SettingsPush",A="MN:SettingsPush"$() palette that was the old std palette
+//becomes the new one, so an app's $LK,"SettingsPop",A="MN:SettingsPop"$() can't undo <CTRL-ALT-i>.
+  I64 i;
+  CTask *task,*task1;
+  CTaskSettings *tmpse;
+  PUSHFD
+  CLI
+  for (i=0;i<mp_cnt;i++) {
+    task1=task=cpu_structs[i].seth_task;
+    do {
+      if (!TaskValidate(task)) break;
+      tmpse=task->next_settings;
+      while (tmpse) {
+	if (!MemCmp(tmpse->palette,old_std,COLORS_NUM*sizeof(CBGR48)))
+	  MemCpy(tmpse->palette,gr_palette_std,COLORS_NUM*sizeof(CBGR48));
+	tmpse=tmpse->next;
+      }
+      task=task->next_task;
+    } while (task!=task1);
+  }
+  POPFD
+}
 
 public U0 PaletteUnholySet(I64 mode=UNHOLY_PAL_HELLFIRE)
 {//Damn (or redeem) the std palette. Survives task deaths.
-  CBGR48 *src;
+  CBGR48 *src,old_std[COLORS_NUM];
   if (!(0<=mode<UNHOLY_PAL_NUM))
     mode=UNHOLY_PAL_HELLFIRE;
   if (mode==UNHOLY_PAL_NEGATIVE)
@@ -143,12 +177,12 @@ public U0 PaletteUnholySet(I64 mode=UNHOLY_PAL_HELLFIRE)
     src=gr_palette_holy;
   else
     src=gr_palette_hellfire;
+  MemCpy(old_std,gr_palette_std,COLORS_NUM*sizeof(CBGR48));
   MemCpy(gr_palette_std,src,COLORS_NUM*sizeof(CBGR48));
   unholy_palette=mode;
+  PaletteUnholySettingsFix(old_std);
   PaletteSetStd;
 }
-
-CBGR48 unholy_breath[COLORS_NUM]; //What the bellows last wrote to the DAC.
 
 public U0 PaletteUnholyBreathe()
 {//Hellfire breathes. Called every frame; touches only the DAC.

@@ -98,8 +98,17 @@ U0 UnholyFlamesUpdate()
   }
 }
 
+Bool UnholyFontIs(U64 *f)
+{//Is f one of our three fonts?
+  return f==unholy_font || f==unholy_font_mirror || f==unholy_font_rot180;
+}
+
 public U0 UnholyFontSet(I64 mode=UNHOLY_FONT_STD)
 {//Select std, mirror-script or upside-down font.
+//If <CTRL-ALT-f> swapped ours into aux_font, swap back first, so
+  //the other font (Cyrillic, or $LK,"FontEd",A="FI:::/Demo/Graphics/FontEd.HC"$'s) stays in aux_font.
+  if (!UnholyFontIs(text.font) && UnholyFontIs(text.aux_font))
+    SwapI64(&text.font,&text.aux_font);
   if (mode==UNHOLY_FONT_MIRROR)
     text.font=unholy_font_mirror;
   else if (mode==UNHOLY_FONT_ROT180)
@@ -244,13 +253,13 @@ U0 CtrlAltU(I64 sc)
 U0 CtrlAltY(I64 sc)
 {
   if (UnholyKeyEcho(sc)) return;
-  if (sc&SCF_SHIFT) {
-    if (unholy_font_mode==UNHOLY_FONT_ROT180)
+  if (sc&SCF_SHIFT) {//Go by what is on the scrn, not a cached mode.
+    if (text.font==unholy_font_rot180)
       UnholyFontSet(UNHOLY_FONT_STD);
     else
       UnholyFontSet(UNHOLY_FONT_ROT180);
   } else {
-    if (unholy_font_mode==UNHOLY_FONT_MIRROR)
+    if (text.font==unholy_font_mirror)
       UnholyFontSet(UNHOLY_FONT_STD);
     else
       UnholyFontSet(UNHOLY_FONT_MIRROR);

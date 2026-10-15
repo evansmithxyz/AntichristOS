@@ -80,7 +80,8 @@ I64 SpriteElemSize(CSprite *tmpg)
 public I64 SpriteSize(U8 *elems)
 {//Walk sprite elements and return size of sprite as binary data.
   CSprite *tmpg=elems-offset(CSprite.start),*tmpg1=tmpg;
-  while (tmpg->type&SPG_TYPE_MASK)
+  while (tmpg->type&SPG_TYPE_MASK && //A corrupt type ends the walk.
+	tmpg->type&SPG_TYPE_MASK<SPT_TYPES_NUM)
     tmpg(U8 *)+=SpriteElemSize(tmpg);
   return tmpg(U8 *)-tmpg1(U8 *)+sprite_elem_base_sizes[SPT_END];
 }
@@ -101,7 +102,8 @@ I64 SpriteTypeMask(U8 *elems)
 U0 SpriteSelAll(U8 *elems,Bool val)
 {
   CSprite *tmpg=elems-offset(CSprite.start);
-  while (tmpg->type&SPG_TYPE_MASK) {
+  while (tmpg->type&SPG_TYPE_MASK &&
+	tmpg->type&SPG_TYPE_MASK<SPT_TYPES_NUM) {
     BEqu(&tmpg->type,SPf_SEL,val);
     tmpg(U8 *)+=SpriteElemSize(tmpg);
   }
