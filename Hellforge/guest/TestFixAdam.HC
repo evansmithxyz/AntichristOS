@@ -1,6 +1,6 @@
 //Regression test for the adam review fixes.
 //  python Hellforge/forge.py run Hellforge/guest/TestFixAdam.HC --smp 4
-//corrupt sprites (walk guards, gr.empty_sprite, Extents, DemoDoc),
+//corrupt sprites (walk guards, mesh tris, gr.empty_sprite, Extents, DemoDoc),
 //breathing after SettingsPop, Ctrl-Alt-I under SettingsPush, Ctrl-Alt-Y
 //vs Ctrl-Alt-F, the Adversary's colors, God's own pop-ups, doc links,
 //Psalmody honoring Ctrl-Alt-R, and the boot splash.
@@ -103,6 +103,31 @@ Bool FaWalk(I64 bad_type)
   return fa_done && fa_size==3;
 }
 
+U0 FaMesh()
+{//A mesh whose tris were scrambled by lost bytes (KeepAway's) must not
+//read outside its vertices: Gr3Mesh() skips those tris.
+  CDC *dc=DCNew(64,64);
+  CD3I32 v[4];
+  CMeshTri tri[3];
+  I64 i,good,mixed;
+  MemSet(v,0,sizeof(v));
+  v[1].x=60; v[2].y=60; v[3].x=60; v[3].y=60;
+  for (i=0;i<3;i++)
+    tri[i].color=RED;
+  tri[0].nums[0]=0; tri[0].nums[1]=1; tri[0].nums[2]=2;
+  tri[1].nums[0]=1; tri[1].nums[1]=3; tri[1].nums[2]=2;
+  DCFill(dc,BLACK);
+  good=Gr3Mesh(dc,4,v,2,tri);
+  tri[1].nums[1]=0x7FFFFF00; //Far outside the vertices
+  tri[2].nums[0]=-5; tri[2].nums[1]=0; tri[2].nums[2]=1;
+  DCFill(dc,BLACK);
+  mixed=Gr3Mesh(dc,4,v,3,tri);
+  HfPrint("FA mesh: 2 good tris %d pixs, 1 good + 2 scrambled %d pixs\n",
+	good,mixed);
+  FaCheck(good>0 && 0<mixed<good,"Gr3Mesh skips tris that point past its vertices");
+  DCDel(dc);
+}
+
 U0 FaSprites()
 {
   CTask *t;
@@ -118,6 +143,7 @@ U0 FaSprites()
   FaCheck(FaWalk(0x78),"type 120 element: Sprite3 and SpriteSize stop");
   FaCheck(FaWalk(35),"type 35 element: Sprite3 and SpriteSize stop");
   FaCheck(FaWalk(SPT_TYPES_NUM),"type SPT_TYPES_NUM element stops the walk");
+  FaMesh;
 
   t=User;
   Sleep(300);
@@ -276,6 +302,7 @@ U0 FaPopUp(U8 *cmd,U8 *want1,U8 *want2,U8 *nope,Bool doodle=FALSE)
 {
   CTask *t,*p;
   I64 i;
+  F64 t0;
   U8 buf[STR_LEN];
   FifoU8Flush(god.fifo);
   t=User("%s;\n",cmd);
@@ -287,14 +314,21 @@ U0 FaPopUp(U8 *cmd,U8 *want1,U8 *want2,U8 *nope,Bool doodle=FALSE)
     StrPrint(buf,"%s pop-up does not say %s",cmd,nope);
     FaCheck(!FaDocHas(p->display_doc,nope),buf);
     PostMsg(p,MSG_KEY_DOWN_UP,CH_ESC,0);
-    if (doodle) {//Doodle a while, then throw it away (god.doodle_dc freed).
+    if (doodle) {//Doodle to the end, then throw it away (god.doodle_dc freed).
       Sleep(800);
       StrPrint(buf,"%s pop-up gone after <ESC>",cmd);
       FaCheck(!TaskValidate(t->popup_task),buf);
-      for (i=0;i<80;i++) {
+//A doodle eats about 2000 bits, 24 per key, and GodDoodleSmooth() is
+      //slow, so keep pressing until it is done (keys queue while it smooths).
+      t0=tS;
+      for (i=0;i<200 && !god.doodle_done;i++) {
 	PostMsg(t,MSG_KEY_DOWN_UP,CH_SPACE,0);
-	Sleep(20);
+	Sleep(40);
       }
+      while (!god.doodle_done && tS-t0<40.0)
+	Sleep(50);
+      HfPrint("FA %s: done=%d after %d <SPACE>s, %5.2fs\n",cmd,
+	    god.doodle_done,i,tS-t0);
       Sleep(500);
       HfShot(cmd);
       StrPrint(buf,"%s: the <SPACE>s it asks for reach the doodle",cmd);
@@ -359,24 +393,21 @@ I64 FaCensus(U8 *filename)
       n++;
       if (!DocLinkChk(doc,st) || !StrNCmp(st,"MN:",3) &&
 	    !HashFind(st+3,adam_task->hash_table,HTG_SRC_SYM)) {
-	HfPrint("FA BROKEN %s line %d: %s
-",filename,doc_e->y+1,st);
+	HfPrint("FA BROKEN %s line %d: %s\n",filename,doc_e->y+1,st);
 	bad++;
       }
       Free(st);
     }
     doc_e=doc_e->next;
   }
-  HfPrint("FA census %s links=%d bad=%d
-",filename,n,bad);
+  HfPrint("FA census %s links=%d bad=%d\n",filename,n,bad);
   DocDel(doc);
   return bad;
 }
 
 U0 FaLinks()
 {
-  HfPrint("-- links
-");
+  HfPrint("-- links\n");
   FaCheck(!FaCensus("::/Adam/God/AdvNotes.DD"),"AdvNotes.DD links resolve");
   FaCheck(!FaCensus("::/Apps/Psalmody/JukeBox.HC"),"JukeBox.HC links resolve");
   FaCheck(!FaCensus("::/Apps/Psalmody/Help.DD"),"Psalmody Help links resolve");

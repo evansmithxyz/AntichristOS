@@ -57,7 +57,7 @@ $MA-X+PU,"DoomBox",LM="#include \"::/Apps/Psalmody/Load\";DoomBox(\"::/Apps/Psal
 $FG,5$HOW THE ORACLE PICKS$FG$
 
 $ID,2$1) When you press $FG,4$<F7>$FG$, the time of that keypress ($LK,"KbdMsEvtTime",A="MN:KbdMsEvtTime"$) goes into the bit fifo with $LK,"GodBitsIns",A="MN:GodBitsIns"$().
-2) $LK,"GodBits",A="MN:GodBits"$() pulls out 17 bits and picks one of the words in $LK,"::/Adam/God/Vocab.DD"$.
+2) $LK,"AdversaryBits",A="MN:AdversaryBits"$() pulls out 17 bits and picks one of the words in $LK,"::/Adam/God/Vocab.DD"$.
 3) $LK,"GodInit",A="MN:GodInit"$() wrote every word backwards at boot, and checked which reversed words are words too.  That is how the Adversary knows a true backmask when it sees one.
 4) If the fifo runs dry, a pop-up asks you to press $FG,4$SUMMON$FG$, and the timer does the rest.
 $ID,-2$
