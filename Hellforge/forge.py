@@ -88,7 +88,7 @@ def log(*a):
 def iso_kwargs(a):
     return dict(boot_msg=a.boot_msg, volume_id=a.volume_id, excludes=a.exclude,
                 date=a.date, catalog_id=a.catalog_id, skip_invalid=a.skip_invalid,
-                patch_bins=a.patch_broken_bins,
+                patch_bins=a.patch_broken_bins, dotz=getattr(a, "dotz", True),
                 add=[(s[:s.rfind(":")], s[s.rfind(":") + 1:]) for s in a.add])
 
 
@@ -100,6 +100,8 @@ def add_iso_opts(p, patch_default=False):
                         "(default: %s)" % ("on" if patch_default else "off"))
     p.add_argument("--no-patch-broken-bins", dest="patch_broken_bins",
                    action="store_false")
+    p.add_argument("--no-dotz", dest="dotz", action="store_false",
+                   help="store files under plain names instead of TempleOS-style .Z")
     p.add_argument("--boot-msg", default=None,
                    help="stage1 boot message (default: from the tree's BootDVD.HC)")
     p.add_argument("--volume-id", default=None)

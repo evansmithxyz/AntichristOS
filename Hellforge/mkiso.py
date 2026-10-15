@@ -617,6 +617,38 @@ def patch_bin_tail(data, strip_refs=False):
     return text + b"\0" + b"".join(out)
 
 
+# ---- .Z names, as on a real TempleOS disk --------------------------------------
+# The original distro stored nearly every file TempleOS-compressed under a
+# "<name>.Z" name (e.g. ::/Doc/StandBy.DD.Z, ~/PersonalMenu.DD.Z,
+# ::/Misc/Bible.TXT.Z are looked up by exact name).  The repo holds the expanded
+# files, so dotz_tree() puts the .Z back.  It wraps each file in a CT_NONE
+# CArcCompress header (I64 compressed_size, I64 expanded_size, U8 type=1),
+# which ExpandBuf() returns verbatim, and mkiso marks it RS_ATTR_COMPRESSED like
+# FileWrite() would.  These stay unwrapped:
+#   * /0000Boot/* and *.C: contiguous files read raw (the CD boot kernel)
+#   * *.DATA: AutoComplete opens ACDefs.DATA with FOpen() for raw block access
+CT_NONE = 1
+ARC_HDR = struct.Struct("<qqB")
+DOTZ_KEEP_RE = re.compile(r"(\.Z|\.C|\.DATA)$", re.I)
+
+
+def dotz_tree(root):
+    n_wrapped = 0
+    for n in list(root.walk()):
+        if n.is_dir or DOTZ_KEEP_RE.search(n.name) or n.path().upper().startswith("/0000BOOT/"):
+            continue
+        data = file_bytes(n)
+        check_name(n.name + ".Z", n.path() + ".Z")
+        n.data = ARC_HDR.pack(ARC_HDR.size + len(data), len(data), CT_NONE) + data
+        n.src = None
+        n.name += ".Z"
+        n_wrapped += 1
+    for n in root.walk():
+        if n.is_dir:
+            n.children.sort(key=lambda c: c.name)
+    return n_wrapped
+
+
 # ---- Identity strings taken from the OS's own sources -------------------------
 _HC_ESC = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'", "0": "\0"}
 _HC_STR = r'"((?:\\.|[^"\\])*)"'
@@ -672,7 +704,7 @@ def source_identity(src):
 def make_iso(src, out, boot_msg=None, volume_id=None, excludes=None,
              inject_autorun=None, add=(), append=(), mkdirs=None, date=None,
              catalog_id=None, not64_msg=None, skip_invalid=False,
-             manifest=None, patch_bins=False, log=print):
+             manifest=None, patch_bins=False, dotz=True, log=print):
     """Build the ISO. Returns geometry dict.  boot_msg, not64_msg and catalog_id
     default to what the tree's own BootDVD.HC / DskISORedSea.HC say."""
     ident = source_identity(src)
@@ -709,6 +741,8 @@ def make_iso(src, out, boot_msg=None, volume_id=None, excludes=None,
         append_file(root, "StartOS.HC",
                     b"\n//Hellforge autorun (injected, not in repo)\n"
                     + AUTORUN_INCLUDE.encode() + b"\n")
+    if dotz:
+        log(f"mkiso: stored {dotz_tree(root)} files under .Z names (CT_NONE)")
     stage1, syms = build_stage1(boot_msg, not64_msg)
     dt = parse_date(date)
     # deterministic "unique_id": hash of tree paths+sizes+date
@@ -769,6 +803,8 @@ def main(argv=None):
     ap.add_argument("--skip-invalid", action="store_true",
                     help="skip names RedSea cannot store instead of failing")
     ap.add_argument("--manifest", default=None, help="write a block map listing")
+    ap.add_argument("--no-dotz", dest="dotz", action="store_false",
+                    help="store files under their plain names instead of TempleOS-style .Z")
     ap.add_argument("--patch-broken-bins", action="store_true",
                     help="in the image only, replace corrupted DolDoc sprite tails "
                          "(see README) so boot is not stalled by 'Bin Not Found'")
@@ -788,7 +824,8 @@ def main(argv=None):
                        append=[split2(s, "append") for s in a.append],
                        mkdirs=a.mkdir, date=a.date, catalog_id=a.catalog_id,
                        not64_msg=a.not64_msg, skip_invalid=a.skip_invalid,
-                       manifest=a.manifest, patch_bins=a.patch_broken_bins)
+                       manifest=a.manifest, patch_bins=a.patch_broken_bins,
+                       dotz=a.dotz)
     except IsoError as e:
         print("mkiso: error:", e, file=sys.stderr)
         return 1
