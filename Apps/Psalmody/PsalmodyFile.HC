@@ -318,9 +318,26 @@ U8 *PsmCvtSong()
 U0 PsmBackmask()
 {//Retrograde: reverse the song in place.  Ties move with their notes
 //and words are reversed unless they hold DolDoc commands.
-  PsmNote *tmpn=psm.head.next,*tmpn1;
+  PsmNote *tmpn=psm.head.next,*tmpn1,*tmpn2;
   Bool tie,last_tie=FALSE;
   U8 *st;
+//A meter belongs in front of the notes after it, so first move each
+  //meter behind its run of notes.  Reversing puts it back in front.
+  while (tmpn!=&psm.head) {
+    tmpn1=tmpn->next;
+    if (tmpn->type==PSMT_METER) {
+      tmpn2=tmpn;
+      while (tmpn2->next!=&psm.head && tmpn2->next->type!=PSMT_METER)
+	tmpn2=tmpn2->next;
+      if (tmpn2!=tmpn) {
+	QueRem(tmpn);
+	QueIns(tmpn,tmpn2);
+	tmpn1=tmpn->next;
+      }
+    }
+    tmpn=tmpn1;
+  }
+  tmpn=psm.head.next;
   while (tmpn!=&psm.head) {
     if (tmpn->type==PSMT_NOTE) {
 //A tie joins a note to the next one, so it moves to that next one.
@@ -353,9 +370,11 @@ U0 PsmInvert()
       if (!pivot)
 	pivot=tmpn->ona;
       ona=2*pivot-tmpn->ona;
-      while (Ona2Octave(ona)<1)
+//Keep it in octaves 1-7: C1 is ona 15, B7 is ona 98.  (I64 math,
+      //Ona2Octave() takes an I8.)
+      while (ona<15)
 	ona+=12;
-      while (Ona2Octave(ona)>7)
+      while (ona>98)
 	ona-=12;
       tmpn->ona=ona;
       Btr(&tmpn->flags,PSMf_FLAT);
@@ -405,6 +424,7 @@ U0 PsmPlayBackwards()
   Snd;
   psm.playing=FALSE;
   psm.cur_note=&psm.head;
+  psm.scrn_x+=psm.cur_note->x-GR_WIDTH/2;
 }
 
 U8 *PsmSaveSong(U8 *dirname,U8 *full_filename)

@@ -60,6 +60,14 @@ U8 *JBWordsCat(U8 *words,I64 *_len,U8 *word)
   return res;
 }
 
+U0 JBLexNum(CCmpCtrl *cc,F64 *_num)
+{//music.tempo=2.5; or music.tempo=3;
+  switch (Lex(cc)) {
+    case TK_F64: *_num=cc->cur_f64; break;
+    case TK_I64: *_num=cc->cur_i64; break;
+  }
+}
+
 public U8 *JukeSongStr(U8 *filename,U8 **_words=NULL,
 	F64 *_tempo=NULL,F64 *_stacatto=NULL,I64 *_notes=NULL)
 {//All $LK,"Play",A="MN:Play"$() strs of a song file joined, without running it.
@@ -96,11 +104,11 @@ public U8 *JukeSongStr(U8 *filename,U8 **_words=NULL,
       } else if (!StrCmp(cc->cur_str,"music") &&
 	    Lex(cc)=='.' && Lex(cc)==TK_IDENT) {
 	if (!StrCmp(cc->cur_str,"tempo")) {
-	  if (Lex(cc)=='=' && Lex(cc)==TK_F64 && _tempo)
-	    *_tempo=cc->cur_f64;
+	  if (Lex(cc)=='=' && _tempo)
+	    JBLexNum(cc,_tempo);
 	} else if (!StrCmp(cc->cur_str,"stacatto_factor")) {
-	  if (Lex(cc)=='=' && Lex(cc)==TK_F64 && _stacatto)
-	    *_stacatto=cc->cur_f64;
+	  if (Lex(cc)=='=' && _stacatto)
+	    JBLexNum(cc,_stacatto);
 	}
       }
     }
@@ -117,19 +125,20 @@ public U8 *JukeSongStr(U8 *filename,U8 **_words=NULL,
 
 public U0 JukeBackmask(U8 *filename)
 {//Play a whole hymn backwards, words and all.  Graphics are lost.
-  U8 *song,*words=NULL,*rev_name;
+  U8 *song=NULL,*words=NULL,*rev_name;
   F64 tempo=2.5,stacatto=0.9;
   Fs->task_end_cb=&SndTaskEndCB;
   MusicSettingsRst;
-  song=JukeSongStr(filename,&words,&tempo,&stacatto,&jb_backmask_notes);
-  jb_backmask_loops=0;
-  music.tempo=tempo;
-  music.stacatto_factor=stacatto;
-  rev_name=StrMirror(filename);
-  "$$WW,1$$$$RED$$%s$$FG$$\n%d notes, backmasked.\n\n",rev_name,jb_backmask_notes;
-  Free(rev_name);
   try {
-    while (!ScanKey) {
+    song=JukeSongStr(filename,&words,&tempo,&stacatto,&jb_backmask_notes);
+    jb_backmask_loops=0;
+    music.tempo=tempo;
+    music.stacatto_factor=stacatto;
+    rev_name=StrMirror(filename);
+    "$$WW,1$$$$RED$$%s$$FG$$\n%d notes, backmasked.\n\n",
+	  rev_name,jb_backmask_notes;
+    Free(rev_name);
+    while (jb_backmask_notes && !ScanKey) {
       music.octave=4;
       music.note_len=1.0;
       PlayRev(song,words);

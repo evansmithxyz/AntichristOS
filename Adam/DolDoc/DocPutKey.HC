@@ -1,5 +1,20 @@
 #help_index "DolDoc/Output;StdOut/DolDoc"
 
+U8 *DocRunFind(U8 *filename,U8 *ext)
+{//The Run file next to filename, stored with or without .Z, or NULL.
+  CDirEntry de;
+  U8 *st=DirFile(filename,"Run",ext);
+  Bool found=FALSE;
+  if (st) {
+    found=FileFind(st,&de,FUF_Z_OR_NOT_Z|FUF_JUST_FILES);
+    Free(st);
+  }
+  if (found)
+    return de.full_name;
+  else
+    return NULL;
+}
+
 public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 {//$LK,"PutKey",A="MN:PutKey"$(ch,sc) at doc insert pt, cur_entry.
   I64 i,x,y;
@@ -307,20 +322,10 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 			DocWrite(doc);
 			st=StrNew(doc->filename.name);
 		      }
-		      if (st2=DirFile(st,"Run","HC.Z")) {
-			if (FileFind(st2)) {
-			  Free(st);
-			  st=st2;
-			} else {
-			  Free(st2);
-			  if (st2=DirFile(st,"Run","UC.Z")) {
-			    if (FileFind(st2)) {
-			      Free(st);
-			      st=st2;
-			    } else
-			      Free(st2);
-			  }
-			}
+		      if ((st2=DocRunFind(st,"HC.Z")) || (st2=DocRunFind(st,"HC")) ||
+			    (st2=DocRunFind(st,"UC.Z")) || (st2=DocRunFind(st,"UC"))) {
+			Free(st);
+			st=st2;
 		      }
 		      if (st) {
 			if (sc&SCF_SHIFT)

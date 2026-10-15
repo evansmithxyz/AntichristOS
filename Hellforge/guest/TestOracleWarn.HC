@@ -58,7 +58,17 @@ while (ptr=StrMatch("WARNING",ptr)) {
   ptr++;
 }
 ptr=st;
+while (ptr=StrMatch("TEMPTATION",ptr)) { //WS1's name for a warning.
+  warns++;
+  ptr++;
+}
+ptr=st;
 while (ptr=StrMatch("ERROR",ptr)) {
+  errs++;
+  ptr++;
+}
+ptr=st;
+while (ptr=StrMatch("BLASPHEMY",ptr)) { //WS1's name for an error.
   errs++;
   ptr++;
 }
