@@ -8,6 +8,15 @@ U0 TimeIns()
   "$$IV,1$$----%D %T----$$IV,0$$\n",cdt,cdt;
 }
 
+U0 TimeInsRev()
+{//AntichristOS: the time, as heard on a record played backwards.
+  CDate cdt=Now;
+  U8 *st=MStrPrint("----%D %T----",cdt,cdt),*rev=StrMirror(st);
+  "$$IV,1$$%s$$IV,0$$\n",rev;
+  Free(st);
+  Free(rev);
+}
+
 Bool MyPutKey(I64 ch,I64 sc)
 {//ch=ASCII; sc=scan_code
 
@@ -86,6 +95,11 @@ Bool MyPutKey(I64 ch,I64 sc)
 		KeyDescSet("Cmd /TimeIns");
 	      else
 		TimeIns;
+	    } else {
+	      if (sc&SCF_KEY_DESC)
+		KeyDescSet("Cmd /TimeIns Backmasked");
+	      else
+		TimeInsRev;
 	    }
 	    return TRUE;
 	}

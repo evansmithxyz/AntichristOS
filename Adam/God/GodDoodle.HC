@@ -5,7 +5,10 @@ U0 GodDoodleDraw(CTask *task,CDC *dc)
   GrBlot(dc,0,0,god.doodle_dc);
   if (Blink) {
     if (god.doodle_done) {
-      dc->color=RED;
+      if (god.doodle_hell)
+	dc->color=YELLOW;
+      else
+	dc->color=RED;
       GrPrint(dc,(task->pix_width-FONT_WIDTH*29)>>1,
 	    (task->pix_height-3*FONT_HEIGHT)>>1,
 	    "Press <ESC> to insert sprite.");
@@ -13,7 +16,10 @@ U0 GodDoodleDraw(CTask *task,CDC *dc)
 	    (task->pix_height-3*FONT_HEIGHT)>>1+2*FONT_HEIGHT,
 	    "Press <SHIFT-ESC> to throw-away sprite.");
     } else {
-      dc->color=GREEN;
+      if (god.doodle_hell)
+	dc->color=LTRED;
+      else
+	dc->color=GREEN;
       GrPrint(dc,(task->pix_width-FONT_WIDTH*25)>>1,
 	    (task->pix_height-FONT_HEIGHT)>>1,
 	    "Press <SPACE> repeatedly.");
@@ -69,6 +75,14 @@ U0 GodDoodleHexIns(U8 *st)
   }
 }
 
+I64 GodDoodleBackColor()
+{
+  if (god.doodle_hell)
+    return BLACK;
+  else
+    return WHITE;
+}
+
 I64 GodDoodleBits(I64 num_bits)
 {
   U8 b;
@@ -82,7 +96,7 @@ I64 GodDoodleBits(I64 num_bits)
       if (god.doodle_ch==CH_ESC||god.doodle_ch==CH_SHIFT_ESC)
 	throw;
       else if (god.doodle_ch=='\n') {
-	DCFill(god.doodle_dc,WHITE);
+	DCFill(god.doodle_dc,GodDoodleBackColor);
 	FifoU8Flush(god.doodle_fifo);
       } else if ('0'<=god.doodle_ch<='9')
 	GodDoodleSmooth(god.doodle_ch-'0');
@@ -94,7 +108,7 @@ I64 GodDoodleBits(I64 num_bits)
 }
 
 public U8 *GodDoodleSprite(U8 *hex=NULL)
-{//Make God draw sprite. $LK+PU,"Holy Spirit Instructions",A="FI:::/Adam/God/HSNotes.DD"$
+{//Make God draw sprite. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
   I64 i,j,w,h,x,y,ch;
   U8 *elems;
 
@@ -105,13 +119,18 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
   WinBorder;
   WinMax;
 
-  if (!hex)
-    PopUpOk("The $LK+PU,"Holy Spirit",A="FI:::/Adam/God/HSNotes.DD"$ can puppet you.\n\n"
-	  "Press $$GREEN$$<SPACE>$$FG$$ until it finishes.");
+  if (!hex) {
+    if (god.doodle_hell)
+      PopUpOk("The $LK+PU,"Adversary",A="FI:::/Adam/God/AdvNotes.DD"$ is a doodler.\n\n"
+	    "Press $$RED$$<SPACE>$$FG$$ until the flames die down.");
+    else
+      PopUpOk("The $LK+PU,"Adversary",A="FI:::/Adam/God/AdvNotes.DD"$ can puppet you.\n\n"
+	    "Press $$GREEN$$<SPACE>$$FG$$ until it finishes.");
+  }
 
   god.doodle_ch=0;
   god.doodle_dc=DCNew(Fs->pix_width,Fs->pix_height);
-  DCFill(god.doodle_dc,WHITE);
+  DCFill(god.doodle_dc,GodDoodleBackColor);
   w=god.doodle_dc->width;
   h=god.doodle_dc->height;
 
@@ -120,7 +139,10 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
   GodDoodleHexIns(hex);
   try {
     for (i=0;i<3;i++) {
-      god.doodle_dc->color=RED;
+      if (god.doodle_hell)
+	god.doodle_dc->color=LTRED;
+      else
+	god.doodle_dc->color=RED;
       for (j=0;j<29;j++)
 	switch [GodDoodleBits(3)] {
 	  case 0:
@@ -150,12 +172,20 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
       for (j=0;j<6;j++) {
 	x=(w-1)*GodDoodleBits(5)/31+w/64;
 	y=(h-1)*GodDoodleBits(5)/31+h/64;
-	switch [GodDoodleBits(2)] {
-	  case 0: god.doodle_dc->color=BLACK;	break;
-	  case 1: god.doodle_dc->color=DKGRAY;	break;
-	  case 2: god.doodle_dc->color=LTGRAY;	break;
-	  case 3: god.doodle_dc->color=WHITE;	break;
-	}
+	if (god.doodle_hell)
+	  switch [GodDoodleBits(2)] {
+	    case 0: god.doodle_dc->color=BLACK;		break;
+	    case 1: god.doodle_dc->color=RED;		break;
+	    case 2: god.doodle_dc->color=LTRED;		break;
+	    case 3: god.doodle_dc->color=YELLOW;	break;
+	  }
+	else
+	  switch [GodDoodleBits(2)] {
+	    case 0: god.doodle_dc->color=BLACK;		break;
+	    case 1: god.doodle_dc->color=DKGRAY;	break;
+	    case 2: god.doodle_dc->color=LTGRAY;	break;
+	    case 3: god.doodle_dc->color=WHITE;		break;
+	  }
 	GrFloodFill3(god.doodle_dc,x,y,0);
       }
       GodDoodleSmooth(3);
@@ -183,9 +213,29 @@ public U8 *GodDoodleSprite(U8 *hex=NULL)
 
 #help_index "God"
 public U0 GodDoodle(U8 *hex=NULL)
-{//Make God draw sprite, insert in doc. $LK+PU,"Holy Spirit Instructions",A="FI:::/Adam/God/HSNotes.DD"$
+{//Make God draw sprite, insert in doc. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
   U8 *elems;
   if (elems=GodDoodleSprite(hex)) {
+    Sprite(elems);
+    Free(elems);
+  }
+}
+
+#help_index "God;AntichristOS"
+public U8 *AdversaryDoodleSprite(U8 *hex=NULL)
+{//Make the Adversary draw a hellfire sprite.  Returns elems, MAlloc()ed.
+  U8 *elems;
+  Bool old_hell=god.doodle_hell;
+  god.doodle_hell=TRUE;
+  elems=GodDoodleSprite(hex); //Catches its own exceptions.
+  god.doodle_hell=old_hell;
+  return elems;
+}
+
+public U0 AdversaryDoodle(U8 *hex=NULL)
+{//Make the Adversary draw a hellfire sprite, insert in doc. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
+  U8 *elems;
+  if (elems=AdversaryDoodleSprite(hex)) {
     Sprite(elems);
     Free(elems);
   }

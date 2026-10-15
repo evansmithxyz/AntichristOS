@@ -1,0 +1,16 @@
+#!/bin/bash
+
+#A random Bible passage, backmasked: last line first and every line
+#reversed.  (tac is cat backmasked.)  Hold it to a mirror.
+#Usage: AdversaryPassage [path/to/Bible.TXT]
+
+BIBLE="${1:-$(dirname "$0")/../../Misc/Bible.TXT}"
+if [ ! -f "$BIBLE" ]; then
+    echo "Can't find $BIBLE (pass the path to Bible.TXT)." >&2
+    exit 1
+fi
+TOTAL=$(wc -l < "$BIBLE")
+LINE=$(shuf -i 1-$((TOTAL-15)) -n 1 --random-source=/dev/urandom)
+echo "$(echo "Line $LINE" | rev)  (hold to a mirror)"
+echo
+sed -n "${LINE},$((LINE+15))p" "$BIBLE" | tac | rev

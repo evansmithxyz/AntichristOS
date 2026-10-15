@@ -141,13 +141,22 @@ U0 BibleInit()
 	"ST_BIBLE_BOOK_LINES"))-1);
 } BibleInit;
 
+public U8 *BibleFileFind(U8 *filename=BIBLE_FILENAME)
+{//Full name of a book file, with or without .Z, MAlloc()ed.  NULL if none.
+  CDirEntry de;
+  if (FileFind(filename,&de,FUF_Z_OR_NOT_Z|FUF_JUST_FILES))
+    return de.full_name;
+  else
+    return NULL;
+}
+
 public U8 *BibleLine2Verse(I64 line,I64 separate_ch=CH_SPACE)
 {//Line number to verse str, Malloc()ed.
 //Separate with <SPACE> or ','.  If you pass '%', it uses "%20".
   CDoc *doc;
   CDocEntry *doc_e;
   I64 i=0,cnt=DefineCnt("ST_BIBLE_BOOKS"),start=0,last_start=0;
-  U8 *ptr=DefineSub(0,"ST_BIBLE_BOOK_LINES"),*ptr2;
+  U8 *ptr=DefineSub(0,"ST_BIBLE_BOOK_LINES"),*ptr2,*name;
   while (i<=cnt) {
     last_start=start;
     start=Str2I64(ptr);
@@ -157,7 +166,10 @@ public U8 *BibleLine2Verse(I64 line,I64 separate_ch=CH_SPACE)
     ptr+=StrLen(ptr)+1;
   }
   if (0<=--i<cnt) {
-    doc=DocRead(BIBLE_FILENAME,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
+    if (!(name=BibleFileFind))
+      name=StrNew(BIBLE_FILENAME);
+    doc=DocRead(name,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
+    Free(name);
     DocGoToLine(doc,line); //one based
     doc_e=doc->cur_entry;
     while (doc_e!=doc && (doc_e->type_u8!=DOCT_TEXT || !*doc_e->tag))
@@ -219,9 +231,11 @@ public U0 BookLines(CDoc *doc_out=NULL,I64 start,I64 lines,
 {//Put N line starting at line M into doc.
   CDoc *doc_in;
   CDocEntry *doc_e;
+  U8 *name;
   if (!doc_out) doc_out=DocPut;
-  if (doc_out && FileFind(book_filename)) {
-    doc_in=DocRead(book_filename,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
+  if (doc_out && (name=BibleFileFind(book_filename))) {
+    doc_in=DocRead(name,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
+    Free(name);
     DocGoToLine(doc_in,start); //one based
     doc_e=doc_in->cur_entry;
     while (lines>0 && doc_e!=doc_in) {
@@ -242,9 +256,9 @@ public U0 BibleVerse(CDoc *doc_out=NULL,U8 *verse,I64 lines)
   I64 i;
   CDoc *doc_in;
   CDocEntry *doc_e;
-  U8 *st,*st2;
+  U8 *st,*st2,*name;
   if (!doc_out) doc_out=DocPut;
-  if (doc_out && FileFind(BIBLE_FILENAME)) {
+  if (doc_out && (name=BibleFileFind)) {
     st=StrNew(verse);
     st2=StrNew(verse);
     if (StrOcc(st,','))
@@ -254,7 +268,7 @@ public U0 BibleVerse(CDoc *doc_out=NULL,U8 *verse,I64 lines)
     i=DefineMatch(st,"ST_BIBLE_BOOKS",LMF_IGNORE_CASE);
     if (i>=0) {
       i=Str2I64(DefineSub(i,"ST_BIBLE_BOOK_LINES"));
-      doc_in=DocRead(BIBLE_FILENAME,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
+      doc_in=DocRead(name,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
       DocGoToLine(doc_in,i); //one based
       if (*st2) {
 	StrCpy(doc_in->find_replace->find_text,st2);
@@ -274,18 +288,24 @@ public U0 BibleVerse(CDoc *doc_out=NULL,U8 *verse,I64 lines)
     }
     Free(st);
     Free(st2);
+    Free(name);
   }
 }
 
 public CDoc *BibleDoc()
 {//Return Bible as DolDoc with trees.
-  CDoc	*res=DocRead(BIBLE_FILENAME);
-  CDocEntry *doc_e=res->head.next,*doc_e1;
+  CDoc	*res;
+  CDocEntry *doc_e,*doc_e1;
   Bool open_chapter=FALSE;
-  U8	*ptr=Define("ST_BIBLE_BOOK_LINES");
+  U8	*ptr=Define("ST_BIBLE_BOOK_LINES"),*name=BibleFileFind;
   I64	book,book_cnt=DefineCnt("ST_BIBLE_BOOK_LINES")-1,
 	chapter,
 	line=Str2I64(ptr,,&ptr);
+  if (!name)
+    name=StrNew(BIBLE_FILENAME);
+  res=DocRead(name);
+  Free(name);
+  doc_e=res->head.next;
   ptr++;
   for (book=0;book<book_cnt;book++) {
     while (doc_e->y+1<line) {
@@ -333,11 +353,36 @@ public CDoc *BibleDoc()
   return res;
 }
 
+public CDocEntry *BibleDocBook(CDoc *doc,U8 *book="Revelation")
+{//Find a book's tree in a $LK,"BibleDoc",A="MN:BibleDoc"$() and open it.
+  CDocEntry *doc_e=doc->head.next;
+  U8 *ptr;
+  while (doc_e!=doc) {
+    if (doc_e->type_u8==DOCT_TREE) {
+      ptr=doc_e->tag;
+      if (StrLen(ptr)>3 && ptr[1]==']') //"+] " or "-] "
+	ptr+=3;
+    } else
+      ptr=NULL;
+    if (ptr && !StrCmp(ptr,book)) {
+      doc_e->de_flags&=~DOCEF_CHECKED_COLLAPSED;
+      DocRecalc(doc);
+      return doc_e;
+    }
+    doc_e=doc_e->next;
+  }
+  return NULL;
+}
+
 public U0 BibleView()
-{//View Bible as DolDoc with trees.
+{//View Bible as DolDoc with trees.  AntichristOS opens it at the end.
   U8 buf[STR_LEN];
   CDoc *doc=BibleDoc;
-  StrPrint(buf,"AL:%d,1",doc);
+  CDocEntry *doc_e=BibleDocBook(doc);
+  if (doc_e)
+    StrPrint(buf,"AL:%d,%d",doc,doc_e->y+1);
+  else
+    StrPrint(buf,"AL:%d,1",doc);
   Ed(buf);
   DocDel(doc);
 }
@@ -345,4 +390,69 @@ U0 CtrlAltB(I64)
 {
   PopUp("BibleView;");
 }
-CtrlAltCBSet('B',&CtrlAltB,"Cmd /Bible");
+CtrlAltCBSet('B',&CtrlAltB,"Cmd /Bible (Revelation First)");
+
+#help_index "God;AntichristOS"
+public U8 *BibleLinesStr(I64 start,I64 lines,Bool backmask=FALSE,
+	U8 *book_filename=BIBLE_FILENAME)
+{//N lines starting at line M (one based), MAlloc()ed.  NULL if no book.
+//Backmask: the lines come out in reverse order, each one reversed.
+  CDoc *doc_in;
+  CDocEntry *doc_e;
+  U8 *name,**lst,*st,*res,*dst;
+  I64 i,n=0,size=1;
+  if (lines<=0 || !(name=BibleFileFind(book_filename)))
+    return NULL;
+  doc_in=DocRead(name,DOCF_PLAIN_TEXT|DOCF_NO_CURSOR);
+  Free(name);
+  DocGoToLine(doc_in,start); //one based
+  lst=CAlloc(lines*sizeof(U8 *));
+  doc_e=doc_in->cur_entry;
+  while (n<lines && doc_e!=doc_in) {
+    if (doc_e->type_u8==DOCT_TEXT) {
+      if (lst[n]) {
+	st=MStrPrint("%s%s",lst[n],doc_e->tag);
+	Free(lst[n]);
+	lst[n]=st;
+      } else
+	lst[n]=StrNew(doc_e->tag);
+    } else if (doc_e->type_u8==DOCT_NEW_LINE) {
+      if (!lst[n])
+	lst[n]=StrNew("");
+      n++;
+    }
+    doc_e=doc_e->next;
+  }
+  if (n<lines && lst[n])
+    n++;
+  DocDel(doc_in);
+  for (i=0;i<n;i++)
+    size+=StrLen(lst[i])+1;
+  res=dst=MAlloc(size);
+  for (i=0;i<n;i++) {
+    if (backmask)
+      st=StrMirror(lst[n-1-i]);
+    else
+      st=StrNew(lst[i]);
+    StrCpy(dst,st);
+    dst+=StrLen(st);
+    *dst++='\n';
+    Free(st);
+  }
+  *dst=0;
+  for (i=0;i<lines;i++)
+    Free(lst[i]);
+  Free(lst);
+  return res;
+}
+
+public U0 BookLinesRev(CDoc *doc_out=NULL,I64 start,I64 lines,
+	U8 *book_filename=BIBLE_FILENAME)
+{//Put N lines starting at line M into doc, backmasked.
+  U8 *st;
+  if (!doc_out) doc_out=DocPut;
+  if (doc_out && (st=BibleLinesStr(start,lines,TRUE,book_filename))) {
+    DocPrint(doc_out,"%s",st);
+    Free(st);
+  }
+}

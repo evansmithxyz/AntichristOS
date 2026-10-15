@@ -400,6 +400,9 @@ U0 Psalmody(U8 *dirname="~/Psalmody")
 	"  Record(,'z');"
 	"  Random(,',');"
 	"  MarkIncomplete(MSG_CMD,PSMF_INCOMPLETE);"
+	"  Backmask(,'b');"
+	"  Invert(,'v');"
+	"  PlayBackwards(,'n');"
 	"}"
 	"Snd {"
 	"  Octave1(,'1');"
@@ -607,6 +610,20 @@ mo_got_msg:
 		PsmPopMode;
 		filename=PsmSaveSong(dirname,filename);
 		PsmPushMode(psm_octave);
+		break;
+	      case 'b':
+		PsmBackmask;
+		break;
+	      case 'v':
+		PsmInvert;
+		break;
+	      case 'n':
+		if (was_playing)
+		  break;
+		col=0;
+		PsmMenu(psm_octave);
+		PsmPlayBackwards;
+		PsmMenu(psm_octave);
 		break;
 	      case CH_CTRLC:
 		PsmCopyToClip;

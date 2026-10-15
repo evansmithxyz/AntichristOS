@@ -1,6 +1,12 @@
 #help_index "God"
 
 DefineLstLoad("ST_RHYTHM_COMPLEXITY","Simple\0Normal\0Complex\0");
+DefineLstLoad("ST_SONG_MODE",
+	"Holy (Ionian)\0Unholy (Locrian)\0Diabolus (Tritone)\0");
+
+#define SONG_MODE_HOLY		0
+#define SONG_MODE_UNHOLY	1
+#define SONG_MODE_DIABOLUS	2
 
 class CMakeSongSettings
 {
@@ -8,15 +14,49 @@ class CMakeSongSettings
   Bool rests			format "$$CB,\"Rests\"$$\n";
   Bool six_eight		format "$$CB,\"Six Eight\"$$\n";
   I64  octave			format "$$DA-TRM,A=\"Octave:%d\"$$\n";
+  I64  mode			format "$$LS,D=\"ST_SONG_MODE\"$$\n";
+  Bool backmask			format "$$CB,\"Backmask\"$$\n";
   I64  octave_state;
 };
+
+//Semitones above the root for the eight notes of each unholy mode.
+//Unholy: B Locrian (B C D E F G A B), all white keys, B-F a tritone.
+//Diabolus: E F Bb B D E F Bb, the devil's interval twice an octave.
+U8 song_mode_scales[16]={0,1,3,5,6,8,10,12,0,1,6,7,10,12,13,18};
+
+I64 SongModeOna(CMakeSongSettings *mss,I64 k)
+{//k is a random note nibble.
+  I64 root;
+  if (mss->mode==SONG_MODE_UNHOLY)
+    root=Note2Ona(2,mss->octave); //B
+  else
+    root=Note2Ona(7,mss->octave); //E
+  return root+song_mode_scales[(mss->mode-1)*8+k/2];
+}
+
+U0 InsNoteOna(CMakeSongSettings *mss,U8 *buf,I64 ona,I64 *j)
+{//Spell an ona for $LK,"Play",A="MN:Play"$(), with an octave digit when it changes.
+  U8 *st;
+  if (mss->octave_state!=Ona2Octave(ona)) {
+    mss->octave_state=Ona2Octave(ona);
+    buf[*j]=mss->octave_state+'0';
+    *j+=1;
+  }
+  st=LstSub(Ona2Note(ona),music_note_lst);
+  while (*st) {
+    buf[*j]=*st++;
+    *j+=1;
+  }
+}
 
 U0 InsNote(CMakeSongSettings *mss,U8 *buf,I64 k,I64 *j)
 {//k is a random note nibble
   if (!k && mss->rests) {
     buf[*j]='R';
     *j+=1;
-  } else {
+  } else if (mss->mode!=SONG_MODE_HOLY)
+    InsNoteOna(mss,buf,SongModeOna(mss,k),j);
+  else {
     k/=2;
     if (k<3) {
       if (mss->octave_state!=mss->octave) {
@@ -54,31 +94,23 @@ U8 god_normal_songs [5]={DUR_4,DUR_4,DUR_8_8,DUR_3_3_3,DUR_16_16_16_16};
 U8 god_complex_songs[9]={DUR_4,DUR_4,DUR_8_8,DUR_8_8,DUR_8DOT_16,DUR_3_3_3,
 DUR_8_16_16,DUR_16_16_8,DUR_16_16_16_16};
 
-public U8 *GodSongStr()
-{//Make God generate 2 measures of a song. $LK+PU,"Holy Spirit Instructions",A="FI:::/Adam/God/HSNotes.DD"$
-  CMakeSongSettings mss;
-  U8 *buf;
-  I64 i,j=0,k,n,k2,duration,last_duration=-1,len;
-
-  MemSet(&mss,0,sizeof(mss));
-  mss.complexity=1;
-  mss.rests=FALSE;
-  mss.octave=music.octave;
-
-  if (!PopUpForm(&mss))
-    return NULL;
+U8 *SongStrGen(CMakeSongSettings *mss,Bool flush=TRUE)
+{//2 measures from the god bits.  flush: start with an empty bit fifo.
+  U8 *buf,*rev;
+  I64 i,j=0,k,n,k2,ona,duration,last_duration=-1,len;
 
   buf=CAlloc(256);
-  music.octave=mss.octave=ClampI64(mss.octave,1,7);
+  music.octave=mss->octave=ClampI64(mss->octave,1,7);
+  mss->mode=ClampI64(mss->mode,SONG_MODE_HOLY,SONG_MODE_DIABOLUS);
   progress4=0;
-  if (mss.six_eight)
+  if (mss->six_eight)
     progress4_max=6;
   else
     progress4_max=8;
 
-  mss.octave_state=mss.octave+1;
-  buf[j++]='0'+mss.octave_state;
-  if (mss.six_eight) {
+  mss->octave_state=mss->octave+1;
+  buf[j++]='0'+mss->octave_state;
+  if (mss->six_eight) {
     len=6;
     buf[j++]='M';
     buf[j++]='6';
@@ -86,12 +118,13 @@ public U8 *GodSongStr()
     buf[j++]='8';
   } else
     len=8;
-  FifoU8Flush(god.fifo);
+  if (flush)
+    FifoU8Flush(god.fifo);
   for (i=0;i<len;i++) {
     n=GodBits(8);
-    if (mss.complexity==2)
+    if (mss->complexity==2)
       duration=god_complex_songs[n%9];
-    else if (mss.complexity==1)
+    else if (mss->complexity==1)
       duration=god_normal_songs[n%5];
     else
       duration=god_simple_songs[n%5];
@@ -100,15 +133,15 @@ public U8 *GodSongStr()
       case DUR_8_8:
 	if (last_duration!=DUR_8_8)
 	  buf[j++]='e';
-	InsNote(&mss,buf,GodBits(4),&j);
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	break;
       case DUR_8DOT_16:
 	buf[j++]='e';
 	buf[j++]='.';
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	buf[j++]='s';
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	duration=DUR_16_16_16_16;
 	break;
       case DUR_3_3_3:
@@ -116,26 +149,26 @@ public U8 *GodSongStr()
 	  buf[j++]='e';
 	  buf[j++]='t';
 	}
-	InsNote(&mss,buf,GodBits(4),&j);
-	InsNote(&mss,buf,GodBits(4),&j);
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	break;
       case DUR_8_16_16:
 	if (last_duration!=DUR_8_8)
 	  buf[j++]='e';
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	buf[j++]='s';
-	InsNote(&mss,buf,GodBits(4),&j);
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	duration=DUR_16_16_16_16;
 	break;
       case DUR_16_16_8:
 	if (last_duration!=DUR_16_16_16_16)
 	  buf[j++]='s';
-	InsNote(&mss,buf,GodBits(4),&j);
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	buf[j++]='e';
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
 	duration=DUR_8_8;
 	break;
       case DUR_16_16_16_16:
@@ -143,29 +176,101 @@ public U8 *GodSongStr()
 	  buf[j++]='s';
 	k =GodBits(4);
 	k2=GodBits(4);
-	InsNote(&mss,buf,k,&j);
-	InsNote(&mss,buf,k2,&j);
-	InsNote(&mss,buf,k,&j);
-	InsNote(&mss,buf,k2,&j);
+	if (mss->mode==SONG_MODE_DIABOLUS && (k || !mss->rests)) {
+//The riff: a note and its tritone, twice.
+	  ona=SongModeOna(mss,k);
+	  InsNoteOna(mss,buf,ona,&j);
+	  InsNoteOna(mss,buf,ona+6,&j);
+	  InsNoteOna(mss,buf,ona,&j);
+	  InsNoteOna(mss,buf,ona+6,&j);
+	} else {
+	  InsNote(mss,buf,k,&j);
+	  InsNote(mss,buf,k2,&j);
+	  InsNote(mss,buf,k,&j);
+	  InsNote(mss,buf,k2,&j);
+	}
 	break;
       default:
 	if (last_duration!=DUR_4)
 	  buf[j++]='q';
-	InsNote(&mss,buf,GodBits(4),&j);
+	InsNote(mss,buf,GodBits(4),&j);
     }
     last_duration=duration;
     progress4++;
   }
   buf[j++]=0;
   progress4=progress4_max=0;
+  if (mss->backmask) {
+    rev=PlayStrRev(buf);
+    Free(buf);
+    buf=rev;
+  }
   return buf;
 }
 
+public U8 *GodSongStr()
+{//Make God generate 2 measures of a song. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
+  CMakeSongSettings mss;
+
+  MemSet(&mss,0,sizeof(mss));
+  mss.complexity=1;
+  mss.rests=FALSE;
+  mss.octave=music.octave;
+  mss.mode=SONG_MODE_HOLY;
+
+  if (!PopUpForm(&mss))
+    return NULL;
+  return SongStrGen(&mss,TRUE);
+}
+
 public U0 GodSong()
-{//Make God generate 2measuresx2+2measuresx2. $LK+PU,"Holy Spirit Instructions",A="FI:::/Adam/God/HSNotes.DD"$
+{//Make God generate 2measuresx2+2measuresx2. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
   U8 *st1=GodSongStr,*st2=GodSongStr;
   if (st1 && st2)
     DocPrint(DocPut,"$$SO,\"<Song>\",A=\"%s%s%s%s\"$$",st1,st1,st2,st2);
+  Free(st1);
+  Free(st2);
+}
+
+#help_index "God;AntichristOS"
+public U8 *DiabolusSongStr(I64 mode=SONG_MODE_DIABOLUS,Bool backmask=FALSE,
+	I64 complexity=1,Bool rests=FALSE,Bool six_eight=FALSE,I64 octave=3)
+{//The Adversary composes 2 measures from the god bits.  No pop-ups.
+//mode: SONG_MODE_HOLY, SONG_MODE_UNHOLY (Locrian), SONG_MODE_DIABOLUS.
+  //backmask: the str comes out backwards.  Free() the result.
+  CMakeSongSettings mss;
+  MemSet(&mss,0,sizeof(mss));
+  mss.mode=mode;
+  mss.backmask=backmask;
+  mss.complexity=ClampI64(complexity,0,2);
+  mss.rests=rests;
+  mss.six_eight=six_eight;
+  mss.octave=octave;
+  return SongStrGen(&mss,FALSE);
+}
+
+public U0 AbyssBitsIns(I64 n=48)
+{//Fill the bit fifo from the Abyss (timers), no pop-ups.
+  I64 i;
+  for (i=0;i<n;i++)
+    GodBitsIns(GOD_GOOD_BITS,RandU64^GetTSC>>GOD_BAD_BITS);
+}
+
+public U0 DiabolusSong()
+{//The Adversary composes 2measuresx2+2measuresx2. $LK+PU,"Adversary's Notes",A="FI:::/Adam/God/AdvNotes.DD"$
+  CMakeSongSettings mss;
+  U8 *st1,*st2;
+  MemSet(&mss,0,sizeof(mss));
+  mss.complexity=1;
+  mss.octave=ClampI64(music.octave-1,1,7);
+  mss.mode=SONG_MODE_DIABOLUS;
+  if (!PopUpForm(&mss))
+    return;
+  FifoU8Flush(god.fifo);
+  AbyssBitsIns;
+  st1=SongStrGen(&mss,FALSE);
+  st2=SongStrGen(&mss,FALSE);
+  DocPrint(DocPut,"$$SO,\"<Diabolus>\",A=\"%s%s%s%s\"$$",st1,st1,st2,st2);
   Free(st1);
   Free(st2);
 }

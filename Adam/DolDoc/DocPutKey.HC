@@ -239,7 +239,7 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 			KeyDescSet("Cmd /Help");
 		    } else {
 		      if (sc&SCF_SHIFT)
-			Ed("::/Doc/AboutTempleOS.DD.Z");
+			Ed("::/Doc/AboutAntichristOS.DD.Z");
 		      else
 			Ed("::/Doc/HelpIndex.DD.Z");
 		    }
@@ -311,8 +311,16 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 			if (FileFind(st2)) {
 			  Free(st);
 			  st=st2;
-			} else
+			} else {
 			  Free(st2);
+			  if (st2=DirFile(st,"Run","UC.Z")) {
+			    if (FileFind(st2)) {
+			      Free(st);
+			      st=st2;
+			    } else
+			      Free(st2);
+			  }
+			}
 		      }
 		      if (st) {
 			if (sc&SCF_SHIFT)
@@ -326,33 +334,63 @@ public U0 DocPutKey(CDoc *doc,I64 ch=0,I64 sc=0)
 		  case SC_F6:
 		    if (sc&SCF_KEY_DESC) {
 		      if (sc&SCF_SHIFT)
-			KeyDescSet("Cmd /God Doodle");
+			KeyDescSet("Cmd /Adversary Doodle");
 		      else
-			KeyDescSet("Cmd /God Song");
+			KeyDescSet("Cmd /Diabolus Song");
 		    } else {
-//$LK,"::/Adam/God/HSNotes.DD"$
+//$LK,"::/Adam/God/AdvNotes.DD"$
 		      if (sc&SCF_SHIFT) {
 			DocUnlock(doc);
-			GodDoodle;
+			AdversaryDoodle;
 			DocLock(doc);
 		      } else
-			GodSong;
+			DiabolusSong;
 		    }
 		    break;
 		  case SC_F7:
+		    if (sc&SCF_KEY_DESC) {
+		      if (sc&SCF_SHIFT)
+			KeyDescSet("Cmd /Adversary Passage");
+		      else
+			KeyDescSet("Cmd /Adversary Word");
+		    } else {
+//$LK,"::/Adam/God/AdvNotes.DD"$
+		      FifoU8Flush(god.fifo);
+		      GodBitsIns(GOD_GOOD_BITS,KbdMsEvtTime>>GOD_BAD_BITS);
+		      if (sc&SCF_SHIFT)
+			AdversaryPassage;
+		      else
+			AdversaryWord;
+		    }
+		    break;
+		  case SC_F8:
 		    if (sc&SCF_KEY_DESC) {
 		      if (sc&SCF_SHIFT)
 			KeyDescSet("Cmd /God Passage");
 		      else
 			KeyDescSet("Cmd /God Word");
 		    } else {
-//$LK,"::/Adam/God/HSNotes.DD"$
 		      FifoU8Flush(god.fifo);
 		      GodBitsIns(GOD_GOOD_BITS,KbdMsEvtTime>>GOD_BAD_BITS);
 		      if (sc&SCF_SHIFT)
 			GodBiblePassage;
 		      else
 			GodWord;
+		    }
+		    break;
+		  case SC_F9:
+		    if (sc&SCF_KEY_DESC) {
+		      if (sc&SCF_SHIFT)
+			KeyDescSet("Cmd /God Doodle");
+		      else
+			KeyDescSet("Cmd /God Song");
+		    } else {
+		      if (sc&SCF_SHIFT) {
+			DocUnlock(doc);
+			GodDoodle;
+			DocLock(doc);
+		      } else
+			GodSong;
 		    }
 		    break;
 		}
