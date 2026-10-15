@@ -276,14 +276,25 @@ it inside the tail, so a damaged DolDoc file shows one or more of:
   walk into the heap: General Protection faults (`Demo/Graphics/Extents.HC`),
   endless WinMgr loops (`gr.empty_sprite` in `Adam/AMouse.HC`, the fallback for
   every bad document sprite), and QEMU-WHPX dying with "failed to decode
-  instruction" (`SpritePlot3D`, `Pick`, `Shadow`; this is what stops the
-  stock `Misc/OSTestSuite.HC` under WHPX on an unpatched image: the error
-  comes from WHPX's instruction emulator, so `--accel tcg` does not raise it).
+  instruction" (`SpritePlot3D`, `Shadow`);
+- **shifted sprites:** a bin that still parses but whose numbers moved by a
+  byte: mesh triangles naming vertex 0x03000000 of a 6-vertex mesh
+  (`Demo/Graphics/Pick3D.HC`: `Gr3Mesh()` reads far past the vertex list and
+  QEMU-WHPX dies the same way), or a line to y=184549375 (`X-Caliber`).
+
+The QEMU-WHPX deaths are what stop the stock `Misc/OSTestSuite.HC` under WHPX
+on an unpatched image. The error comes from WHPX's instruction emulator, so
+`--accel tcg` does not raise it (it reads the wild addresses instead). On a
+patched image the suite runs under WHPX except for two steps: `DunGen` (its
+map sprite is lost, see below) and `Strut`, whose `DrawIt` takes a General
+Protection fault under WHPX on a stock tree too (not sprite data).
 
 `forge.py doccheck` lists every affected file: it parses each tail the way
 `DocLoad()` does, walks each sprite bin the way `SpriteElemSize()` does (a
 sound sprite ends in `SPT_END` exactly at its last byte, which is how the
-sprite editor saves it), and checks each `.GR` picture's `DCSave()` layout.
+sprite editor saves it, keeps every coordinate and size within +-2^20 and has
+no mesh triangle naming a vertex outside its mesh), and checks each `.GR`
+picture's `DCSave()` layout.
 It currently reports about 40 sprite-bearing `.HC`/`.DD` files, including
 `PersonalMenu.DD`, plus `StadiumBG.GR`.
 
@@ -293,15 +304,17 @@ It currently reports about 40 sprite-bearing `.HC`/`.DD` files, including
   every image reaches the desktop in about 10 s.
 - **Workaround for the sprite files:** `--patch-broken-bins` rewrites, in the
   image only, every damaged tail that `doccheck` reports: sound bins are kept,
-  and each lost, truncated or malformed sprite becomes the 1-byte empty sprite
-  (`SPT_END`), so nothing stalls or walks out of bounds (those sprites are
-  simply blank). In a `.MAP` file it drops the `,BI=n` of a lost bin instead.
-  A damaged `.GR` picture becomes a blank one of the same size and palette.
-  Files that are sound are never touched.
+  and each lost, truncated, malformed or shifted sprite becomes the 1-byte
+  empty sprite (`SPT_END`), so nothing stalls or walks out of bounds (those
+  sprites are simply blank). In a `.MAP` file it drops the `,BI=n` of a lost
+  bin instead. A damaged `.GR` picture becomes a blank one of the same size
+  and palette. Files that are sound are never touched. A program that needs a
+  lost sprite's data still fails: `DunGen` builds its map from its lost first
+  sprite and takes a General Protection fault.
 - **Defaults:** the patch is on for `play`, `boot`, `run`, `bootstrap` and
   `selftest`, and off for `iso`, which builds a faithful image (it boots in
   ~10 s, but opening a damaged file stalls 3 s per lost bin, and the malformed
-  sprites misbehave as above).
+  and shifted sprites misbehave as above).
 - **The real fix needs the original V5.03 ISO:** restoring the stripped bytes
   means copying the files from the original TempleOS V5.03 distribution
   (expanded from their `.Z` form). A byte can be restored by hand only when the

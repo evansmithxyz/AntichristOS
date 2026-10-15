@@ -201,7 +201,9 @@ def cmd_play(a):
                "-audiodev", f"{audio},id=hellsnd"]
         log("play: " + " ".join(cmd))
         # QEMU's messages go to a file (it outlives this process), shown here
-        # if it quits during the first seconds.
+        # if it quits during the first seconds.  Its stdout goes there too, so
+        # a caller reading our stdout through a pipe is not held open until
+        # the window closes.
         errpath = os.path.join(OUT, "play.qemu-stderr.txt")
         try:
             errf = open(errpath, "wb")
@@ -209,7 +211,8 @@ def cmd_play(a):
             errpath = os.path.join(OUT, f"play-{os.getpid()}.qemu-stderr.txt")
             errf = open(errpath, "wb")
         with errf:
-            p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stderr=errf)
+            p = subprocess.Popen(cmd, stdin=subprocess.DEVNULL, stdout=errf,
+                                 stderr=errf)
         try:
             p.wait(timeout=5)
         except subprocess.TimeoutExpired:

@@ -77,6 +77,22 @@ def t_sprite_unit():
         ("negative polyline", b"\x0b" + struct.pack("<i", -3) + E, False),
         ("text without NUL", b"\x1b" + struct.pack("<2i", 1, 2) + b"Hell", False),
         ("empty", b"", False),
+        ("mesh", b"\x18" + struct.pack("<2i", 3, 1) + bytes(36)
+         + struct.pack("<4i", 4, 0, 1, 2) + E, True),
+        ("mesh vertex past the list", b"\x18" + struct.pack("<2i", 3, 1) + bytes(36)
+         + struct.pack("<4i", 4, 0, 1, 0x03000000) + E, False),
+        ("shiftable mesh", b"\x19" + struct.pack("<5i", 1, 2, 3, 3, 1) + bytes(36)
+         + struct.pack("<4i", 4, 2, 1, 0) + E, True),
+        ("shiftable mesh vertex -1", b"\x19" + struct.pack("<5i", 1, 2, 3, 3, 1) + bytes(36)
+         + struct.pack("<4i", 4, 2, -1, 0) + E, False),
+        ("mesh vertex coordinate shifted", b"\x18" + struct.pack("<2i", 1, 0)
+         + struct.pack("<3i", 0, 0x19000000, 0) + E, False),
+        ("line to 184549375", b"\x0a" + struct.pack("<4i", 4, -2, -33554432, 184549375)
+         + E, False),
+        ("polyline point shifted", b"\x0b" + struct.pack("<5i", 2, 0, 0, 0x0A000000, 0)
+         + E, False),
+        ("line at the bound", b"\x0a" + struct.pack("<4i", 0, 0, -(1 << 20), 1 << 20)
+         + E, True),
     ]
     bad = [n for n, d, want in cases if mkiso.sprite_ok(d) != want]
     check("sprite_ok unit cases", not bad, f"wrong: {bad}" if bad else f"{len(cases)} cases")
@@ -136,6 +152,14 @@ def t_tree_rule(src):
         check(f"restored {rel} is sound unpatched",
               data is not None and mkiso.doc_bin_problems(data) is None
               and mkiso.patch_bin_tail(data) is None)
+    # Pick3D's bin 2 walks to SPT_END but its mesh is shifted by a byte
+    # (triangles name vertex 0x03000000): Gr3Mesh() of it kills QEMU-WHPX.
+    p = os.path.join(src, "Demo", "Graphics", "Pick3D.HC")
+    if os.path.isfile(p):
+        with open(p, "rb") as fh:
+            prob = mkiso.doc_bin_problems(fh.read())
+        check("Pick3D's shifted mesh (bin 2) is flagged",
+              prob is not None and 2 in prob["bad_sprites"], f"{prob}")
     check(".GR is not DolDoc", not mkiso.DOLDOC_EXT_RE.search("StadiumBG.GR"))
     grs, bad_gr = 0, []
     for dp, dn, fn in os.walk(src):

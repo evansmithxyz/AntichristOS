@@ -603,7 +603,8 @@ def build_image(root, stage1, syms, dt, volume_id=None, catalog_id="TempleOS",
 # declared size runs past the end of the file (DocLoad() then copies whatever
 # follows the file buffer), or its sprite elements no longer parse, and
 # Sprite3() walks out of sprite_elem_base_sizes[] into the heap (GP faults,
-# endless WinMgr loops, QEMU-WHPX "failed to decode instruction").
+# endless WinMgr loops, QEMU-WHPX "failed to decode instruction"), or they
+# parse but hold shifted numbers (mesh vertex numbers past the vertex list).
 # --patch-broken-bins rewrites such tails in the IMAGE ONLY (never the repo).
 _BI_RE = re.compile(rb"BI=(\d+)")
 # DolDoc-format files.  (.GR is not one: GRWrite() stores a raw CDC, DCSave().)
@@ -650,13 +651,29 @@ SPT_BASE_SIZES = (1, 2, 3, 5, 17, 1, 1, 9, 9, 13, 17, 5, 17, 25, 13, 25, 29,
                   5, 5, 5, 5, 9, 9, 17, 9, 21, 17, 9, 9, 9)
 SPT_TYPES_NUM = len(SPT_BASE_SIZES)      # 30
 SPG_TYPE_MASK = 0x7F
+# A stripped byte can also leave a bin that still walks to SPT_END but whose
+# numbers are shifted by a byte: mesh triangles naming vertices far past the
+# vertex list (Gr3Mesh() then reads p[0x03000000]: Pick3D kills QEMU-WHPX)
+# or coordinates in the hundreds of millions (a line Line() steps through
+# pixel by pixel).  Sound sprites stay far inside this bound (the tree's
+# largest coordinate or size is 641).
+SPT_NUM_MAX = 1 << 20
+# Leading I32 fields (after the type byte) that are coordinates or sizes.
+_SPT_INTS = {3: 1, 4: 4, 7: 2, 8: 2, 10: 4, 12: 4, 13: 4, 14: 3, 15: 4, 16: 4,
+             21: 2, 22: 2, 23: 4, 25: 3, 26: 4, 27: 2, 28: 2, 29: 2}
+
+
+def _ints(d, off, k):
+    return struct.unpack_from("<%di" % k, d, off)
 
 
 def sprite_ok(d):
     """True if d is well-formed sprite data: SpriteElemSize() steps through
     elements of known types (< SPT_TYPES_NUM, no negative counts) and lands on
     SPT_END at exactly the last byte, as the sprite editor saves them (a
-    sprite bin's size is SpriteSize()).  Anything else is damaged data."""
+    sprite bin's size is SpriteSize()); every coordinate and size is within
+    +-SPT_NUM_MAX and every mesh triangle names vertices of its own mesh.
+    Anything else is damaged data."""
     off, n = 0, len(d)
     while off < n:
         t = d[off] & SPG_TYPE_MASK
@@ -667,25 +684,30 @@ def sprite_ok(d):
         size = SPT_BASE_SIZES[t]
         if off + size > n:
             return False
-        cnt = ()
+        cnt, nums, mesh = (), list(_ints(d, off + 1, _SPT_INTS.get(t, 0))), None
+        if t == 16:                                  # SPT_POLYGON: + sides
+            nums += _ints(d, off + 25, 1)
         if t == 11:                                  # SPT_POLYLINE: num CD2I32
-            cnt = struct.unpack_from("<i", d, off + 1)
+            cnt = _ints(d, off + 1, 1)
             extra = cnt[0] * 8
         elif 17 <= t <= 20:                          # SPT_BSPLINE*: num CD3I32
-            cnt = struct.unpack_from("<i", d, off + 1)
+            cnt = _ints(d, off + 1, 1)
             extra = cnt[0] * 12
         elif t == 9:                                 # SPT_POLYPT: 3 bits each
-            cnt = struct.unpack_from("<i", d, off + 1)
+            cnt = _ints(d, off + 1, 1)
+            nums += _ints(d, off + 5, 2)
             extra = (cnt[0] * 3 + 7) >> 3
         elif t == 23:                                # SPT_BITMAP: w x h bytes
-            cnt = struct.unpack_from("<ii", d, off + 9)
+            cnt = _ints(d, off + 9, 2)
             extra = ((cnt[0] + 7) & ~7) * cnt[1]
         elif t == 24:                                # SPT_MESH
-            cnt = struct.unpack_from("<ii", d, off + 1)
+            cnt = _ints(d, off + 1, 2)
             extra = cnt[0] * 12 + cnt[1] * 16
+            mesh = off + 9
         elif t == 25:                                # SPT_SHIFTABLE_MESH
-            cnt = struct.unpack_from("<ii", d, off + 13)
+            cnt = _ints(d, off + 13, 2)
             extra = cnt[0] * 12 + cnt[1] * 16
+            mesh = off + 21
         elif t >= 27:                                # SPT_TEXT*: NUL-ended
             j = d.find(b"\0", off + size)
             if j < 0:
@@ -693,7 +715,18 @@ def sprite_ok(d):
             extra = j + 1 - (off + size)
         else:
             extra = 0
-        if any(c < 0 for c in cnt):
+        if any(c < 0 for c in cnt) or off + size + extra > n:
+            return False
+        if t == 11 or 17 <= t <= 20:                 # the points
+            nums += _ints(d, off + 5, extra // 4)
+        if mesh is not None:
+            vertices, tris = cnt
+            nums += _ints(d, mesh, 3 * vertices)
+            for k in range(tris):                    # CMeshTri: color, nums[3]
+                if not all(0 <= v < vertices
+                           for v in _ints(d, mesh + 12 * vertices + 16 * k + 4, 3)):
+                    return False
+        if any(abs(v) > SPT_NUM_MAX for v in nums):
             return False
         off += size + extra
     return False

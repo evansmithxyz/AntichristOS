@@ -3,7 +3,9 @@
 //  * .Z layout: ACWords.DATA.Z (AutoComplete's dictionary words need that
 //    exact name), ACDefs.DATA plain (FOpen()ed), CT_NONE .Z files.
 //  * every sprite bin of every .HC/.DD file is sound, walked with the OS's
-//    own SpriteElemSize() (--patch-broken-bins, the default for run).
+//    own SpriteElemSize() (--patch-broken-bins, the default for run), with
+//    sane numbers: no mesh triangle names a vertex past its mesh's list
+//    (Pick3D's shifted mesh kills QEMU-WHPX), no huge coordinates.
 //  * damaged DolDoc files load without "Bin Not Found" stalls.
 //  * a .GR picture (not DolDoc) reads back whole: GRRead() of the damaged
 //    StadiumBG.GR hangs, so the patch makes it a blank picture.
@@ -18,6 +20,73 @@ U0 TcFail(U8 *fmt,...)
   HfPrint("TCFAIL %s\n",st);
   Free(st);
   tc_bad++;
+}
+
+#define TC_NUM_MAX	0x100000 //mkiso.SPT_NUM_MAX
+
+Bool TcI32sOk(I32 *p,I64 n)
+{//Coordinates and sizes of a sound sprite are small.
+  while (n-->0) {
+    if (!(-TC_NUM_MAX<=*p<=TC_NUM_MAX))
+      return FALSE;
+    p++;
+  }
+  return TRUE;
+}
+
+Bool TcMeshOk(CD3I32 *p,I64 vertices,I64 tris)
+{//Gr3Mesh() indexes p[] with every triangle's vertex numbers.
+  CMeshTri *tri=p+vertices;
+  I64 i,j;
+  if (!TcI32sOk(p,3*vertices))
+    return FALSE;
+  for (i=0;i<tris;i++,tri++)
+    for (j=0;j<3;j++)
+      if (!(0<=tri->nums[j]<vertices))
+	return FALSE;
+  return TRUE;
+}
+
+Bool TcElemSane(U8 *e)
+{//The numbers in the element at e (same rule as mkiso.sprite_ok()).
+  CSprite *g=e-offset(CSprite.start);
+  I32 *p=e+1; //The I32s after the type byte
+  switch (g->type&SPG_TYPE_MASK) {
+    case SPT_THICK:
+      return TcI32sOk(p,1);
+    case SPT_PLANAR_SYMMETRY:
+    case SPT_LINE:
+    case SPT_RECT:
+    case SPT_ROTATED_RECT:
+    case SPT_ELLIPSE:
+    case SPT_BITMAP:
+    case SPT_ARROW:
+      return TcI32sOk(p,4);
+    case SPT_POLYGON:
+      return TcI32sOk(p,4) && TcI32sOk(&g->pwhas.sides,1);
+    case SPT_SHIFT:
+    case SPT_PT:
+    case SPT_FLOOD_FILL:
+    case SPT_FLOOD_FILL_NOT:
+    case SPT_TEXT:
+    case SPT_TEXT_BOX:
+    case SPT_TEXT_DIAMOND:
+      return TcI32sOk(p,2);
+    case SPT_CIRCLE:
+      return TcI32sOk(p,3);
+    case SPT_POLYPT:
+      return TcI32sOk(&g->npu.x,2);
+    case SPT_POLYLINE:
+      return TcI32sOk(&g->nu.u,2*g->nu.num);
+    case SPT_BSPLINE2...SPT_BSPLINE3_CLOSED:
+      return TcI32sOk(&g->nu.u,3*g->nu.num);
+    case SPT_MESH:
+      return TcMeshOk(&g->mu.u,g->mu.vertex_cnt,g->mu.tri_cnt);
+    case SPT_SHIFTABLE_MESH:
+      return TcI32sOk(p,3) &&
+	    TcMeshOk(&g->pmu.u,g->pmu.vertex_cnt,g->pmu.tri_cnt);
+  }
+  return TRUE;
 }
 
 I64 TcSpriteLen(U8 *d,I64 max,I64 *_why=NULL)
@@ -39,6 +108,14 @@ I64 TcSpriteLen(U8 *d,I64 max,I64 *_why=NULL)
     n=SpriteElemSize(d+off-offset(CSprite.start));
     if (n<sprite_elem_base_sizes[t]) {
       why=4; //negative count
+      break;
+    }
+    if (off+n>max) {
+      why=3;
+      break;
+    }
+    if (!TcElemSane(d+off)) {
+      why=6; //shifted numbers: huge coordinates, mesh vertex past the list
       break;
     }
     off+=n;
