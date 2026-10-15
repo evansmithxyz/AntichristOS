@@ -563,7 +563,7 @@ I64 Cmp(U8 *filename,U8 *map_name=NULL,U8 *out_name=NULL,U8 mapfile_drv_let=0)
   Free(fbuf);
   Free(fbuf2);
   Free(fbuf3);
-  Print("Errs:%d Warns:%d Code:%X Size:%X\n",
+  Print("Sins:%d Temptations:%d Code:%X Size:%X\n",
 	error_cnt,warning_cnt,aot_U8s,size);
   return error_cnt;
 }
@@ -613,12 +613,11 @@ I64 ExePrint(U8 *fmt,...)
 
 I64 ExeFile(U8 *name,I64 ccf_flags=0)
 {//JIT Compile and execute a file.
+//#include gives it the dft ".HC.Z" ext (or ".UC.Z" if no .HC exists).
   I64 res;
-  U8 *name2=ExtDft(name,"HC.Z"),
-	*st=MStrPrint("#include \"%s\";",name2);
+  U8 *st=MStrPrint("#include \"%s\";",name);
   res=ExePutS(st,name,ccf_flags);
   Free(st);
-  Free(name2);
   return res;
 }
 
@@ -656,11 +655,11 @@ I64 ExePrint2(U8 *fmt,...)
 
 I64 ExeFile2(U8 *name,I64 ccf_flags=0)
 {//throws exceptions
+//#include gives it the dft ".HC.Z" ext (or ".UC.Z" if no .HC exists).
   I64 res;
-  U8 *name2=ExtDft(name,"HC.Z"),*st=MStrPrint("#include \"%s\";",name2);
+  U8 *st=MStrPrint("#include \"%s\";",name);
   res=ExePutS2(st,name,ccf_flags);
   Free(st);
-  Free(name2);
   return res;
 }
 

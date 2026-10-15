@@ -456,8 +456,9 @@ U0 PrsGlblVarLst(CCmpCtrl *cc,I64 saved_mode,CHashClass *saved_tmpc,
   }
 }
 
-U0 PrsIf(CCmpCtrl *cc,I64 try_cnt,CCodeMisc *lb_break)
-{
+U0 PrsIf(CCmpCtrl *cc,I64 try_cnt,CCodeMisc *lb_break,
+	I64 br_op=IC_BR_ZERO)
+{//br_op=IC_BR_NOT_ZERO makes it 'unless'.  No NOT is inserted.
   CCodeMisc *lb,*lb1;
   I64 k;
   if (cc->token!='(')
@@ -469,7 +470,7 @@ U0 PrsIf(CCmpCtrl *cc,I64 try_cnt,CCodeMisc *lb_break)
     LexExcept(cc,"Missing ')' at ");
   Lex(cc);
   lb=COCMiscNew(cc,CMT_LABEL);
-  ICAdd(cc,IC_BR_ZERO,lb,0);
+  ICAdd(cc,br_op,lb,0);
   PrsStmt(cc,try_cnt,lb_break);
   k=PrsKeyWord(cc);
   if (k==KW_ELSE) {
@@ -483,8 +484,8 @@ U0 PrsIf(CCmpCtrl *cc,I64 try_cnt,CCodeMisc *lb_break)
     ICAdd(cc,IC_LABEL,lb,0);
 }
 
-U0 PrsWhile(CCmpCtrl *cc,I64 try_cnt)
-{
+U0 PrsWhile(CCmpCtrl *cc,I64 try_cnt,I64 br_op=IC_BR_ZERO)
+{//br_op=IC_BR_NOT_ZERO makes it 'until'.
   CCodeMisc *lb,*lb_done;
   if (cc->token!='(')
     LexExcept(cc,"Expecting '(' at ");
@@ -497,21 +498,30 @@ U0 PrsWhile(CCmpCtrl *cc,I64 try_cnt)
     LexExcept(cc,"Missing ')' at ");
   Lex(cc);
   lb_done=COCMiscNew(cc,CMT_LABEL);
-  ICAdd(cc,IC_BR_ZERO,lb_done,0);
+  ICAdd(cc,br_op,lb_done,0);
   PrsStmt(cc,try_cnt,lb_done);
   ICAdd(cc,IC_JMP,lb,0);
   ICAdd(cc,IC_LABEL,lb_done,0);
 }
 
 U0 PrsDoWhile(CCmpCtrl *cc,I64 try_cnt)
-{
+{//do S while (c);  or the Unholy  do S until (c);
   CCodeMisc *lb,*lb_done;
+  I64 br_op;
   lb=COCMiscNew(cc,CMT_LABEL);
   lb_done=COCMiscNew(cc,CMT_LABEL);
   ICAdd(cc,IC_LABEL,lb,0);
   PrsStmt(cc,try_cnt,lb_done);
-  if (PrsKeyWord(cc)!=KW_WHILE)
-    LexExcept(cc,"Missing 'while' at");
+  switch (PrsKeyWord(cc)) {
+    case KW_WHILE:
+      br_op=IC_BR_NOT_ZERO;
+      break;
+    case KW_UNTIL:
+      br_op=IC_BR_ZERO;
+      break;
+    default:
+      LexExcept(cc,"Missing 'while' or 'until' at");
+  }
   if (Lex(cc)!='(')
     LexExcept(cc,"Expecting '(' at ");
   Lex(cc);
@@ -519,7 +529,7 @@ U0 PrsDoWhile(CCmpCtrl *cc,I64 try_cnt)
     throw('Compiler');
   if (cc->token!=')')
     LexExcept(cc,"Missing ')' at ");
-  ICAdd(cc,IC_BR_NOT_ZERO,lb,0);
+  ICAdd(cc,br_op,lb,0);
   ICAdd(cc,IC_LABEL,lb_done,0);
   if (Lex(cc)!=';')
     LexExcept(cc,"Missing ';' at");
@@ -985,6 +995,12 @@ Bool PrsStmt(CCmpCtrl *cc,I64 try_cnt=0,
 		    case KW_SWITCH:
 		      PrsSwitch(cc,try_cnt);
 		      break;
+		    case KW_UNLESS:
+		      PrsIf(cc,try_cnt,lb_break,IC_BR_NOT_ZERO);
+		      break;
+		    case KW_UNTIL:
+		      PrsWhile(cc,try_cnt,IC_BR_NOT_ZERO);
+		      break;
 		  end:
 		end:
 		  if (cc->token!=',') goto sm_done;
@@ -1139,6 +1155,9 @@ sm_import:
 		case KW_NO_WARN:
 		  Lex(cc);
 		  PrsNoWarn(cc);
+		  goto sm_semicolon;
+		case KW_BACKWARDS: //backwards "\n!dlroW ,olleH"; prints.
+		  PrsFunCall(cc,NULL,FALSE,NULL);
 		  goto sm_semicolon;
 		case KW_UNION:
 		case KW_CLASS:

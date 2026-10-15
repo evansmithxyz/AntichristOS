@@ -268,7 +268,7 @@ public I64 AdamFile(U8 *filename,Bool warn_ext=TRUE)
   I64 res=0;
   if (warn_ext &&
 	!FilesFindMatch(name2,FILEMASK_JIT) &&
-	!PopUpCancelOk(ST_WARN_ST "Not .HC File\n\n"))
+	!PopUpCancelOk(ST_WARN_ST "Not .HC/.UC File\n\n"))
     okay=FALSE;
   if (okay)
     res=Adam("#include \"%s\";",name2);
@@ -286,7 +286,7 @@ public I64 PopUpFile(U8 *filename,Bool warn_ext=TRUE,
   I64 res=0;
   if (warn_ext &&
 	!FilesFindMatch(name2,FILEMASK_JIT) &&
-	!PopUpCancelOk(ST_WARN_ST "Not .HC File\n\n"))
+	!PopUpCancelOk(ST_WARN_ST "Not .HC/.UC File\n\n"))
     okay=FALSE;
   if (okay) {
     st=MStrPrint(

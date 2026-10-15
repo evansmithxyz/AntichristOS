@@ -144,7 +144,7 @@ U8 *CmdLinePmt()
     "%s",st;
     Free(st);
   }
-  '>';
+  '<'; //AntichristOS: the prompt points the other way.
   if (IsDbgMode&&IsRaw)
     RawDr;
 

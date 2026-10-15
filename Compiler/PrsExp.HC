@@ -728,7 +728,7 @@ I64 PrsUnaryTerm(CCmpCtrl *cc,CPrsStk *ps,CMemberLst **_local_var,
     case '(':
       if (Lex(cc)==TK_IDENT && cc->hash_entry &&
 	    cc->hash_entry->type & (HTT_CLASS|HTT_INTERNAL_TYPE))
-	LexExcept(cc,"Use TempleOS postfix typecasting at ");
+	LexExcept(cc,"Use AntichristOS postfix typecasting at ");
       else {
 	if (PREC_TERM>*max_prec)
 	  *max_prec=PREC_TERM;
@@ -932,6 +932,23 @@ pu_export_sys_sym:
 		  LexExcept(cc,"Missing ')' at ");
 		Lex(cc);
 	      }
+	      return PE_MAYBE_MODIFIERS;
+	    case KW_BACKWARDS: //Unholy C: str const, bytes reversed.
+	      if (Lex(cc)!=TK_STR)
+		LexExcept(cc,"Expecting string after 'backwards' at ");
+	      if (PREC_TERM>*max_prec)
+		*max_prec=PREC_TERM;
+	      cm=COCMiscNew(cc,CMT_STR_CONST);
+	      ICAdd(cc,IC_STR_CONST,cm,cmp.internal_types[RT_U8]+1);
+	      cm->str=LexExtStr(cc,&cm->st_len);
+	      i=0;
+	      j=cm->st_len-2; //st_len counts the terminator.
+	      while (i<j) {
+		SwapU8(cm->str+i,cm->str+j);
+		i++;
+		j--;
+	      }
+	      cc->flags|=CCF_HAS_MISC_DATA;
 	      return PE_MAYBE_MODIFIERS;
 	    case KW_DEFINED:
 	      if (PREC_TERM>*max_prec)

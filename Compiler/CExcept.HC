@@ -82,7 +82,7 @@ U0 LexExcept(CCmpCtrl *cc,U8 *str=NULL)
 {//Print err msg, $LK,"LexPutPos",A="MN:LexPutPos"$() and throw exception.
   if (!Bt(&sys_run_level,RLf_ADAM_SERVER)) {
     Raw(ON);
-    "Note: Still in boot phase.\n";
+    "Note: Still in boot phase.  The pit is not open yet.\n";
   }
   if (str) PrintErr(str);
   if (!IsRaw)
