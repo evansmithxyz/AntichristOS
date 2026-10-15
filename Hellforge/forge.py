@@ -100,9 +100,11 @@ def add_iso_opts(p, patch_default=False):
                         "(default: %s)" % ("on" if patch_default else "off"))
     p.add_argument("--no-patch-broken-bins", dest="patch_broken_bins",
                    action="store_false")
-    p.add_argument("--boot-msg", default="Loading TempleOS")
+    p.add_argument("--boot-msg", default=None,
+                   help="stage1 boot message (default: from the tree's BootDVD.HC)")
     p.add_argument("--volume-id", default=None)
-    p.add_argument("--catalog-id", default="TempleOS")
+    p.add_argument("--catalog-id", default=None,
+                   help="El Torito id (default: from the tree's DskISORedSea.HC)")
     p.add_argument("--exclude", action="append", default=[], metavar="GLOB")
     p.add_argument("--add", action="append", default=[], metavar="HOST:ISOPATH")
     p.add_argument("--date", default=None)

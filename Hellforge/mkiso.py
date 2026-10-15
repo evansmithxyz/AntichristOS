@@ -617,12 +617,71 @@ def patch_bin_tail(data, strip_refs=False):
     return text + b"\0" + b"".join(out)
 
 
+# ---- Identity strings taken from the OS's own sources -------------------------
+_HC_ESC = {"n": "\n", "r": "\r", "t": "\t", "\\": "\\", '"': '"', "'": "'", "0": "\0"}
+_HC_STR = r'"((?:\\.|[^"\\])*)"'
+
+
+def _holyc_unescape(lit):
+    """Decode a HolyC string literal body as it sits in a DolDoc source file."""
+    lit = lit.replace("$$", "$")
+    out, i = [], 0
+    while i < len(lit):
+        if lit[i] == "\\" and i + 1 < len(lit):
+            out.append(_HC_ESC.get(lit[i + 1], lit[i + 1]))
+            i += 2
+        else:
+            out.append(lit[i])
+            i += 1
+    return "".join(out)
+
+
+def _source_text(src, *parts):
+    try:
+        with open(os.path.join(src, *parts), "rb") as f:
+            return f.read().split(b"\0")[0].decode("latin-1")
+    except OSError:
+        return None
+
+
+def source_identity(src):
+    """The stage-1 messages (Adam/Opt/Boot/BootDVD.HC) and El Torito catalog id
+    (Adam/Opt/Boot/DskISORedSea.HC) of the tree being imaged, so the image says
+    whatever the OS sources say.  Returns a dict with whichever of boot_msg,
+    not64_msg and catalog_id could be found."""
+    res = {}
+    t = _source_text(src, "Adam", "Opt", "Boot", "BootDVD.HC")
+    if t:
+        named = dict(re.findall(r"^\s*(BDVD_\w+):\s*DU8\s+" + _HC_STR + r"\s*,\s*0\s*;", t, re.M))
+        msgs = re.findall(r"DU8\s+" + _HC_STR + r"\s*,\s*0\s*;", t)
+        boot = named.get("BDVD_TEMPLEOS_MSG", msgs[0] if msgs else None)
+        n64 = named.get("BDVD_NOT64_MSG", msgs[1] if len(msgs) > 1 else None)
+        if boot is not None:
+            res["boot_msg"] = _holyc_unescape(boot)
+        if n64 is not None:
+            res["not64_msg"] = _holyc_unescape(n64)
+    t = _source_text(src, "Adam", "Opt", "Boot", "DskISORedSea.HC")
+    if t:
+        m = re.search(r"StrCpy\(&et->w\[2\],\s*" + _HC_STR + r"\)", t)
+        if m:
+            res["catalog_id"] = _holyc_unescape(m.group(1))[:24]
+    return res
+
+
 # ---- High-level -------------------------------------------------------------
-def make_iso(src, out, boot_msg="Loading TempleOS", volume_id=None, excludes=None,
+def make_iso(src, out, boot_msg=None, volume_id=None, excludes=None,
              inject_autorun=None, add=(), append=(), mkdirs=None, date=None,
-             catalog_id="TempleOS", not64_msg=None, skip_invalid=False,
+             catalog_id=None, not64_msg=None, skip_invalid=False,
              manifest=None, patch_bins=False, log=print):
-    """Build the ISO. Returns geometry dict."""
+    """Build the ISO. Returns geometry dict.  boot_msg, not64_msg and catalog_id
+    default to what the tree's own BootDVD.HC / DskISORedSea.HC say."""
+    ident = source_identity(src)
+    if boot_msg is None:
+        boot_msg = ident.get("boot_msg", "Loading TempleOS")
+    if not64_msg is None:
+        not64_msg = ident.get("not64_msg")
+    if catalog_id is None:
+        catalog_id = ident.get("catalog_id", "TempleOS")
     excl = list(DEFAULT_EXCLUDES) + list(excludes or [])
     root = scan_tree(src, excl, skip_invalid=skip_invalid, log=log)
     patched = []
@@ -687,13 +746,15 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description="Build a TempleOS RedSea ISO (.ISO.C)")
     ap.add_argument("--src", default=REPO, help="source tree (default: repo root)")
     ap.add_argument("--out", default=os.path.join(HERE, "out", "TempleOS.ISO.C"))
-    ap.add_argument("--boot-msg", default="Loading TempleOS")
+    ap.add_argument("--boot-msg", default=None,
+                    help="stage1 boot message (default: from the tree's BootDVD.HC)")
     ap.add_argument("--not64-msg", default=None,
                     help="stage1 'requires 64-bit' message (\\n\\r escapes ok)")
     ap.add_argument("--volume-id", default=None,
                     help="ISO9660 volume id (not set by TempleOS; optional)")
-    ap.add_argument("--catalog-id", default="TempleOS",
-                    help="El Torito validation entry id string (24 chars)")
+    ap.add_argument("--catalog-id", default=None,
+                    help="El Torito validation entry id string (24 chars; default: "
+                         "from the tree's DskISORedSea.HC)")
     ap.add_argument("--exclude", action="append", default=[], metavar="GLOB")
     ap.add_argument("--inject-autorun", metavar="FILE",
                     help=f"place FILE at /{AUTORUN_ISO_PATH} and #include it at end of StartOS.HC")
