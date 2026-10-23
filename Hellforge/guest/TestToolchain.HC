@@ -2,6 +2,9 @@
 //Checks the image mkiso builds, from inside the guest:
 //  * .Z layout: ACWords.DATA.Z (AutoComplete's dictionary words need that
 //    exact name), ACDefs.DATA plain (FOpen()ed), CT_NONE .Z files.
+//  * the dictionary finds definitions: ACWords/ACDefs.DATA are whole (the
+//    archive's had lost their 0x05 bytes, and only 3,636 of 95,293 words
+//    found a definition, none of the ones checked here).
 //  * every sprite bin of every .HC/.DD file is sound, walked with the OS's
 //    own SpriteElemSize() (--patch-broken-bins, the default for run), with
 //    sane numbers: no mesh triangle names a vertex past its mesh's list
@@ -203,6 +206,18 @@ U0 TcDocLoad(U8 *name)
     TcFail("%s: %d DolDoc errors, %5.2fs to load",name,errs,dt);
 }
 
+U0 TcACDef(U8 *word,U8 *def)
+{//The dictionary's first definition of word starts with def.
+  U8 *st=ACDDefGet(word);
+  if (st) {
+    HfPrint("TC ac: %s: %s\n",word,st);
+    if (StrNCmp(st,def,StrLen(def)))
+      TcFail("ACDDefGet(\"%s\") is \"%s\", not \"%s...\"",word,st,def);
+    Free(st);
+  } else
+    TcFail("ACDDefGet(\"%s\") found no definition",word);
+}
+
 U0 TcAutoComplete()
 {
   F64 t0=tS;
@@ -216,6 +231,12 @@ U0 TcAutoComplete()
     TcFail("no %s: AutoComplete has no dictionary words",ACD_WORD_FILENAME);
   if (!acd.has_defs || !FileFind(ACD_DEF_FILENAME))
     TcFail("%s is not stored plain (FOpen() needs it)",ACD_DEF_FILENAME);
+  else if (acd.has_words) {
+//Blocks 363, 931 and 1482 of the 1,611 in ACDefs.DATA.
+    TcACDef("Devil","The Evil One; Satan");
+    TcACDef("Pandemonium","The great hall or council chamber of demons");
+    TcACDef("Tritone","A superfluous or augmented fourth.");
+  }
 }
 
 U0 TcAttr(U8 *name,Bool compressed)

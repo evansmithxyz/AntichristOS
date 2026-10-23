@@ -21,7 +21,7 @@ U0 DrawIt(CTask *task,CDC *)
 #define STK_SIZE 2048
 //We would put these as local vars
 //in SolveMaze() but the system stk size
-//is limited, so it's a bad habit.  The heap
+//is limited, so it's a bad habit.The heap
 //is the normal TempleOS technique, but
 //it's a pain in this case.
 I64	stk_ptr,

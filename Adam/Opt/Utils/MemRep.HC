@@ -70,7 +70,7 @@ I64 BlkDevsSize()
     if (bd->bd_signature==BD_SIGNATURE_VAL) {
       j=(bd->max_blk+1)<<BLK_SIZE_BITS;
       if (bd->type==BDT_RAM)
-	"RAMDsk %C\t:%010X/%010X\n",
+	"RAMDsk%C\t:%010X/%010X\n",
 	      bd->first_drv_let,j-DrvUnused(bd->first_drv_let),j;
       res+=MSize2(bd->dev_id_record);
     }
@@ -202,7 +202,7 @@ public U0 MemRep()
   "Kernel\t:%010X-%010X\n",mem_boot_base-sizeof(CBinFile),bfh;
 
   "VGA\t\t:00000A0000-00000BFFFF\n";
-  "$$ID,-2$$$$BLACK$$High Memory\t:0000100000-%010X$$FG$$\n",
+  "$$ID,-2$$$$BLACK$$HighMemory\t:0000100000-%010X$$FG$$\n",
 	mem_heap_limit;
   "$LK,"SYS_FIXED_AREA",A="MN:CSysFixedArea"$\t:%010X-%010X\n",
 	SYS_FIXED_AREA,SYS_FIXED_AREA+sizeof(CSysFixedArea)-1;

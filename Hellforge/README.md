@@ -54,8 +54,8 @@ ISOPATH may be written with the image's `.Z` name (see below).
 
 `play` builds `out/AntichristOS.ISO.C` and boots it in a QEMU window with the
 PC speaker wired to the host's sound card, then returns while QEMU keeps
-running. Defaults: `--patch-broken-bins` on (so the sprite demos and the
-Personal Menu work), `.Z` names on, `--mem 2048`, `--smp 4`, `--display sdl`,
+running. Defaults: `--patch-broken-bins` on (it blanks the two sprites that
+are broken in V5.03 itself, see "Known repo data problem"), `.Z` names on, `--mem 2048`, `--smp 4`, `--display sdl`,
 `--audio` the platform's backend (`dsound` on Windows, `coreaudio` on macOS,
 `sdl` elsewhere), `--accel auto`. `--no-build` boots the existing image
 (`--out` picks another one). QEMU's own messages go to
@@ -259,11 +259,20 @@ four bootstrap files (~710 KB) take ~17 s.
 
 ## Known repo data problem (read this)
 
-The archive this repo came from had **every 0x05 byte (CH_CURSOR) stripped from
-DolDoc-format files**, including from their binary tails, and from the `.GR`
-picture `Demo/Games/Stadium/StadiumBG.GR` (its compressed body is 20 bytes
-short, and `GRRead()` of it hangs). A lost byte shifts everything after
-it inside the tail, so a damaged DolDoc file shows one or more of:
+The archive this repo came from (the `archive` branch) was expanded from the
+V5.03 ISO with `TOSZ -ascii`, which **deletes every 0x05 byte (CH_CURSOR) and
+turns every 0x1F (CH_SHIFT_SPACE) into 0x20** in the whole file, binary tail
+included (only `.BIN.Z` files were expanded in binary mode). That hit the
+DolDoc files' sprite tails, the `.MAP` files and the `.GR` picture
+`Demo/Games/Stadium/StadiumBG.GR` (its compressed body was 20 bytes short, and
+`GRRead()` of it hung), the text parts of 153 source files (their
+CH_SHIFT_SPACEs became plain spaces) and the AutoComplete dictionary.
+**All of it is now restored from the original ISO** except one shift-space
+(see "Restored from the V5.03 ISO" below), so this section mostly records what
+the damage looked like.
+
+A lost byte shifts everything after it inside the tail, so a damaged DolDoc
+file showed one or more of:
 
 - **lost bins:** later `CDocBin` headers are garbage, so `DocLoad()` drops the
   bins and `DocBinsValidate()` calls `RawPrint(3000,"Bin Not Found")` for every
@@ -282,44 +291,90 @@ it inside the tail, so a damaged DolDoc file shows one or more of:
   (`Demo/Graphics/Pick3D.HC`: `Gr3Mesh()` reads far past the vertex list and
   QEMU-WHPX dies the same way), or a line to y=184549375 (`X-Caliber`).
 
-The QEMU-WHPX deaths are what stop the stock `Misc/OSTestSuite.HC` under WHPX
-on an unpatched image. The error comes from WHPX's instruction emulator, so
-`--accel tcg` does not raise it (it reads the wild addresses instead). On a
-patched image the suite runs under WHPX except for two steps: `DunGen` (its
-map sprite is lost, see below) and `Strut`, whose `DrawIt` takes a General
-Protection fault under WHPX on a stock tree too (not sprite data).
+These were what stopped the stock `Misc/OSTestSuite.HC`: the QEMU-WHPX deaths
+on an unpatched image (the error comes from WHPX's instruction emulator, so
+`--accel tcg` does not raise it; it reads the wild addresses instead), and on a
+patched image `DunGen` (step 3), which builds its map from its lost first
+sprite and took a General Protection fault. With the restored tails `DunGen`
+runs, and the suite stops at `Strut` (step 17), whose `DrawIt` takes a General
+Protection fault in the Window Mgr under WHPX on a stock tree too (not sprite
+data). With `Strut` skipped it runs all 171 steps, unless it loses a race in
+the stock `DoXCaliber` (step 20): that checks for X-Caliber's start-up popup
+100 ms after starting it, and when the popup comes later, the suite waits
+forever (on the tree before the restore too). Run the suite from a User
+terminal (`User("#include \"::/Misc/OSTestSuite\";\n")` in a `forge.py run`
+test): run directly in the `Hellforge` autorun task, it hangs the guest in its
+first steps, under TCG too.
 
-`forge.py doccheck` lists every affected file: it parses each tail the way
+`forge.py doccheck` lists every damaged file: it parses each tail the way
 `DocLoad()` does, walks each sprite bin the way `SpriteElemSize()` does (a
 sound sprite ends in `SPT_END` exactly at its last byte, which is how the
 sprite editor saves it, keeps every coordinate and size within +-2^20 and has
 no mesh triangle naming a vertex outside its mesh), and checks each `.GR`
-picture's `DCSave()` layout.
-It currently reports about 40 sprite-bearing `.HC`/`.DD` files, including
-`PersonalMenu.DD`, plus `StadiumBG.GR`.
+picture's `DCSave()` layout. It now reports one file, `Demo/DolDoc/DemoDoc.DD`,
+which is byte-identical to the V5.03 ISO: the last 9 bytes of its bin 1 are
+junk in the original (a line to (16777132,1170548523) and no `SPT_END`), so
+nothing can restore them.
 
+### Restored from the V5.03 ISO
+
+- **Source:** `TOS_Distro.ISO` from `https://templeos.org/Downloads/`
+  (17,346,560 bytes, SHA-1 `1a1ec79990e21fa3d66ac680009da63d3ac512b0`), the
+  final nightly the `archive` branch was made from. Its RedSea tree, with the
+  `.Z` files expanded in binary mode (the LZW of `Kernel/Compress.HC`), equals
+  every `archive` file it holds once TOSZ's `-ascii` filter is applied to it.
+- **Sprite tails:** 37 DolDoc files have their original tail back (from the
+  first NUL on) under their current text, and `StadiumBG.GR` is the original
+  file. `toslint.py`'s `TAIL_REPAIRS` holds the sha1 of each repaired tail.
+  `Adam/AMouse.HC` and `Demo/Graphics/Extents.HC` had been repaired by hand
+  and already equal the original.
+- **Titanium:** in `Apps/Titanium/Titanium.HC` the last two bytes of bin 9
+  (0x28 0x38) are junk in V5.03 itself: its last mesh triangle named vertex
+  0x2800006B and `SPT_END` was 0x38. They are 0x00 0x00, as in bins 7 and 8,
+  the sibling frames with the same triangles. Titanium's `MPMenDraw()` jobs
+  `SpriteInterpolate()` bins 8, 7, 8, 9, which throws if one frame is blanked
+  and the others are not; `DrawIt()` then waits for that job forever and the
+  screen freezes (as it did while `--patch-broken-bins` blanked bin 9).
 - **The `.MAP` files are fixed:** `bootstrap --install` rebuilt
   `Kernel/Kernel.MAP` and `Compiler/Compiler.MAP` in the guest, with their 0x05
   bytes, and they are in the repo, so the old ~45 minute boot stall is gone:
   every image reaches the desktop in about 10 s.
-- **Workaround for the sprite files:** `--patch-broken-bins` rewrites, in the
-  image only, every damaged tail that `doccheck` reports: sound bins are kept,
-  and each lost, truncated, malformed or shifted sprite becomes the 1-byte
-  empty sprite (`SPT_END`), so nothing stalls or walks out of bounds (those
-  sprites are simply blank). In a `.MAP` file it drops the `,BI=n` of a lost
-  bin instead. A damaged `.GR` picture becomes a blank one of the same size
-  and palette. Files that are sound are never touched. A program that needs a
-  lost sprite's data still fails: `DunGen` builds its map from its lost first
-  sprite and takes a General Protection fault.
+- **Text parts:** 152 files have their CH_SHIFT_SPACEs (0x1F) back, 2,745 of
+  them. No V5.03 text part holds a 0x05, so no byte had moved. 112 of the files
+  now have the original text, because the fork never changed it. In the other 40
+  the fork had edited the text, so each 0x1F went back only where its place is
+  certain: on a line the fork left as it was (`git diff --histogram`), on a
+  line it moved verbatim (the same bytes occur once in each version: the God
+  key descriptions in `DocPutKey.HC`, now on F8/F9), or at a hand-checked
+  anchor where the fork kept the bytes around it (`GodBible.HC`'s
+  `Cmd /Bible`, the `Part  1` ... `Part 12` buttons in `Tour.IN`, a sentence
+  in `TourC.IN`, and `KDefine.HC`'s blank `ST_INT_NAMES` entries, matched by
+  interrupt number). The lexer reads 0x1F as a space, so compiled code does
+  not change; in the editor a shift-space is a small dot again, as in V5.03.
+- **Not restored:** one 0x1F, in `Adam/Opt/Boot/BootDVD.HC`. V5.03's
+  `"Loading TempleOS"` had it between the two words, and the fork replaced both
+  (`"Summoning AntichristOS"`), so it stays a space.
+- **AutoComplete dictionary:** `Adam/AutoComplete/ACDefs.DATA` and
+  `ACWords.DATA` are the V5.03 files, whole (the fork never changed them).
+  `ACDefs.DATA` had lost 256,736 0x05 bytes (`ACD_EXTRA_CHAR` marks), which
+  shifted its 16 KB blocks, and `ACWords.DATA` 15,239 0x05 and 530 0x1F, all in
+  its 16-bit block numbers. Only 3,636 of the 95,293 words found their
+  definition; now 94,907 do. `TestToolchain` looks up Devil, Pandemonium and
+  Tritone in the guest.
+- **toslint:** W-CTRL does not flag 0x05 or 0x1F (see `toslint.CTRL_RE`).
+  They are ordinary DolDoc text (`DocSave()` writes the cursor as 0x05, and
+  Shift-Space types 0x1F), and the `archive` base has none of them, so every
+  restored byte would otherwise look new.
+- **Workaround for damaged sprites:** `--patch-broken-bins` rewrites, in the
+  image only, every damaged tail that `doccheck` reports (now just
+  `DemoDoc.DD`): sound bins are kept, and each lost, truncated, malformed or
+  shifted sprite becomes the 1-byte empty sprite (`SPT_END`), so nothing stalls
+  or walks out of bounds (those sprites are simply blank). In a `.MAP` file it
+  drops the `,BI=n` of a lost bin instead. A damaged `.GR` picture becomes a
+  blank one of the same size and palette. Files that are sound are never
+  touched.
 - **Defaults:** the patch is on for `play`, `boot`, `run`, `bootstrap` and
-  `selftest`, and off for `iso`, which builds a faithful image (it boots in
-  ~10 s, but opening a damaged file stalls 3 s per lost bin, and the malformed
-  and shifted sprites misbehave as above).
-- **The real fix needs the original V5.03 ISO:** restoring the stripped bytes
-  means copying the files from the original TempleOS V5.03 distribution
-  (expanded from their `.Z` form). A byte can be restored by hand only when the
-  sprite structure makes it unambiguous; afterwards `doccheck` must no longer
-  list the file.
+  `selftest`, and off for `iso`, which builds a faithful image.
 
 ## Editing TempleOS sources safely: `tosedit.py`, `toslint.py`
 
@@ -333,4 +388,6 @@ sprite tail after the first NUL and some contain CP437 bytes. `.gitattributes`
 - `toslint.py [--base archive] [files]`: checks changed files against pristine
   TempleOS. It flags UTF-8 sequences, line-ending changes, altered binary tails,
   odd `$` counts per line (every original line has an even count), bad DolDoc
-  commands, broken `FI:`/`FF:`/`FL:` link targets and brace-balance drift.
+  commands, broken `FI:`/`FF:`/`FL:` link targets, brace-balance drift and new
+  control characters (but not CH_CURSOR 0x05 or CH_SHIFT_SPACE 0x1F, which are
+  DolDoc text that the `archive` base lost).

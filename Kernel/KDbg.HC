@@ -176,9 +176,9 @@ U0 D(U8 *addr,I64 cnt=0x80,Bool show_offset=TRUE)
   U8 *ptr=addr;
   while (cnt) {
     if (show_offset)
-      "%08X ",ptr-addr;
+      "%08X",ptr-addr;
     else
-      "%010X ",ptr;
+      "%010X",ptr;
     if (cnt>16)
       j=16;
     else
@@ -186,7 +186,7 @@ U0 D(U8 *addr,I64 cnt=0x80,Bool show_offset=TRUE)
     for (i=0;i<j;i++)
       "%02X ",ptr[i];
     for (;i<16;i++)
-      "   ";
+      "";
     for (i=0;i<j;i++) {
       ch=ptr[i];
       if (ch<CH_SHIFT_SPACE || ch==CH_BACKSPACE)
@@ -586,10 +586,10 @@ U0 Fault3(I64 fault_num,I64 fault_err_code)
   Busy(100000);
   if (fault_num==I_DBG) {
     if (dbg.msg) {
-      "\n!!! %s",dbg.msg;
+      "\n!!!%s",dbg.msg;
       if (dbg.msg_num)
 	"%016X",dbg.msg_num;
-      " !!!\n\n";
+      "!!!\n\n";
     }
   }
   if (dbg.panic)
@@ -623,7 +623,7 @@ U0 Fault2(I64 fault_num,I64 fault_err_code)
 	  fault_num,fault_num,"ST_INT_NAMES",fault_err_code;
     was_in_dbg=DbgMode(ON);
     "RIP:%08X",Fs->rip; //Sometimes crashes on %p, so do this first
-    ":%p  RSP:%08X\n",Fs->rip,Fs->rsp;
+    ":%pRSP:%08X\n",Fs->rip,Fs->rsp;
     if (fault_num==I_PAGE_FAULT) {
       MOV_RAX_CR2
       i=GetRAX;

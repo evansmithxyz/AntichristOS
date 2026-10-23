@@ -5,8 +5,8 @@ Cd(__DIR__);;
 
 /*
 AntichristOS DolDoc's can have "cursor movement" cmds which can move the cursor up
-the scrn and layer on existing text.  It can also have callback funs which
-supply live, changing text.  For these reasons, you can't assume you know
+the scrn and layer on existing text.It can also have callback funs which
+supply live, changing text.For these reasons, you can't assume you know
 where the vis portion of the document is and must process much
 of the document each time it is placed on the scrn, becoming CPU
 intensive on big documents.

@@ -7,8 +7,8 @@ U0 CtrlAltZ(I64 sc)
   else
     GrScaleZoom(2.0);
 }
-CtrlAltCBSet('Z',&CtrlAltZ,"Cmd /Zoom In",
-	"Cmd /Zoom Out");
+CtrlAltCBSet('Z',&CtrlAltZ,"Cmd/Zoom In",
+	"Cmd/Zoom Out");
 
 U0 Scrn2Clip(I64)
 {
@@ -26,7 +26,7 @@ U0 CtrlAltS(I64)
 {
   Spawn(&Scrn2Clip);
 }
-CtrlAltCBSet('S',&CtrlAltS,"Cmd /Scrn Shot to Clip");
+CtrlAltCBSet('S',&CtrlAltS,"Cmd/Scrn Shot to Clip");
 
 #help_index "Graphics/Unholy"
 CtrlAltCBSet('I',&CtrlAltI,"Cmd /Next Unholy Palette",

@@ -396,7 +396,7 @@ U32
 
 U8 *LstSub(I64 sub, U8 *lst)
 {//Point to lst entry.
-//Not efficient.  Use an array of U8 ptrs for efficiency.
+//Not efficient.Use an array of U8 ptrs for efficiency.
   if (!lst) return NULL;
   while (*lst && sub>0) {
     while (*lst)	//Advance to end of cur entry.

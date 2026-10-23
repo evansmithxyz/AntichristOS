@@ -173,7 +173,7 @@ U0 KMain()
   IntInit1;
 
   //Before this point use $LK,"Snd",A="MN:Snd"$() and $LK,"Busy",A="MN:Busy"$()
-  //to debug.  After this point, use $LK,"RawPrint",A="MN:RawPrint"$()
+  //to debug.After this point, use $LK,"RawPrint",A="MN:RawPrint"$()
   LBts(&sys_run_level,RLf_RAW);
   "AntichristOS V%4.2f\t%D %T\n",
 	sys_os_version,sys_compile_time,sys_compile_time;

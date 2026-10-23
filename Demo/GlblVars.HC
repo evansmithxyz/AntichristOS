@@ -37,7 +37,7 @@ on and off within your programs, leaving
 ones which need initialization on the code heap.
 
 You can't dynamically initialize data heap
-glbls--they are consts.  This might be a silly
+glbls--they are consts.This might be a silly
 point, but might res in odd differences, perhaps
 from the order things are evaluated.
 
